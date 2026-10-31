@@ -1,0 +1,127 @@
+# ============================================================
+# 09-mysql-statefulset.yaml — Real MySQL Database in Kubernetes
+# ============================================================
+# EQUIVALENT IN TERRAFORM:
+#   `cloud-sql.tf` (MySQL 8.0 Database Server)
+#
+# WHY USE `StatefulSet` INSTEAD OF `Deployment` FOR DATABASES?
+#   Compare `04-deployment.yaml` (Web App) vs `09-mysql-statefulset.yaml` (DB):
+#
+#   1. Fixed Pod Names (Identity):
+#      - Deployment: Random names (`northpoint-storefront-5cc7b-xyz`)
+#      - StatefulSet: Numbered, permanent names (`mysql-0`, `mysql-1`)
+#        `mysql-0` is ALWAYS the Primary database!
+#
+#   2. Ordered Startup & Shutdown:
+#      - Deployment: Starts/kills all 5 Pods at the exact same second.
+#      - StatefulSet: Starts `mysql-0` first, waits until it is 100%
+#        healthy, and ONLY THEN starts `mysql-1` (Standby Replica).
+#
+#   3. Dedicated Hard Drive Per Pod (`volumeClaimTemplates`):
+#      - Automatically creates a separate PersistentVolumeClaim named
+#        `mysql-data-mysql-0` specifically for `mysql-0`. Even if `mysql-0`
+#        crashes, the new `mysql-0` re-attaches to `mysql-data-mysql-0`!
+# ============================================================
+
+
+# ------------------------------------------------------------
+# 1. HEADLESS SERVICE (Gives `mysql-0` a Fixed DNS Address)
+# ------------------------------------------------------------
+# `clusterIP: None` is called a "Headless Service".
+# Instead of load-balancing randomly, it gives each database Pod
+# its own direct DNS address: `mysql-0.mysql.northpoint-living.svc.cluster.local`
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  namespace: northpoint-living
+  labels:
+    app: mysql
+spec:
+  clusterIP: None                  # Headless Service (required for StatefulSet)
+  selector:
+    app: mysql
+  ports:
+    - name: mysql
+      port: 3306                   # Standard MySQL port
+
+---
+# ------------------------------------------------------------
+# 2. STATEFULSET (The MySQL 8.0 Database Engine)
+# ------------------------------------------------------------
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql                      # Pods will be named: `mysql-0`, `mysql-1`...
+  namespace: northpoint-living
+spec:
+  serviceName: "mysql"             # Links to the Headless Service above
+  replicas: 1                      # 1 Primary DB (`mysql-0`) for local lab (2 for HA)
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0         # Official MySQL 8.0 image (matches cloud-sql.tf!)
+          ports:
+            - containerPort: 3306
+              name: mysql
+
+          # ---- DATABASE CREDENTIALS (From 02-configmap.yaml & 03-secret.yaml!) ----
+          env:
+            # Root password pulled securely from 03-secret.yaml
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: storefront-secrets
+                  key: DB_PASSWORD
+
+            # Automatically create the `northpoint` database at startup
+            - name: MYSQL_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: storefront-config
+                  key: DB_NAME
+
+          # ---- CPU & MEMORY ----
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+
+          # ---- PERMANENT DATABASE DISK MOUNT ----
+          # MySQL stores all tables and customer rows inside `/var/lib/mysql`
+          volumeMounts:
+            - name: mysql-data
+              mountPath: /var/lib/mysql
+
+          # ---- HEALTH PROBE (Is MySQL ready to accept SQL queries?) ----
+          readinessProbe:
+            exec:
+              command: ["mysqladmin", "ping", "-h", "127.0.0.1"]
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+
+  # ---- AUTOMATIC HARD DRIVE GENERATOR (`volumeClaimTemplates`) ----
+  # Unlike a Deployment (which shares 1 PVC), a StatefulSet has a built-in
+  # PVC factory! For `mysql-0`, it automatically creates a 5Gi PVC named:
+  #   `mysql-data-mysql-0`
+  volumeClaimTemplates:
+    - metadata:
+        name: mysql-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 5Gi
+

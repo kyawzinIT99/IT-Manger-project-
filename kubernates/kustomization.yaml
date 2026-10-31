@@ -1,0 +1,39 @@
+# ============================================================
+# kustomization.yaml — The "Orchestrator" That Links All YAML Files
+# ============================================================
+# HOW THIS WORKS:
+#   In Terraform, Terraform automatically reads every `.tf` file in
+#   the folder.
+#   In Kubernetes, `kustomization.yaml` is the official controller
+#   file that tells `kubectl` which `.yaml` files belong together
+#   and in what exact order to apply them!
+#
+# COMMAND TO RUN ALL FILES VIA THIS ORCHESTRATOR:
+#   kubectl apply -k .
+# ============================================================
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: northpoint-living
+
+# Apply our modular YAML files in exact dependency order:
+resources:
+  - 01-namespace.yaml
+  - 02-configmap.yaml
+  - 03-secret.yaml
+  - 08-pvc.yaml
+  - 09-mysql-statefulset.yaml
+  - 04-deployment.yaml
+  - 05-service.yaml
+  - 06-hpa.yaml
+  - 07-ingress.yaml
+  - 10-monitoring.yaml
+  - 11-grafana.yaml
+
+# Common labels applied to all resources (just like `local.common_labels` in main.tf!)
+labels:
+  - pairs:
+      managed-by: kustomize
+      project: northpoint-living
+

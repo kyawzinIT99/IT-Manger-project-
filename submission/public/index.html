@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Northpoint Living — Cloud Migration Submission</title>
+  <style>
+    @media print {
+      .page-break { page-break-before: always; }
+      body { font-size: 11pt; }
+      h1 { font-size: 18pt; }
+      h2 { font-size: 15pt; }
+      h3 { font-size: 13pt; }
+      table { font-size: 10pt; }
+      @page { margin: 1.5cm 2cm; size: A4; }
+      .no-print { display: none; }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Helvetica Neue', Arial, sans-serif; color: #1a1a2e; line-height: 1.6; padding: 40px; max-width: 900px; margin: 0 auto; }
+    h1 { font-size: 26px; color: #1a1a2e; margin-bottom: 5px; border-bottom: 3px solid #3B82F6; padding-bottom: 8px; }
+    h2 { font-size: 20px; color: #1e40af; margin: 30px 0 12px 0; }
+    h3 { font-size: 16px; color: #374151; margin: 20px 0 8px 0; }
+    p { margin-bottom: 10px; font-size: 13px; }
+    table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 12px; }
+    th { background: #f1f5f9; color: #334155; text-align: left; padding: 8px 10px; border: 1px solid #e2e8f0; font-weight: 600; }
+    td { padding: 7px 10px; border: 1px solid #e2e8f0; vertical-align: top; }
+    tr:nth-child(even) { background: #f8fafc; }
+    .header-banner { background: linear-gradient(135deg, #1e40af, #3B82F6); color: white; padding: 30px; border-radius: 12px; margin-bottom: 30px; }
+    .header-banner h1 { color: white; border-bottom: 2px solid rgba(255,255,255,0.3); }
+    .header-banner p { color: rgba(255,255,255,0.9); }
+    .note-box { background: #eff6ff; border-left: 4px solid #3B82F6; padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 15px 0; font-size: 12px; }
+    .warn-box { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 15px 0; font-size: 12px; }
+    .danger-box { background: #fef2f2; border-left: 4px solid #ef4444; padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 15px 0; font-size: 12px; }
+    .tip-box { background: #ecfdf5; border-left: 4px solid #10b981; padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 15px 0; font-size: 12px; }
+    .metric-row { display: flex; gap: 15px; margin: 15px 0; }
+    .metric-card { flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 15px; text-align: center; }
+    .metric-card .value { font-size: 28px; font-weight: 700; color: #1e40af; }
+    .metric-card .label { font-size: 11px; color: #64748b; margin-top: 3px; }
+    code { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-family: 'SF Mono', 'Fira Code', monospace; }
+    pre { background: #1e293b; color: #e2e8f0; padding: 16px; border-radius: 8px; overflow-x: auto; margin: 12px 0; font-size: 11px; line-height: 1.5; }
+    pre code { background: none; padding: 0; color: inherit; }
+    .arch-svg { width: 100%; max-width: 800px; margin: 15px auto; display: block; }
+    .budget-bar { height: 22px; border-radius: 11px; background: #e2e8f0; margin: 8px 0; position: relative; overflow: hidden; }
+    .budget-fill { height: 100%; border-radius: 11px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; color: white; font-size: 11px; font-weight: 600; }
+    .green { background: linear-gradient(90deg, #10b981, #34d399); }
+    .yellow { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+    ul, ol { margin: 8px 0 8px 24px; font-size: 13px; }
+    li { margin-bottom: 4px; }
+    .print-btn { position: fixed; top: 20px; right: 20px; background: #3B82F6; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 14px; cursor: pointer; box-shadow: 0 4px 12px rgba(59,130,246,0.3); z-index: 100; }
+    .print-btn:hover { background: #2563eb; }
+    .footer { text-align: center; color: #94a3b8; font-size: 11px; margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0; }
+  </style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">📄 Save as PDF</button>
+
+<!-- COVER -->
+<div class="header-banner">
+  <h1>Northpoint Living — Cloud Migration</h1>
+  <p style="font-size:16px; margin-top:8px;">Scenario Assessment Submission</p>
+  <p>IT Manager (Infrastructure, DevOps & Security) — Visible One Limited</p>
+  <p style="margin-top:12px; font-size:12px; opacity:0.8;">Platform: Google Cloud Platform · Region: asia-east2 (Hong Kong) · Architecture: Fully Managed / Serverless</p>
+</div>
+
+<div class="note-box">
+  <strong>Assumptions Stated Up Front</strong><br>
+  • The PHP e-commerce platform is assumed to be <strong>WooCommerce on WordPress</strong> (most common open-source PHP CMS e-commerce stack).<br>
+  • "Closest available region" for data residency = <strong>Google Cloud asia-east2 (Hong Kong)</strong>.<br>
+  • All prices use public GCP pricing as of October 2026. 1 USD ≈ 7.80 HKD.<br>
+  • The operating team is <strong>small</strong> (2–3 engineers at Visible One) — operational simplicity is weighted heavily.
+</div>
+
+<div class="metric-row">
+  <div class="metric-card">
+    <div class="value" style="color:#10b981;">99.9%</div>
+    <div class="label">Uptime Target</div>
+  </div>
+  <div class="metric-card">
+    <div class="value" style="color:#3B82F6;">≤15 min</div>
+    <div class="label">RPO</div>
+  </div>
+  <div class="metric-card">
+    <div class="value" style="color:#f59e0b;">≤60 min</div>
+    <div class="label">RTO</div>
+  </div>
+  <div class="metric-card">
+    <div class="value" style="color:#6366f1;">HKD 7,380</div>
+    <div class="label">Monthly Cost (59% under budget)</div>
+  </div>
+</div>
+
+<!-- ============ A. ARCHITECTURE ============ -->
+<div class="page-break"></div>
+<h2>A. Architecture Diagram</h2>
+<p>Target-state design on Google Cloud Platform — asia-east2 (Hong Kong). All components are fully managed or serverless. No VMs, no OS patching, no server management.</p>
+
+<svg viewBox="0 0 800 450" class="arch-svg">
+  <rect x="10" y="5" width="780" height="440" rx="12" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="6 3"/>
+  <text x="25" y="25" fill="#64748b" font-size="11" font-weight="600" font-family="sans-serif">Google Cloud Platform — asia-east2 (Hong Kong)</text>
+
+  <!-- Users -->
+  <rect x="20" y="40" width="130" height="60" rx="10" fill="#dbeafe" stroke="#3B82F6" stroke-width="1"/>
+  <text x="85" y="65" text-anchor="middle" fill="#1e40af" font-size="11" font-weight="600" font-family="sans-serif">🌏 End Users</text>
+  <text x="85" y="82" text-anchor="middle" fill="#64748b" font-size="9" font-family="sans-serif">HK · SG · TW</text>
+
+  <!-- CDN -->
+  <rect x="200" y="40" width="120" height="60" rx="10" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="260" y="62" text-anchor="middle" fill="#92400e" font-size="11" font-weight="600" font-family="sans-serif">Cloud CDN</text>
+  <text x="260" y="78" text-anchor="middle" fill="#92400e" font-size="9" font-family="sans-serif">+ Global HTTP(S) LB</text>
+
+  <!-- Cloud Armor -->
+  <rect x="370" y="40" width="120" height="60" rx="10" fill="#fef2f2" stroke="#ef4444" stroke-width="1.5"/>
+  <text x="430" y="62" text-anchor="middle" fill="#991b1b" font-size="11" font-weight="600" font-family="sans-serif">Cloud Armor</text>
+  <text x="430" y="78" text-anchor="middle" fill="#991b1b" font-size="9" font-family="sans-serif">WAF · DDoS · Geo</text>
+
+  <!-- Cloud Run -->
+  <rect x="180" y="130" width="340" height="100" rx="12" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5"/>
+  <text x="350" y="150" text-anchor="middle" fill="#065f46" font-size="10" font-weight="600" font-family="sans-serif">SERVERLESS COMPUTE — Cloud Run (auto-scale 2→50)</text>
+
+  <rect x="200" y="160" width="90" height="55" rx="8" fill="white" stroke="#d1d5db" stroke-width="1"/>
+  <text x="245" y="182" text-anchor="middle" fill="#1f2937" font-size="10" font-weight="600" font-family="sans-serif">Instance A</text>
+  <text x="245" y="197" text-anchor="middle" fill="#6b7280" font-size="9" font-family="sans-serif">Zone A</text>
+
+  <rect x="305" y="160" width="90" height="55" rx="8" fill="white" stroke="#d1d5db" stroke-width="1"/>
+  <text x="350" y="182" text-anchor="middle" fill="#1f2937" font-size="10" font-weight="600" font-family="sans-serif">Instance B</text>
+  <text x="350" y="197" text-anchor="middle" fill="#6b7280" font-size="9" font-family="sans-serif">Zone B</text>
+
+  <rect x="410" y="160" width="95" height="55" rx="8" fill="white" stroke="#10b981" stroke-width="1.5" stroke-dasharray="4 2"/>
+  <text x="457" y="180" text-anchor="middle" fill="#10b981" font-size="10" font-weight="600" font-family="sans-serif">Auto-scale</text>
+  <text x="457" y="197" text-anchor="middle" fill="#6b7280" font-size="9" font-family="sans-serif">⚡ 10× peak</text>
+
+  <!-- Database -->
+  <rect x="180" y="260" width="160" height="100" rx="12" fill="#eef2ff" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="260" y="280" text-anchor="middle" fill="#3730a3" font-size="10" font-weight="600" font-family="sans-serif">Cloud SQL MySQL</text>
+  <rect x="195" y="290" width="130" height="28" rx="6" fill="white" stroke="#6366f1" stroke-width="1"/>
+  <text x="260" y="309" text-anchor="middle" fill="#1f2937" font-size="9" font-weight="600" font-family="sans-serif">Primary (Zone A)</text>
+  <rect x="195" y="324" width="130" height="28" rx="6" fill="white" stroke="#a5b4fc" stroke-width="1"/>
+  <text x="260" y="343" text-anchor="middle" fill="#6b7280" font-size="9" font-family="sans-serif">HA Standby (Zone B)</text>
+
+  <!-- Storage -->
+  <rect x="370" y="260" width="150" height="100" rx="12" fill="#f0fdf4" stroke="#22c55e" stroke-width="1"/>
+  <text x="445" y="280" text-anchor="middle" fill="#166534" font-size="10" font-weight="600" font-family="sans-serif">Cloud Storage</text>
+  <rect x="385" y="290" width="120" height="28" rx="6" fill="white" stroke="#d1d5db" stroke-width="1"/>
+  <text x="445" y="309" text-anchor="middle" fill="#1f2937" font-size="9" font-family="sans-serif">180 GB Media</text>
+  <rect x="385" y="324" width="120" height="28" rx="6" fill="white" stroke="#d1d5db" stroke-width="1"/>
+  <text x="445" y="343" text-anchor="middle" fill="#6b7280" font-size="9" font-family="sans-serif">Backups (PITR)</text>
+
+  <!-- Ops Panel -->
+  <rect x="560" y="40" width="220" height="320" rx="12" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="670" y="62" text-anchor="middle" fill="#334155" font-size="10" font-weight="600" font-family="sans-serif">🔧 Operations</text>
+
+  <rect x="575" y="75" width="190" height="32" rx="6" fill="white" stroke="#e2e8f0"/>
+  <text x="670" y="95" text-anchor="middle" fill="#1f2937" font-size="9" font-family="sans-serif">📊 Cloud Monitoring + Alerts</text>
+
+  <rect x="575" y="115" width="190" height="32" rx="6" fill="white" stroke="#e2e8f0"/>
+  <text x="670" y="135" text-anchor="middle" fill="#1f2937" font-size="9" font-family="sans-serif">📋 Cloud Logging (30-day)</text>
+
+  <rect x="575" y="155" width="190" height="32" rx="6" fill="white" stroke="#e2e8f0"/>
+  <text x="670" y="175" text-anchor="middle" fill="#1f2937" font-size="9" font-family="sans-serif">🔑 Secret Manager</text>
+
+  <rect x="575" y="195" width="190" height="32" rx="6" fill="white" stroke="#e2e8f0"/>
+  <text x="670" y="215" text-anchor="middle" fill="#1f2937" font-size="9" font-family="sans-serif">🚀 Cloud Build (CI/CD)</text>
+
+  <rect x="575" y="235" width="190" height="32" rx="6" fill="white" stroke="#e2e8f0"/>
+  <text x="670" y="255" text-anchor="middle" fill="#1f2937" font-size="9" font-family="sans-serif">🌐 VPC Connector (Private)</text>
+
+  <rect x="575" y="275" width="190" height="32" rx="6" fill="white" stroke="#e2e8f0"/>
+  <text x="670" y="295" text-anchor="middle" fill="#1f2937" font-size="9" font-family="sans-serif">🔒 IAM · AES-256 · TLS · PDPO</text>
+
+  <rect x="575" y="315" width="90" height="32" rx="6" fill="#fce7f3" stroke="#ec4899"/>
+  <text x="620" y="335" text-anchor="middle" fill="#9d174d" font-size="9" font-family="sans-serif">💳 Payment GW</text>
+
+  <rect x="675" y="315" width="90" height="32" rx="6" fill="#f3e8ff" stroke="#a855f7"/>
+  <text x="720" y="335" text-anchor="middle" fill="#6b21a8" font-size="9" font-family="sans-serif">📁 GitHub</text>
+
+  <!-- Arrows -->
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#3B82F6"/></marker></defs>
+  <line x1="150" y1="70" x2="198" y2="70" stroke="#3B82F6" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="320" y1="70" x2="368" y2="70" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="430" y1="100" x2="350" y2="128" stroke="#10b981" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="300" y1="230" x2="270" y2="258" stroke="#6366f1" stroke-width="1.5" marker-end="url(#a)"/>
+  <line x1="400" y1="230" x2="430" y2="258" stroke="#22c55e" stroke-width="1.5" marker-end="url(#a)"/>
+
+  <!-- Footer -->
+  <text x="400" y="430" text-anchor="middle" fill="#94a3b8" font-size="9" font-family="sans-serif">All components fully managed — zero servers to patch, scale, or maintain</text>
+</svg>
+
+<!-- ============ B. DESIGN RATIONALE ============ -->
+<div class="page-break"></div>
+<h2>B. Design Rationale</h2>
+
+<h3>Why Google Cloud Platform?</h3>
+<table>
+  <tr><th>Decision Factor</th><th>GCP Advantage</th></tr>
+  <tr><td>Hong Kong data residency</td><td><code>asia-east2</code> is a full GCP region <strong>in Hong Kong</strong> — PII never leaves the jurisdiction</td></tr>
+  <tr><td>No servers to manage</td><td>Cloud Run is fully serverless: no VMs, no OS patching, no capacity planning</td></tr>
+  <tr><td>10× auto-scaling</td><td>Cloud Run scales from min instances to hundreds in seconds, per-request billing</td></tr>
+  <tr><td>Small team friendly</td><td>Fewer moving parts than EKS/ECS; managed DB eliminates DBA burden</td></tr>
+  <tr><td>Regional expansion</td><td>Identical Terraform modules deploy to <code>asia-southeast1</code> (SG) and <code>asia-east1</code> (TW)</td></tr>
+  <tr><td>Budget fit</td><td>Pay-per-use compute + committed-use DB discounts keep steady state at 41% of budget</td></tr>
+</table>
+
+<h3>How we meet 99.9% availability</h3>
+<ol>
+  <li><strong>Multi-zone Cloud Run</strong> — instances in at least two availability zones. If one zone fails, the LB routes to surviving instances automatically.</li>
+  <li><strong>Cloud SQL HA</strong> — synchronous replication to a standby in a different zone. Automatic failover in &lt; 60 seconds.</li>
+  <li><strong>Cloud CDN</strong> — cached product pages and media continue serving even if compute is briefly degraded.</li>
+  <li><strong>Health checks</strong> — Global LB runs checks every 10s. Unhealthy instances drained within 30s.</li>
+</ol>
+
+<div class="warn-box">
+  <strong>Where it can still fail:</strong> A full regional outage of asia-east2 (extremely rare). Mitigation: CDN continues serving cached pages; cross-region DR is a Phase 2 item. A bad deployment is mitigated by blue-green traffic splitting + instant rollback.
+</div>
+
+<h3>How the database survives losing a node (RPO ≤ 15 min)</h3>
+<table>
+  <tr><th>Protection Layer</th><th>RPO Achieved</th><th>How</th></tr>
+  <tr><td>HA synchronous replication</td><td><strong>0 minutes</strong></td><td>Standby has every committed transaction. Auto-failover promotes standby</td></tr>
+  <tr><td>Automated backups (PITR)</td><td><strong>≤ 15 min</strong></td><td>Point-in-time recovery via binary log. Recover to any second in retention window</td></tr>
+  <tr><td>Cross-region backup</td><td><strong>≤ 24 hours</strong></td><td>Daily export to Cloud Storage in asia-southeast1 (Singapore). Regional disaster protection</td></tr>
+</table>
+
+<h3>How the 10× campaign spike is absorbed</h3>
+<ul>
+  <li><strong>Cloud Run auto-scaling</strong> responds to concurrent request count. From 2 to 20 instances takes ~15–30 seconds.</li>
+  <li><strong>Configuration:</strong> <code>max-instances=50</code> (hard cost cap), <code>concurrency=80</code> (PHP-FPM per container).</li>
+  <li><strong>Read replica</strong> added to Cloud SQL during campaign window to offload catalogue queries (scheduled via Terraform toggle).</li>
+  <li><strong>CDN warm-up</strong> — pre-cache product pages before each campaign, reducing origin load by ~70%.</li>
+</ul>
+
+<h3>What is deliberately left out of Phase 1</h3>
+<table>
+  <tr><th>Deferred Item</th><th>Reason</th></tr>
+  <tr><td>Cross-region active-active DR</td><td>Doubles DB cost. Single-region HA meets 99.9%. Evaluate in Phase 2</td></tr>
+  <tr><td>Kubernetes (GKE)</td><td>Overkill for a single PHP app. Cloud Run = same containers, no cluster management</td></tr>
+  <tr><td>Redis/Memcached cache</td><td>Useful but not critical at current traffic. Add for SG/TW latency optimization</td></tr>
+  <tr><td>Full WAF rule tuning</td><td>Deploy OWASP CRS preset. Fine-tune after 30-day traffic baseline</td></tr>
+  <tr><td>Multi-region media replication</td><td>CDN serves globally from one bucket. Replicate when SG/TW storefronts launch</td></tr>
+</table>
+
+<!-- ============ C. COST ============ -->
+<div class="page-break"></div>
+<h2>C. Cost Estimate</h2>
+<p>All prices in USD/month from GCP public pricing (asia-east2). HKD conversion at 7.80. 1-year committed-use discounts applied to Cloud SQL.</p>
+
+<h3>Steady-State Monthly Cost</h3>
+<table>
+  <tr><th>Component</th><th>Specification</th><th>USD/month</th><th>Notes</th></tr>
+  <tr><td>Cloud Run</td><td>2 min instances, 2 vCPU / 4 GB each</td><td style="text-align:right;">$280</td><td>Always-allocated CPU for low latency</td></tr>
+  <tr><td>Cloud SQL MySQL HA</td><td>db-custom-4-15360, HA failover, 100 GB SSD</td><td style="text-align:right;">$520</td><td>1-year CUD (~30% off)</td></tr>
+  <tr><td>Cloud SQL Backups</td><td>PITR + daily GCS export</td><td style="text-align:right;">$25</td><td>7-day PITR + 30-day exports</td></tr>
+  <tr><td>Cloud Storage</td><td>180 GB Standard, ~50K ops/month</td><td style="text-align:right;">$8</td><td>Product media</td></tr>
+  <tr><td>CDN + LB</td><td>~200 GB egress, 1 forwarding rule</td><td style="text-align:right;">$60</td><td>Cache + health checks</td></tr>
+  <tr><td>Cloud Armor</td><td>1 policy, 10 rules</td><td style="text-align:right;">$12</td><td>OWASP CRS + geo rules</td></tr>
+  <tr><td>Monitoring/Ops</td><td>Uptime checks, dashboards, alerts</td><td style="text-align:right;">$25</td><td>Within free tier for most metrics</td></tr>
+  <tr><td>Other</td><td>VPC connector, DNS, secrets, logs</td><td style="text-align:right;">$41</td><td></td></tr>
+  <tr style="background:#dbeafe; font-weight:700;"><td>TOTAL STEADY STATE</td><td></td><td style="text-align:right;">$946</td><td><strong>≈ HKD 7,380</strong></td></tr>
+</table>
+
+<h3>Campaign-Month Additional Cost (2 months/year)</h3>
+<table>
+  <tr><th>Component</th><th>Specification</th><th>USD/month</th></tr>
+  <tr><td>Cloud Run scale-up</td><td>15–20 instances during 4–6 hour peaks (×2)</td><td style="text-align:right;">+$120</td></tr>
+  <tr><td>Cloud SQL Read Replica</td><td>Active 2 weeks around campaign</td><td style="text-align:right;">+$180</td></tr>
+  <tr><td>CDN increased egress</td><td>~800 GB egress</td><td style="text-align:right;">+$60</td></tr>
+  <tr><td>Cloud Armor</td><td>Higher request volume</td><td style="text-align:right;">+$5</td></tr>
+  <tr style="background:#fef3c7; font-weight:700;"><td>CAMPAIGN MONTH TOTAL</td><td></td><td style="text-align:right;">$1,311 ≈ HKD 10,225</td></tr>
+</table>
+
+<h3>Budget Summary</h3>
+<table>
+  <tr><th>Period</th><th>Monthly (HKD)</th><th>vs Target (HKD 18,000)</th><th>Status</th></tr>
+  <tr><td>Steady state (10 months/yr)</td><td style="font-weight:700; color:#10b981;">7,380</td><td>59% under budget</td><td>✅ Well within</td></tr>
+  <tr><td>Campaign month (2 months/yr)</td><td style="font-weight:700; color:#f59e0b;">10,225</td><td>43% under budget</td><td>✅ Within budget</td></tr>
+  <tr><td>Annualised average</td><td style="font-weight:700; color:#10b981;">7,854</td><td>56% under budget</td><td>✅</td></tr>
+</table>
+
+<div>
+  <p style="font-size:12px; margin-top:8px;"><strong>Steady State</strong> — HKD 7,380 of 18,000</p>
+  <div class="budget-bar"><div class="budget-fill green" style="width:41%;">41%</div></div>
+  <p style="font-size:12px;"><strong>Campaign Month</strong> — HKD 10,225 of 18,000</p>
+  <div class="budget-bar"><div class="budget-fill yellow" style="width:57%;">57%</div></div>
+</div>
+
+<div class="tip-box">
+  <strong>Budget headroom</strong> (~$600/month) is deliberately preserved as a buffer for Phase 2 Singapore/Taiwan expansion, where multi-region replication will increase costs.
+</div>
+
+<!-- ============ D. AUTOMATION ============ -->
+<div class="page-break"></div>
+<h2>D. Automation</h2>
+
+<h3>D1. Infrastructure-as-Code Excerpt — Cloud Run Service (Terraform)</h3>
+<pre><code># Cloud Run Service — Northpoint Living PHP E-commerce
+
+resource "google_cloud_run_v2_service" "storefront" {
+  name     = "northpoint-storefront"
+  location = var.region   # "asia-east2"
+  ingress  = "INGRESS_TRAFFIC_INTERNAL_LOAD_BALANCER"
+
+  template {
+    scaling {
+      min_instance_count = var.min_instances   # 2 for HA
+      max_instance_count = var.max_instances   # 50 hard cap
+    }
+
+    vpc_access {
+      connector = google_vpc_access_connector.main.id
+      egress    = "PRIVATE_RANGES_ONLY"
+    }
+
+    containers {
+      image = "${var.region}-docker.pkg.dev/${var.project_id}/northpoint/storefront:${var.image_tag}"
+      ports { container_port = 8080 }
+
+      resources {
+        limits = { cpu = "2", memory = "4Gi" }
+        cpu_idle = false   # Always-allocated for e-commerce latency
+      }
+
+      env { name = "DB_HOST"; value = google_sql_database_instance.primary.private_ip_address }
+      env { name = "MEDIA_BUCKET"; value = google_storage_bucket.product_media.name }
+
+      # Secrets from Secret Manager (never hardcoded)
+      env {
+        name = "DB_PASSWORD"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.db_password.secret_id
+            version = "latest"
+          }
+        }
+      }
+
+      startup_probe {
+        http_get { path = "/api/health" }
+        initial_delay_seconds = 5
+        failure_threshold     = 10
+      }
+      liveness_probe {
+        http_get { path = "/api/health" }
+        period_seconds = 30
+      }
+    }
+  }
+
+  traffic {
+    type    = "TRAFFIC_TARGET_ALLOCATION_TYPE_LATEST"
+    percent = 100
+  }
+}</code></pre>
+
+<h3>D2. What to Automate First After Go-Live</h3>
+<table>
+  <tr><th>Priority</th><th>What</th><th>How</th><th>Why</th></tr>
+  <tr><td>1</td><td>Deployments</td><td>Cloud Build trigger on <code>main</code> branch push</td><td>Eliminates manual uploads; provides rollback</td></tr>
+  <tr><td>2</td><td>Monitoring alerts</td><td>Terraform-managed: error rate &gt;1%, P95 &gt;3s, CPU &gt;80%</td><td>Alert before the client phones us</td></tr>
+  <tr><td>3</td><td>SSL certificates</td><td>Google-managed certs on the LB</td><td>Zero involvement, never expire</td></tr>
+  <tr><td>4</td><td>Database backups</td><td>Cloud SQL automated + Cloud Scheduler GCS export</td><td>PITR by default; GCS = cross-region safety net</td></tr>
+  <tr><td>5</td><td>Campaign scaling</td><td>Cloud Scheduler triggers read replica + min_instances change</td><td>Pre-warm before campaign, scale down after</td></tr>
+</table>
+
+<h3>What to Leave Manual (Deliberately)</h3>
+<table>
+  <tr><th>What</th><th>Why Manual</th></tr>
+  <tr><td>Failover promotion (DR)</td><td>High-judgement decision. Automated cross-region risks split-brain</td></tr>
+  <tr><td>Major version upgrades</td><td>Require application testing. Automate build, human decides promotion</td></tr>
+  <tr><td>Cloud Armor rule changes</td><td>Security policy updates require PR review, not auto-apply</td></tr>
+  <tr><td>Campaign date scheduling</td><td>Business decision — marketing team provides the dates</td></tr>
+</table>
+
+<!-- ============ E. MIGRATION ============ -->
+<div class="page-break"></div>
+<h2>E. Migration and Rollback Plan</h2>
+
+<h3>4-Week Migration Timeline</h3>
+<table>
+  <tr><th>Phase</th><th>Week</th><th>Activities</th></tr>
+  <tr><td style="background:#dbeafe;">BUILD</td><td>1–2</td><td>Provision GCP via Terraform · Containerise PHP app · Set up Cloud SQL HA · Migrate 180 GB media → Cloud Storage</td></tr>
+  <tr><td style="background:#dcfce7;">TEST</td><td>3</td><td>Full DB sync from VPS · Smoke test on canary URL · Load test at 15× · Security scan & review</td></tr>
+  <tr><td style="background:#fef9c3;">CUTOVER</td><td>4</td><td>DNS TTL ↓ 60s (48h before) · Maintenance window 02:00 HKT · Final DB sync + DNS switch · Verify live</td></tr>
+  <tr><td style="background:#f3e8ff;">STABILISE</td><td>5–8</td><td>30-day parallel run · VPS as warm standby · Daily DB export → VPS · Decommission VPS day 30</td></tr>
+</table>
+
+<h3>Cutover Night Sequence (Sunday 02:00 – 04:00 HKT)</h3>
+<table>
+  <tr><th>Time</th><th>Action</th><th>Owner</th></tr>
+  <tr><td>02:00</td><td>Enable maintenance mode (static CDN page)</td><td>DevOps</td></tr>
+  <tr><td>02:05</td><td>Final mysqldump → Cloud SQL import</td><td>DevOps</td></tr>
+  <tr><td>02:20</td><td>Verify row counts: orders, users, products match</td><td>DevOps + QA</td></tr>
+  <tr><td>02:25</td><td>Run automated smoke tests (registration, cart, checkout)</td><td>Automated</td></tr>
+  <tr><td>02:30</td><td>Switch DNS A record → Global LB IP</td><td>DevOps</td></tr>
+  <tr><td>02:35</td><td>Verify traffic flowing in Cloud Run dashboard</td><td>DevOps</td></tr>
+  <tr><td>04:00</td><td>Close maintenance window ✅</td><td>DevOps + Client</td></tr>
+</table>
+
+<h3>Rollback Decision Matrix</h3>
+<table>
+  <tr><th>Condition</th><th>Action</th><th>Decision Maker</th></tr>
+  <tr style="background:#fef2f2;"><td>Smoke tests fail</td><td>Abort. Restore DNS to VPS IP immediately</td><td>DevOps lead</td></tr>
+  <tr style="background:#fef9c3;"><td>Error rate &gt; 5% in first 2 hours</td><td>Revert DNS (60s TTL). Export Cloud SQL → replay on VPS</td><td>DevOps + IT Manager</td></tr>
+  <tr style="background:#dbeafe;"><td>Minor issues, &lt; 5% errors</td><td>Stay on new platform. Investigate & hotfix. Rollback if unresolved in 4h</td><td>IT Manager</td></tr>
+  <tr style="background:#f3e8ff;"><td>Critical business function broken</td><td>Immediate rollback regardless of metrics</td><td>Client + IT Manager</td></tr>
+</table>
+
+<div class="warn-box">
+  <strong>VPS retained for 30 days post-migration</strong> as warm standby. DB synchronised daily via scheduled mysqldump export from Cloud SQL → VPS. After 30 days with no issues, VPS is decommissioned.
+</div>
+
+<!-- ============ F. RISK REGISTER ============ -->
+<div class="page-break"></div>
+<h2>F. Risk Register — Top 5 Risks</h2>
+
+<table>
+  <tr><th style="width:5%;">#</th><th style="width:25%;">Risk</th><th style="width:10%;">Likelihood</th><th style="width:10%;">Impact</th><th>Mitigation</th></tr>
+  <tr>
+    <td style="text-align:center; font-weight:700;">1</td>
+    <td>Campaign spike exceeds 10× estimate</td>
+    <td style="background:#fef9c3; text-align:center;">Medium</td>
+    <td style="background:#fef2f2; text-align:center;">High</td>
+    <td>Set <code>max_instances=50</code>. Pre-provision read replica. Load-test at 15× before each campaign. Cloud Armor rate-limits bot traffic.</td>
+  </tr>
+  <tr>
+    <td style="text-align:center; font-weight:700;">2</td>
+    <td>Data breach / PDPO non-compliance</td>
+    <td style="background:#dcfce7; text-align:center;">Low</td>
+    <td style="background:#fef2f2; text-align:center; font-weight:700;">Critical</td>
+    <td>All data in asia-east2 (HK). AES-256 at rest, TLS in transit. VPC Service Controls. Access logging. Annual PDPO review.</td>
+  </tr>
+  <tr>
+    <td style="text-align:center; font-weight:700;">3</td>
+    <td>Bad deployment breaks production</td>
+    <td style="background:#fef9c3; text-align:center;">Medium</td>
+    <td style="background:#fef2f2; text-align:center;">High</td>
+    <td>Blue-green deploy: new revision gets 0% traffic until smoke test passes. Instant rollback via <code>gcloud</code> CLI. Canary → full rollout.</td>
+  </tr>
+  <tr>
+    <td style="text-align:center; font-weight:700;">4</td>
+    <td>Cloud SQL failover exceeds 60s</td>
+    <td style="background:#dcfce7; text-align:center;">Low</td>
+    <td style="background:#fef9c3; text-align:center;">Medium</td>
+    <td>RTO target is 60 min, not 60 sec. Even 5-min failover is well within RTO. Cloud Run retries automatically. CDN serves cached pages.</td>
+  </tr>
+  <tr>
+    <td style="text-align:center; font-weight:700;">5</td>
+    <td><strong>Agency key-person risk (Visible One)</strong></td>
+    <td style="background:#fef9c3; text-align:center;">Medium</td>
+    <td style="background:#fef2f2; text-align:center;">High</td>
+    <td>All infra in Terraform (reproducible). Runbooks in shared wiki. CI/CD = no deep knowledge for deploys. Cross-train ≥1 engineer within 60 days.</td>
+  </tr>
+</table>
+
+<div class="danger-box">
+  Risk #5 is an <strong>agency risk to Visible One</strong>, not only a client risk. If platform knowledge lives in one person's head, the agency's ability to service this client — and its credibility — is at stake. IaC and documentation are the mitigation.
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <p><em>Submission prepared for Visible One Limited assessment panel · ~8 pages · Time invested: ≤ 4 hours</em></p>
+  <p style="margin-top:4px;"><em>With more time: Cloud Armor rule tuning for e-commerce attacks, Terraform test suite (terratest), quarterly failover drill runbook.</em></p>
+  <p style="margin-top:8px;">Visible One Limited — Scenario Assessment, IT Manager (Infrastructure, DevOps & Security)</p>
+</div>
+
+</body>
+</html>

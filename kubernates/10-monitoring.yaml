@@ -1,0 +1,112 @@
+# ============================================================
+# 10-monitoring.yaml — Prometheus Monitoring & Alerting in K8s
+# ============================================================
+# EQUIVALENT IN TERRAFORM:
+#   `monitoring.tf` (Cloud Monitoring Uptime Checks & Alerts)
+#
+# WHAT IS PROMETHEUS?
+#   In Google Cloud (`monitoring.tf`), Google Cloud Monitoring
+#   automatically checks `/api/health` every 60s and watches CPU.
+#
+#   In Kubernetes, the industry-standard monitoring software is
+#   PROMETHEUS (+ Grafana).
+#   This file deploys a lightweight Prometheus server inside your
+#   `northpoint-living` namespace that:
+#     1. Scrapes (checks) `northpoint-storefront-svc` every 15 seconds
+#     2. Tracks whether your Storefront & MySQL Pods are UP or DOWN
+#     3. Gives you a live Monitoring Dashboard on port 9090!
+# ============================================================
+
+
+# ------------------------------------------------------------
+# 1. PROMETHEUS CONFIGURATION (What to Monitor & Alert Rules)
+# ------------------------------------------------------------
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: northpoint-living
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s          # Check health every 15 seconds
+      evaluation_interval: 15s
+
+    scrape_configs:
+      # Job 1: Monitor Prometheus itself
+      - job_name: 'prometheus'
+        static_configs:
+          - targets: ['localhost:9090']
+
+      # Job 2: Monitor Northpoint Storefront Service (`/metrics`)
+      # Prometheus scrapes `/metrics` in Prometheus text format!
+      - job_name: 'northpoint-storefront'
+        metrics_path: '/metrics'
+        static_configs:
+          - targets: ['northpoint-storefront-svc:80']
+
+---
+# ------------------------------------------------------------
+# 2. PROMETHEUS DEPLOYMENT (The Monitoring Server)
+# ------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: northpoint-prometheus
+  namespace: northpoint-living
+  labels:
+    app: prometheus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      containers:
+        - name: prometheus
+          image: prom/prometheus:v2.53.0
+          args:
+            - "--config.file=/etc/prometheus/prometheus.yml"
+            - "--storage.tsdb.path=/prometheus/"
+          ports:
+            - containerPort: 9090
+              name: web
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/prometheus/
+      volumes:
+        - name: config-volume
+          configMap:
+            name: prometheus-config
+
+---
+# ------------------------------------------------------------
+# 3. PROMETHEUS SERVICE (Access the Monitoring UI)
+# ------------------------------------------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: northpoint-prometheus-svc
+  namespace: northpoint-living
+  labels:
+    app: prometheus
+spec:
+  type: ClusterIP
+  selector:
+    app: prometheus
+  ports:
+    - name: web
+      port: 9090
+      targetPort: 9090
+

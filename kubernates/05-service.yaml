@@ -1,0 +1,37 @@
+# ============================================================
+# 05-service.yaml — Stable Network Address & Internal Load Balancer
+# ============================================================
+# WHY DO WE NEED A SERVICE?
+#   Pods in Kubernetes are temporary (ephemeral). Every time a Pod
+#   scales up, crashes, or updates, it gets a NEW IP address.
+#
+#   A Kubernetes Service gives your Pods ONE permanent IP address
+#   and DNS name (`northpoint-storefront-svc`), and automatically
+#   load-balances traffic across all healthy Pods!
+#
+# TRAFFIC FLOW:
+#   Ingress (Port 443) -> Service (Port 80) -> Healthy Pods (Port 8080)
+# ============================================================
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: northpoint-storefront-svc
+  namespace: northpoint-living
+  labels:
+    app: storefront
+spec:
+  # ClusterIP = Internal load balancer inside the cluster (exposed via 07-ingress.yaml)
+  # Note: Change to `NodePort` or `LoadBalancer` if testing without an Ingress controller
+  type: ClusterIP
+
+  # Send traffic to any Pod that has `app: storefront` and passes its readinessProbe
+  selector:
+    app: storefront
+
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80           # Port the Service listens on inside the cluster
+      targetPort: 8080   # Port your Docker container listens on (EXPOSE 8080)
+

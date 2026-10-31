@@ -1,0 +1,74 @@
+# ============================================================
+# terraform.tfvars.example — Example Variable Values
+# ============================================================
+# INSTRUCTIONS:
+#   1. Copy this file:  cp terraform.tfvars.example terraform.tfvars
+#   2. Edit terraform.tfvars with YOUR real values
+#   3. Never commit terraform.tfvars to Git (it contains passwords)
+#
+# This .example file is SAFE to commit — it only has placeholders.
+# ============================================================
+
+
+# ========================
+# PROJECT (Required — change these!)
+# ========================
+project_id  = "your-gcp-project-id"    # ← Replace with your GCP project ID
+region      = "asia-east2"              # Hong Kong (don't change for this project)
+environment = "dev"                     # "dev" for testing, "prod" for live
+
+
+# ========================
+# DATABASE (Required — set a strong password!)
+# ========================
+db_password = "CHANGE_ME_to_a_str0ng_passw0rd!"   # ← Change this!
+
+# --- FOR TESTING (cheap, small): ---
+db_tier                = "db-f1-micro"    # Free-tier eligible
+db_ha_enabled          = false            # No HA (single zone)
+db_storage_size_gb     = 10               # 10GB is enough for testing
+db_deletion_protection = false            # Allows terraform destroy
+
+# --- FOR PRODUCTION (uncomment these, comment above): ---
+# db_tier                = "db-custom-4-15360"   # 4 vCPU, 15GB RAM
+# db_ha_enabled          = true                   # HA with auto-failover
+# db_storage_size_gb     = 100                    # 100GB SSD
+# db_deletion_protection = true                   # Prevent accidental deletion
+
+
+# ========================
+# CLOUD RUN (Website)
+# ========================
+# --- FOR TESTING: ---
+min_instances = 1       # 1 instance (save money)
+max_instances = 5       # Max 5 during testing
+cloud_run_cpu    = "1"     # 1 vCPU
+cloud_run_memory = "1Gi"   # 1GB RAM
+
+# --- FOR PRODUCTION (uncomment these, comment above): ---
+# min_instances = 2          # 2 for high availability
+# max_instances = 50         # 50 for 10× campaign spikes
+# cloud_run_cpu    = "2"     # 2 vCPU
+# cloud_run_memory = "4Gi"   # 4GB RAM
+
+image_tag = "latest"
+
+
+# ========================
+# SECURITY
+# ========================
+enable_cloud_armor   = true    # WAF protection
+rate_limit_threshold = 100     # 100 requests/min per IP
+
+
+# ========================
+# MONITORING (Optional)
+# ========================
+alert_email = ""                # Set to receive alerts: "you@email.com"
+
+
+# ========================
+# DOMAIN (Optional — skip for testing)
+# ========================
+domain_name = ""                # Set when you have a real domain
+

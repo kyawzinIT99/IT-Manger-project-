@@ -1,0 +1,9 @@
+{
+  "name": "northpoint-living-client",
+  "version": "1.0.0",
+  "description": "Northpoint Living Frontend Build",
+  "scripts": {
+    "build": "node build.js"
+  }
+}
+

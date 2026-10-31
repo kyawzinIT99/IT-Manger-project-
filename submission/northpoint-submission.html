@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Northpoint Living — Cloud Migration Submission</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    @media print {
+      .page-break { page-break-before: always; }
+      body { font-size: 11pt; }
+      @page { margin: 1.2cm 1.5cm; size: A4; }
+      .no-print { display: none; }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif; color: #1a1a2e; line-height: 1.6; padding: 30px; max-width: 920px; margin: 0 auto; background: #fff; }
+    h1 { font-size: 24px; color: #1a1a2e; margin-bottom: 5px; }
+    h2 { font-size: 20px; color: #1e40af; margin: 28px 0 10px 0; border-left: 4px solid #3B82F6; padding-left: 12px; }
+    h3 { font-size: 15px; color: #374151; margin: 18px 0 8px 0; }
+    p { margin-bottom: 8px; font-size: 12.5px; }
+    table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 11.5px; }
+    th { background: #f1f5f9; color: #334155; text-align: left; padding: 7px 8px; border: 1px solid #e2e8f0; font-weight: 600; }
+    td { padding: 6px 8px; border: 1px solid #e2e8f0; vertical-align: top; }
+    tr:nth-child(even) td { background: #f8fafc; }
+    code { background: #f1f5f9; padding: 1px 5px; border-radius: 3px; font-size: 10.5px; font-family: 'JetBrains Mono', 'SF Mono', 'Consolas', monospace; }
+    pre { background: #1e293b; color: #e2e8f0; padding: 14px; border-radius: 8px; overflow-x: auto; margin: 10px 0; font-size: 10.5px; line-height: 1.5; }
+    pre code { background: none; padding: 0; color: inherit; }
+    ul, ol { margin: 6px 0 6px 20px; font-size: 12.5px; }
+    li { margin-bottom: 3px; }
+    .note { background: #eff6ff; border-left: 4px solid #3B82F6; padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 12px 0; font-size: 11.5px; }
+    .warn { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 12px 0; font-size: 11.5px; }
+    .danger { background: #fef2f2; border-left: 4px solid #ef4444; padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 12px 0; font-size: 11.5px; }
+    .tip { background: #ecfdf5; border-left: 4px solid #10b981; padding: 10px 14px; border-radius: 0 8px 8px 0; margin: 12px 0; font-size: 11.5px; }
+    .banner { background: linear-gradient(135deg, #1e3a8a, #3B82F6); color: white; padding: 28px; border-radius: 14px; margin-bottom: 25px; }
+    .banner h1 { color: white; }
+    .banner p { color: rgba(255,255,255,0.9); }
+    .metrics { display: flex; gap: 12px; margin: 15px 0; }
+    .metric { flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; text-align: center; }
+    .metric .val { font-size: 26px; font-weight: 700; }
+    .metric .lbl { font-size: 10px; color: #64748b; margin-top: 2px; }
+    .vs-grid { display: flex; gap: 0; margin: 12px 0; }
+    .vs-card { flex: 1; padding: 16px; border: 1px solid #e2e8f0; }
+    .vs-card:first-child { border-radius: 10px 0 0 10px; background: #fef2f2; }
+    .vs-card:last-child { border-radius: 0 10px 10px 0; background: #ecfdf5; }
+    .vs-arrow { width: 50px; display: flex; align-items: center; justify-content: center; background: #f1f5f9; font-size: 20px; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; }
+    .icon-row { display: flex; gap: 10px; margin: 12px 0; flex-wrap: wrap; }
+    .icon-card { flex: 1; min-width: 120px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; text-align: center; }
+    .icon-card .emoji { font-size: 28px; display: block; margin-bottom: 4px; }
+    .icon-card .title { font-size: 11px; font-weight: 600; color: #334155; }
+    .icon-card .desc { font-size: 9.5px; color: #64748b; margin-top: 2px; }
+    .bar-bg { height: 20px; border-radius: 10px; background: #e2e8f0; margin: 6px 0; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 10px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; color: white; font-size: 10px; font-weight: 600; }
+    .green { background: linear-gradient(90deg, #10b981, #34d399); }
+    .yellow { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+    .timeline { display: flex; gap: 0; margin: 12px 0; }
+    .tl-phase { flex: 1; border: 1px solid #e2e8f0; padding: 10px; font-size: 11px; }
+    .tl-phase:first-child { border-radius: 8px 0 0 8px; }
+    .tl-phase:last-child { border-radius: 0 8px 8px 0; }
+    .risk-row { display: flex; gap: 4px; align-items: center; padding: 8px 10px; border-radius: 8px; margin: 5px 0; }
+    .footer { text-align: center; color: #94a3b8; font-size: 10.5px; margin-top: 30px; padding-top: 15px; border-top: 1px solid #e2e8f0; }
+    .print-btn { position: fixed; top: 15px; right: 15px; background: #3B82F6; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-size: 13px; cursor: pointer; box-shadow: 0 4px 12px rgba(59,130,246,0.3); z-index: 100; }
+    .print-btn:hover { background: #2563eb; }
+    .split { display: flex; gap: 15px; }
+    .split > * { flex: 1; }
+  </style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">📄 Save as PDF</button>
+
+<!-- ======================== COVER ======================== -->
+<div class="banner">
+  <h1>Northpoint Living — Cloud Migration</h1>
+  <p style="font-size:15px; margin-top:6px;">Scenario Assessment · IT Manager (Infrastructure, DevOps & Security)</p>
+  <p style="font-size:12px; margin-top:4px;">Submitted to Visible One Limited</p>
+</div>
+
+<div class="metrics">
+  <div class="metric"><div class="val" style="color:#10b981;">99.9%</div><div class="lbl">Uptime Target</div></div>
+  <div class="metric"><div class="val" style="color:#3B82F6;">≤15 min</div><div class="lbl">Data Recovery Point</div></div>
+  <div class="metric"><div class="val" style="color:#f59e0b;">≤60 min</div><div class="lbl">Service Recovery Time</div></div>
+  <div class="metric"><div class="val" style="color:#6366f1;">HKD 7,380</div><div class="lbl">/month (59% under budget)</div></div>
+</div>
+
+<!-- ======================== BEFORE / AFTER ======================== -->
+<h2>The Problem & The Solution</h2>
+<p>Northpoint Living's online store runs on a single server. When it fails, everything stops — especially during sales campaigns. Here's what changes:</p>
+
+<div class="vs-grid">
+  <div class="vs-card">
+    <h3 style="color:#dc2626; margin:0 0 8px 0;">❌ Current State (Risky)</h3>
+    <svg viewBox="0 0 300 200" width="100%">
+      <!-- Single server -->
+      <rect x="90" y="30" width="120" height="140" rx="10" fill="#fecaca" stroke="#ef4444" stroke-width="1.5"/>
+      <text x="150" y="60" text-anchor="middle" fill="#991b1b" font-size="11" font-weight="600" font-family="sans-serif">SINGLE SERVER</text>
+      <rect x="105" y="72" width="90" height="22" rx="4" fill="white" stroke="#fca5a5"/>
+      <text x="150" y="87" text-anchor="middle" fill="#7f1d1d" font-size="9" font-family="sans-serif">🌐 Website</text>
+      <rect x="105" y="100" width="90" height="22" rx="4" fill="white" stroke="#fca5a5"/>
+      <text x="150" y="115" text-anchor="middle" fill="#7f1d1d" font-size="9" font-family="sans-serif">🗄️ Database</text>
+      <rect x="105" y="128" width="90" height="22" rx="4" fill="white" stroke="#fca5a5"/>
+      <text x="150" y="143" text-anchor="middle" fill="#7f1d1d" font-size="9" font-family="sans-serif">📁 180GB Files</text>
+      <!-- Warning -->
+      <text x="150" y="188" text-anchor="middle" fill="#dc2626" font-size="10" font-weight="600" font-family="sans-serif">⚠️ If this dies, EVERYTHING dies</text>
+    </svg>
+    <ul style="font-size:10.5px; color:#991b1b;">
+      <li>99.2% uptime (failed 2× last year)</li>
+      <li>No backups tested</li>
+      <li>No auto-scaling</li>
+      <li>Manual file uploads to deploy</li>
+      <li>No monitoring or alerts</li>
+    </ul>
+  </div>
+  <div class="vs-arrow">→</div>
+  <div class="vs-card">
+    <h3 style="color:#059669; margin:0 0 8px 0;">✅ New State (Resilient)</h3>
+    <svg viewBox="0 0 300 200" width="100%">
+      <!-- Multiple components -->
+      <rect x="10" y="20" width="85" height="70" rx="8" fill="#d1fae5" stroke="#10b981"/>
+      <text x="52" y="45" text-anchor="middle" fill="#065f46" font-size="9" font-weight="600" font-family="sans-serif">🌐 Cloud Run</text>
+      <text x="52" y="58" text-anchor="middle" fill="#065f46" font-size="8" font-family="sans-serif">Auto-scales</text>
+      <text x="52" y="70" text-anchor="middle" fill="#065f46" font-size="8" font-family="sans-serif">2 → 50 instances</text>
+      <text x="52" y="82" text-anchor="middle" fill="#10b981" font-size="7" font-family="sans-serif">Zone A + Zone B</text>
+
+      <rect x="108" y="20" width="85" height="70" rx="8" fill="#e0e7ff" stroke="#6366f1"/>
+      <text x="150" y="45" text-anchor="middle" fill="#3730a3" font-size="9" font-weight="600" font-family="sans-serif">🗄️ Cloud SQL</text>
+      <text x="150" y="58" text-anchor="middle" fill="#3730a3" font-size="8" font-family="sans-serif">HA Database</text>
+      <text x="150" y="70" text-anchor="middle" fill="#3730a3" font-size="8" font-family="sans-serif">Auto-backup</text>
+      <text x="150" y="82" text-anchor="middle" fill="#6366f1" font-size="7" font-family="sans-serif">Primary + Standby</text>
+
+      <rect x="206" y="20" width="85" height="70" rx="8" fill="#fef9c3" stroke="#f59e0b"/>
+      <text x="248" y="45" text-anchor="middle" fill="#92400e" font-size="9" font-weight="600" font-family="sans-serif">🛡️ Security</text>
+      <text x="248" y="58" text-anchor="middle" fill="#92400e" font-size="8" font-family="sans-serif">CDN + WAF</text>
+      <text x="248" y="70" text-anchor="middle" fill="#92400e" font-size="8" font-family="sans-serif">DDoS Protection</text>
+      <text x="248" y="82" text-anchor="middle" fill="#f59e0b" font-size="7" font-family="sans-serif">Global Edge</text>
+
+      <rect x="10" y="100" width="85" height="45" rx="8" fill="#fce7f3" stroke="#ec4899"/>
+      <text x="52" y="120" text-anchor="middle" fill="#9d174d" font-size="9" font-weight="600" font-family="sans-serif">📁 Cloud Storage</text>
+      <text x="52" y="133" text-anchor="middle" fill="#9d174d" font-size="8" font-family="sans-serif">180GB Media</text>
+
+      <rect x="108" y="100" width="85" height="45" rx="8" fill="#f3e8ff" stroke="#a855f7"/>
+      <text x="150" y="120" text-anchor="middle" fill="#6b21a8" font-size="9" font-weight="600" font-family="sans-serif">🚀 CI/CD</text>
+      <text x="150" y="133" text-anchor="middle" fill="#6b21a8" font-size="8" font-family="sans-serif">Auto-deploy</text>
+
+      <rect x="206" y="100" width="85" height="45" rx="8" fill="#ecfeff" stroke="#06b6d4"/>
+      <text x="248" y="120" text-anchor="middle" fill="#155e75" font-size="9" font-weight="600" font-family="sans-serif">📊 Monitoring</text>
+      <text x="248" y="133" text-anchor="middle" fill="#155e75" font-size="8" font-family="sans-serif">24/7 Alerts</text>
+
+      <text x="150" y="170" text-anchor="middle" fill="#059669" font-size="9" font-weight="600" font-family="sans-serif">✅ If one part fails, others keep running</text>
+      <text x="150" y="185" text-anchor="middle" fill="#059669" font-size="8" font-family="sans-serif">Everything managed by Google — no servers to maintain</text>
+    </svg>
+    <ul style="font-size:10.5px; color:#065f46;">
+      <li>99.9% uptime (auto-heals)</li>
+      <li>Continuous backups every second</li>
+      <li>Auto-scales for 10× traffic</li>
+      <li>Git push = auto deploy + rollback</li>
+      <li>Real-time monitoring & alerts</li>
+    </ul>
+  </div>
+</div>
+
+<div class="note"><strong>Key insight for non-technical readers:</strong> Think of the current setup like a single delivery truck carrying ALL goods. If it breaks down, everything stops. The new setup is like a fleet of trucks managed by a dispatch service — if one breaks, the rest keep delivering. And the fleet automatically grows during busy periods.</div>
+
+<!-- ======================== A. ARCHITECTURE ======================== -->
+<div class="page-break"></div>
+<h2>A. Architecture — How It All Connects</h2>
+<p>Every component below is <strong>fully managed by Google Cloud</strong> — we don't build or maintain any servers.</p>
+
+<svg viewBox="0 0 860 520" width="100%" style="margin: 10px 0;">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#3B82F6"/></marker>
+    <marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#10b981"/></marker>
+    <marker id="ap" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#8b5cf6"/></marker>
+    <linearGradient id="flow" x1="0%" y1="0%" x2="100%"><stop offset="0%" stop-color="#3B82F6" stop-opacity="0.1"/><stop offset="100%" stop-color="#3B82F6" stop-opacity="0"/></linearGradient>
+  </defs>
+
+  <!-- GCP boundary -->
+  <rect x="185" y="5" width="665" height="510" rx="14" fill="#f0f9ff" stroke="#bfdbfe" stroke-width="1.5" stroke-dasharray="8 4"/>
+  <text x="200" y="28" fill="#1e40af" font-size="11" font-weight="700" font-family="sans-serif">☁️ Google Cloud Platform — Hong Kong (asia-east2)</text>
+  <text x="200" y="42" fill="#60a5fa" font-size="9" font-family="sans-serif">All customer data stays in Hong Kong — PDPO compliant</text>
+
+  <!-- Step 1: Users -->
+  <rect x="15" y="120" width="145" height="100" rx="12" fill="#dbeafe" stroke="#3B82F6" stroke-width="1.5"/>
+  <text x="87" y="148" text-anchor="middle" fill="#1e40af" font-size="24" font-family="sans-serif">🌍</text>
+  <text x="87" y="170" text-anchor="middle" fill="#1e40af" font-size="12" font-weight="700" font-family="sans-serif">Customers</text>
+  <text x="87" y="185" text-anchor="middle" fill="#3b82f6" font-size="9" font-family="sans-serif">Hong Kong · Singapore</text>
+  <text x="87" y="198" text-anchor="middle" fill="#3b82f6" font-size="9" font-family="sans-serif">Taiwan · Worldwide</text>
+  <circle x="15" y="120" cx="30" cy="130" r="10" fill="#3B82F6" opacity="0.2"/>
+  <text x="30" y="134" text-anchor="middle" fill="#1e40af" font-size="9" font-weight="700" font-family="sans-serif">1</text>
+
+  <!-- Arrow 1→2 -->
+  <line x1="160" y1="170" x2="198" y2="115" stroke="#3B82F6" stroke-width="2" marker-end="url(#ar)"/>
+  <text x="175" y="135" fill="#3B82F6" font-size="8" font-family="sans-serif" transform="rotate(-30, 175, 135)">HTTPS</text>
+
+  <!-- Step 2: CDN + WAF -->
+  <rect x="205" y="60" width="200" height="110" rx="12" fill="white" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="305" y="85" text-anchor="middle" fill="#92400e" font-size="11" font-weight="700" font-family="sans-serif">🛡️ STEP 1: Protect & Speed Up</text>
+  <rect x="215" y="95" width="85" height="40" rx="6" fill="#fef9c3" stroke="#fbbf24"/>
+  <text x="257" y="114" text-anchor="middle" fill="#92400e" font-size="10" font-weight="600" font-family="sans-serif">Cloud CDN</text>
+  <text x="257" y="128" text-anchor="middle" fill="#b45309" font-size="8" font-family="sans-serif">Cache globally</text>
+  <rect x="310" y="95" width="85" height="40" rx="6" fill="#fef2f2" stroke="#fca5a5"/>
+  <text x="352" y="114" text-anchor="middle" fill="#991b1b" font-size="10" font-weight="600" font-family="sans-serif">Cloud Armor</text>
+  <text x="352" y="128" text-anchor="middle" fill="#b91c1c" font-size="8" font-family="sans-serif">Block attacks</text>
+  <rect x="215" y="142" width="180" height="18" rx="4" fill="#fef9c3"/>
+  <text x="305" y="155" text-anchor="middle" fill="#92400e" font-size="8" font-family="sans-serif">⚡ Fast loading · 🔒 DDoS blocked · 🌐 Global edge</text>
+  <circle cx="216" cy="70" r="10" fill="#f59e0b" opacity="0.2"/>
+  <text x="216" y="74" text-anchor="middle" fill="#92400e" font-size="9" font-weight="700" font-family="sans-serif">2</text>
+
+  <!-- Arrow 2→3 -->
+  <line x1="305" y1="170" x2="305" y2="208" stroke="#10b981" stroke-width="2" marker-end="url(#ag)"/>
+
+  <!-- Step 3: Cloud Run -->
+  <rect x="205" y="215" width="310" height="130" rx="12" fill="white" stroke="#10b981" stroke-width="1.5"/>
+  <text x="360" y="238" text-anchor="middle" fill="#065f46" font-size="11" font-weight="700" font-family="sans-serif">⚙️ STEP 2: Run the Store (Auto-scaling)</text>
+  
+  <rect x="215" y="248" width="88" height="55" rx="8" fill="#d1fae5" stroke="#6ee7b7"/>
+  <text x="259" y="270" text-anchor="middle" fill="#065f46" font-size="10" font-weight="600" font-family="sans-serif">Instance A</text>
+  <text x="259" y="283" text-anchor="middle" fill="#059669" font-size="8" font-family="sans-serif">Zone A</text>
+  <text x="259" y="296" text-anchor="middle" fill="#059669" font-size="8" font-family="sans-serif">Always On ✓</text>
+  
+  <rect x="313" y="248" width="88" height="55" rx="8" fill="#d1fae5" stroke="#6ee7b7"/>
+  <text x="357" y="270" text-anchor="middle" fill="#065f46" font-size="10" font-weight="600" font-family="sans-serif">Instance B</text>
+  <text x="357" y="283" text-anchor="middle" fill="#059669" font-size="8" font-family="sans-serif">Zone B</text>
+  <text x="357" y="296" text-anchor="middle" fill="#059669" font-size="8" font-family="sans-serif">Always On ✓</text>
+
+  <rect x="411" y="248" width="95" height="55" rx="8" fill="white" stroke="#10b981" stroke-width="1.5" stroke-dasharray="5 3"/>
+  <text x="458" y="268" text-anchor="middle" fill="#10b981" font-size="10" font-weight="700" font-family="sans-serif">+Auto-scale</text>
+  <text x="458" y="283" text-anchor="middle" fill="#6b7280" font-size="8" font-family="sans-serif">Up to 50</text>
+  <text x="458" y="296" text-anchor="middle" fill="#10b981" font-size="8" font-family="sans-serif">⚡ 10× spikes</text>
+
+  <rect x="215" y="310" width="291" height="25" rx="5" fill="#ecfdf5"/>
+  <text x="360" y="327" text-anchor="middle" fill="#065f46" font-size="9" font-family="sans-serif">🔑 No servers to manage · Scales in 15 seconds · Auto-heals if instance fails</text>
+  <circle cx="216" cy="225" r="10" fill="#10b981" opacity="0.2"/>
+  <text x="216" y="229" text-anchor="middle" fill="#065f46" font-size="9" font-weight="700" font-family="sans-serif">3</text>
+
+  <!-- Arrow 3→4 (DB) -->
+  <line x1="300" y1="345" x2="300" y2="388" stroke="#6366f1" stroke-width="2" marker-end="url(#ap)"/>
+  <!-- Arrow 3→5 (Storage) -->
+  <line x1="430" y1="345" x2="490" y2="388" stroke="#6366f1" stroke-width="2" marker-end="url(#ap)"/>
+
+  <!-- Step 4: Database -->
+  <rect x="205" y="395" width="210" height="110" rx="12" fill="white" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="310" y="418" text-anchor="middle" fill="#3730a3" font-size="11" font-weight="700" font-family="sans-serif">🗄️ STEP 3: Store Data Safely</text>
+  <rect x="215" y="428" width="90" height="35" rx="6" fill="#e0e7ff" stroke="#a5b4fc"/>
+  <text x="260" y="446" text-anchor="middle" fill="#3730a3" font-size="9" font-weight="600" font-family="sans-serif">Primary DB</text>
+  <text x="260" y="458" text-anchor="middle" fill="#6366f1" font-size="7" font-family="sans-serif">Zone A · Read/Write</text>
+  <rect x="315" y="428" width="90" height="35" rx="6" fill="#eef2ff" stroke="#c7d2fe"/>
+  <text x="360" y="446" text-anchor="middle" fill="#4f46e5" font-size="9" font-weight="600" font-family="sans-serif">Standby DB</text>
+  <text x="360" y="458" text-anchor="middle" fill="#6366f1" font-size="7" font-family="sans-serif">Zone B · Auto-failover</text>
+  <!-- sync arrow -->
+  <line x1="305" y1="445" x2="313" y2="445" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="309" y="440" text-anchor="middle" fill="#6366f1" font-size="6" font-family="sans-serif">sync</text>
+  <rect x="215" y="470" width="190" height="25" rx="5" fill="#eef2ff"/>
+  <text x="310" y="487" text-anchor="middle" fill="#3730a3" font-size="8" font-family="sans-serif">🔄 Auto-backup every second · 🔒 Encrypted · PDPO ✓</text>
+  <circle cx="216" cy="405" r="10" fill="#6366f1" opacity="0.2"/>
+  <text x="216" y="409" text-anchor="middle" fill="#3730a3" font-size="9" font-weight="700" font-family="sans-serif">4</text>
+
+  <!-- Step 5: Storage -->
+  <rect x="440" y="395" width="160" height="75" rx="12" fill="white" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="520" y="418" text-anchor="middle" fill="#166534" font-size="11" font-weight="700" font-family="sans-serif">📁 Media Files</text>
+  <text x="520" y="438" text-anchor="middle" fill="#166534" font-size="10" font-family="sans-serif">Cloud Storage</text>
+  <text x="520" y="453" text-anchor="middle" fill="#16a34a" font-size="9" font-family="sans-serif">180 GB product images</text>
+  <text x="520" y="466" text-anchor="middle" fill="#16a34a" font-size="8" font-family="sans-serif">Served via CDN globally</text>
+  <circle cx="451" cy="405" r="10" fill="#22c55e" opacity="0.2"/>
+  <text x="451" y="409" text-anchor="middle" fill="#166534" font-size="9" font-weight="700" font-family="sans-serif">5</text>
+
+  <!-- Operations Panel -->
+  <rect x="560" y="60" width="280" height="410" rx="12" fill="white" stroke="#e2e8f0" stroke-width="1.5"/>
+  <text x="700" y="85" text-anchor="middle" fill="#334155" font-size="12" font-weight="700" font-family="sans-serif">🔧 Operations (All Automated)</text>
+
+  <rect x="575" y="100" width="250" height="42" rx="8" fill="#eff6ff" stroke="#bfdbfe"/>
+  <text x="588" y="118" fill="#1e40af" font-size="20" font-family="sans-serif">📊</text>
+  <text x="618" y="118" fill="#1e40af" font-size="10" font-weight="600" font-family="sans-serif">Monitoring & Alerts</text>
+  <text x="618" y="132" fill="#60a5fa" font-size="8" font-family="sans-serif">Know before clients call · 24/7 dashboards</text>
+
+  <rect x="575" y="150" width="250" height="42" rx="8" fill="#ecfdf5" stroke="#bbf7d0"/>
+  <text x="588" y="168" fill="#065f46" font-size="20" font-family="sans-serif">🚀</text>
+  <text x="618" y="168" fill="#065f46" font-size="10" font-weight="600" font-family="sans-serif">CI/CD Pipeline</text>
+  <text x="618" y="182" fill="#34d399" font-size="8" font-family="sans-serif">Git push → auto build → auto deploy → rollback</text>
+
+  <rect x="575" y="200" width="250" height="42" rx="8" fill="#f3e8ff" stroke="#d8b4fe"/>
+  <text x="588" y="218" fill="#6b21a8" font-size="20" font-family="sans-serif">🔑</text>
+  <text x="618" y="218" fill="#6b21a8" font-size="10" font-weight="600" font-family="sans-serif">Secret Manager</text>
+  <text x="618" y="232" fill="#a855f7" font-size="8" font-family="sans-serif">Passwords & API keys encrypted, never in code</text>
+
+  <rect x="575" y="250" width="250" height="42" rx="8" fill="#fef9c3" stroke="#fde68a"/>
+  <text x="588" y="268" fill="#92400e" font-size="20" font-family="sans-serif">🔒</text>
+  <text x="618" y="268" fill="#92400e" font-size="10" font-weight="600" font-family="sans-serif">Security & Compliance</text>
+  <text x="618" y="282" fill="#f59e0b" font-size="8" font-family="sans-serif">AES-256 encryption · TLS · HK PDPO compliant</text>
+
+  <rect x="575" y="300" width="250" height="42" rx="8" fill="#ecfeff" stroke="#a5f3fc"/>
+  <text x="588" y="318" fill="#155e75" font-size="20" font-family="sans-serif">🌐</text>
+  <text x="618" y="318" fill="#155e75" font-size="10" font-weight="600" font-family="sans-serif">VPC Private Network</text>
+  <text x="618" y="332" fill="#06b6d4" font-size="8" font-family="sans-serif">Database never exposed to internet</text>
+
+  <rect x="575" y="350" width="120" height="42" rx="8" fill="#fce7f3" stroke="#f9a8d4"/>
+  <text x="588" y="368" fill="#9d174d" font-size="20" font-family="sans-serif">💳</text>
+  <text x="618" y="368" fill="#9d174d" font-size="10" font-weight="600" font-family="sans-serif">Payment</text>
+  <text x="618" y="382" fill="#ec4899" font-size="8" font-family="sans-serif">3rd-party gateway</text>
+
+  <rect x="705" y="350" width="120" height="42" rx="8" fill="#f0fdf4" stroke="#bbf7d0"/>
+  <text x="718" y="368" fill="#166534" font-size="20" font-family="sans-serif">📋</text>
+  <text x="748" y="368" fill="#166534" font-size="10" font-weight="600" font-family="sans-serif">Logging</text>
+  <text x="748" y="382" fill="#22c55e" font-size="8" font-family="sans-serif">30-day audit trail</text>
+
+  <!-- Connecting compute to ops -->
+  <line x1="515" y1="280" x2="573" y2="270" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4 2"/>
+</svg>
+
+<div class="icon-row">
+  <div class="icon-card"><span class="emoji">🚫🖥️</span><div class="title">Zero Servers</div><div class="desc">No VMs to patch, update, or restart</div></div>
+  <div class="icon-card"><span class="emoji">🔄</span><div class="title">Auto-Healing</div><div class="desc">Failed instance replaced in seconds</div></div>
+  <div class="icon-card"><span class="emoji">📈</span><div class="title">Auto-Scaling</div><div class="desc">2 → 50 instances in 15 seconds</div></div>
+  <div class="icon-card"><span class="emoji">🔒</span><div class="title">PDPO Compliant</div><div class="desc">All data stays in Hong Kong</div></div>
+  <div class="icon-card"><span class="emoji">🇭🇰</span><div class="title">HK Region</div><div class="desc">asia-east2 data centre</div></div>
+</div>
+
+<!-- ======================== B. DESIGN RATIONALE ======================== -->
+<div class="page-break"></div>
+<h2>B. Design Rationale — Why This Design</h2>
+
+<h3>Why Google Cloud Platform?</h3>
+<table>
+  <tr><th>Decision Factor</th><th>GCP Advantage</th></tr>
+  <tr><td>🇭🇰 Hong Kong data residency</td><td><code>asia-east2</code> is in Hong Kong — customer PII never leaves the jurisdiction</td></tr>
+  <tr><td>🚫🖥️ No servers to manage</td><td>Cloud Run is serverless: no VMs, no patching, no capacity planning</td></tr>
+  <tr><td>⚡ 10× auto-scaling</td><td>Scales from 2 → 50 instances in 15 seconds during campaigns</td></tr>
+  <tr><td>👥 Small team friendly</td><td>2–3 engineers can operate everything — no dedicated DBA or SysAdmin needed</td></tr>
+  <tr><td>🌏 SG/TW expansion ready</td><td>Same Terraform modules deploy identically to Singapore & Taiwan regions</td></tr>
+  <tr><td>💰 Budget fit</td><td>HKD 7,380/month — 59% under the HKD 18,000 target</td></tr>
+</table>
+
+<h3>How we guarantee 99.9% uptime</h3>
+
+<svg viewBox="0 0 800 160" width="100%" style="margin: 10px 0;">
+  <rect x="0" y="0" width="800" height="155" rx="10" fill="#f0fdf4" stroke="#bbf7d0"/>
+  <!-- Layer 1 -->
+  <rect x="15" y="15" width="180" height="55" rx="8" fill="white" stroke="#10b981" stroke-width="1.5"/>
+  <text x="105" y="35" text-anchor="middle" fill="#065f46" font-size="10" font-weight="700" font-family="sans-serif">Layer 1: Multi-Zone</text>
+  <text x="105" y="50" text-anchor="middle" fill="#059669" font-size="9" font-family="sans-serif">2 zones running simultaneously</text>
+  <text x="105" y="63" text-anchor="middle" fill="#059669" font-size="8" font-family="sans-serif">Zone A fails → Zone B serves</text>
+  <!-- Arrow -->
+  <text x="208" y="45" fill="#10b981" font-size="16" font-family="sans-serif">+</text>
+  <!-- Layer 2 -->
+  <rect x="225" y="15" width="180" height="55" rx="8" fill="white" stroke="#3B82F6" stroke-width="1.5"/>
+  <text x="315" y="35" text-anchor="middle" fill="#1e40af" font-size="10" font-weight="700" font-family="sans-serif">Layer 2: Load Balancer</text>
+  <text x="315" y="50" text-anchor="middle" fill="#3b82f6" font-size="9" font-family="sans-serif">Health checks every 10 sec</text>
+  <text x="315" y="63" text-anchor="middle" fill="#3b82f6" font-size="8" font-family="sans-serif">Sick instance → removed in 30s</text>
+  <text x="418" y="45" fill="#3B82F6" font-size="16" font-family="sans-serif">+</text>
+  <!-- Layer 3 -->
+  <rect x="435" y="15" width="180" height="55" rx="8" fill="white" stroke="#6366f1" stroke-width="1.5"/>
+  <text x="525" y="35" text-anchor="middle" fill="#3730a3" font-size="10" font-weight="700" font-family="sans-serif">Layer 3: DB Failover</text>
+  <text x="525" y="50" text-anchor="middle" fill="#6366f1" font-size="9" font-family="sans-serif">Standby promoted in &lt;60 sec</text>
+  <text x="525" y="63" text-anchor="middle" fill="#6366f1" font-size="8" font-family="sans-serif">Zero data loss (sync replication)</text>
+  <text x="628" y="45" fill="#6366f1" font-size="16" font-family="sans-serif">+</text>
+  <!-- Layer 4 -->
+  <rect x="645" y="15" width="140" height="55" rx="8" fill="white" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="715" y="35" text-anchor="middle" fill="#92400e" font-size="10" font-weight="700" font-family="sans-serif">Layer 4: CDN</text>
+  <text x="715" y="50" text-anchor="middle" fill="#f59e0b" font-size="9" font-family="sans-serif">Cached pages keep</text>
+  <text x="715" y="63" text-anchor="middle" fill="#f59e0b" font-size="8" font-family="sans-serif">serving during outage</text>
+  <!-- Result -->
+  <rect x="15" y="85" width="770" height="55" rx="8" fill="white" stroke="#10b981" stroke-width="2"/>
+  <text x="400" y="107" text-anchor="middle" fill="#065f46" font-size="13" font-weight="700" font-family="sans-serif">= 99.9% Uptime (from current 99.2% — cutting downtime by 8×)</text>
+  <text x="400" y="127" text-anchor="middle" fill="#059669" font-size="10" font-family="sans-serif">Old: ~70 hours downtime/year → New: ~8 hours downtime/year (and most of that is planned maintenance)</text>
+</svg>
+
+<h3>How 10× campaign spikes are handled</h3>
+
+<svg viewBox="0 0 800 200" width="100%" style="margin: 10px 0;">
+  <rect x="0" y="0" width="800" height="195" rx="10" fill="#eff6ff" stroke="#bfdbfe"/>
+  <!-- Normal -->
+  <rect x="20" y="20" width="170" height="80" rx="10" fill="white" stroke="#d1d5db"/>
+  <text x="105" y="42" text-anchor="middle" fill="#374151" font-size="10" font-weight="700" font-family="sans-serif">📊 Normal Day</text>
+  <text x="105" y="58" text-anchor="middle" fill="#6b7280" font-size="9" font-family="sans-serif">~62 sessions/hour</text>
+  <rect x="40" y="68" width="25" height="25" rx="4" fill="#d1fae5" stroke="#6ee7b7"/>
+  <text x="52" y="85" text-anchor="middle" fill="#065f46" font-size="8" font-family="sans-serif">A</text>
+  <rect x="72" y="68" width="25" height="25" rx="4" fill="#d1fae5" stroke="#6ee7b7"/>
+  <text x="84" y="85" text-anchor="middle" fill="#065f46" font-size="8" font-family="sans-serif">B</text>
+  <text x="115" y="85" fill="#6b7280" font-size="8" font-family="sans-serif">2 instances</text>
+
+  <!-- Arrow -->
+  <text x="210" y="65" fill="#f59e0b" font-size="18" font-family="sans-serif">⚡</text>
+  <text x="205" y="85" fill="#f59e0b" font-size="9" font-weight="700" font-family="sans-serif">Traffic</text>
+  <text x="205" y="95" fill="#f59e0b" font-size="9" font-weight="700" font-family="sans-serif">SURGES</text>
+
+  <!-- Campaign -->
+  <rect x="255" y="20" width="280" height="80" rx="10" fill="white" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="395" y="42" text-anchor="middle" fill="#92400e" font-size="10" font-weight="700" font-family="sans-serif">🔥 Campaign Peak (10× Traffic)</text>
+  <text x="395" y="58" text-anchor="middle" fill="#b45309" font-size="9" font-family="sans-serif">~620 sessions/hour</text>
+  <g>
+    <rect x="270" y="66" width="18" height="25" rx="3" fill="#d1fae5" stroke="#6ee7b7"/>
+    <rect x="291" y="66" width="18" height="25" rx="3" fill="#d1fae5" stroke="#6ee7b7"/>
+    <rect x="312" y="66" width="18" height="25" rx="3" fill="#d1fae5" stroke="#6ee7b7"/>
+    <rect x="333" y="66" width="18" height="25" rx="3" fill="#d1fae5" stroke="#6ee7b7"/>
+    <rect x="354" y="66" width="18" height="25" rx="3" fill="#d1fae5" stroke="#6ee7b7"/>
+    <rect x="375" y="66" width="18" height="25" rx="3" fill="#bbf7d0" stroke="#6ee7b7"/>
+    <rect x="396" y="66" width="18" height="25" rx="3" fill="#bbf7d0" stroke="#6ee7b7"/>
+    <rect x="417" y="66" width="18" height="25" rx="3" fill="#bbf7d0" stroke="#6ee7b7"/>
+    <rect x="438" y="66" width="18" height="25" rx="3" fill="#bbf7d0" stroke="#6ee7b7"/>
+    <rect x="459" y="66" width="18" height="25" rx="3" fill="#bbf7d0" stroke="#6ee7b7"/>
+  </g>
+  <text x="490" y="83" fill="#059669" font-size="8" font-family="sans-serif">~20</text>
+
+  <!-- Result -->
+  <rect x="555" y="20" width="230" height="80" rx="10" fill="white" stroke="#10b981" stroke-width="1.5"/>
+  <text x="670" y="42" text-anchor="middle" fill="#065f46" font-size="10" font-weight="700" font-family="sans-serif">✅ Result</text>
+  <text x="670" y="60" text-anchor="middle" fill="#059669" font-size="9" font-family="sans-serif">Scaled in 15–30 seconds</text>
+  <text x="670" y="75" text-anchor="middle" fill="#059669" font-size="9" font-family="sans-serif">No manual intervention needed</text>
+  <text x="670" y="90" text-anchor="middle" fill="#059669" font-size="9" font-family="sans-serif">Scales back down after peak</text>
+
+  <!-- Bottom row - supporting -->
+  <rect x="20" y="115" width="240" height="65" rx="8" fill="white" stroke="#e2e8f0"/>
+  <text x="140" y="137" text-anchor="middle" fill="#374151" font-size="10" font-weight="600" font-family="sans-serif">🌐 CDN absorbs 70% of reads</text>
+  <text x="140" y="153" text-anchor="middle" fill="#6b7280" font-size="9" font-family="sans-serif">Product images & pages pre-cached</text>
+  <text x="140" y="166" text-anchor="middle" fill="#6b7280" font-size="8" font-family="sans-serif">Most visitors never hit the servers</text>
+
+  <rect x="280" y="115" width="240" height="65" rx="8" fill="white" stroke="#e2e8f0"/>
+  <text x="400" y="137" text-anchor="middle" fill="#374151" font-size="10" font-weight="600" font-family="sans-serif">🗄️ Read replica activated</text>
+  <text x="400" y="153" text-anchor="middle" fill="#6b7280" font-size="9" font-family="sans-serif">Extra DB for catalogue browsing</text>
+  <text x="400" y="166" text-anchor="middle" fill="#6b7280" font-size="8" font-family="sans-serif">Scheduled before campaign date</text>
+
+  <rect x="540" y="115" width="245" height="65" rx="8" fill="white" stroke="#e2e8f0"/>
+  <text x="662" y="137" text-anchor="middle" fill="#374151" font-size="10" font-weight="600" font-family="sans-serif">🛡️ Bot traffic blocked</text>
+  <text x="662" y="153" text-anchor="middle" fill="#6b7280" font-size="9" font-family="sans-serif">Cloud Armor rate-limits scrapers</text>
+  <text x="662" y="166" text-anchor="middle" fill="#6b7280" font-size="8" font-family="sans-serif">Real customers get priority</text>
+</svg>
+
+<h3>Database protection — 3 safety layers</h3>
+<svg viewBox="0 0 800 110" width="100%" style="margin: 10px 0;">
+  <rect x="0" y="0" width="800" height="105" rx="10" fill="#eef2ff" stroke="#c7d2fe"/>
+  <rect x="15" y="12" width="245" height="80" rx="8" fill="white" stroke="#10b981" stroke-width="1.5"/>
+  <text x="137" y="32" text-anchor="middle" fill="#065f46" font-size="10" font-weight="700" font-family="sans-serif">🟢 Layer 1: Live Copy</text>
+  <text x="137" y="48" text-anchor="middle" fill="#059669" font-size="9" font-family="sans-serif">Sync replication to standby DB</text>
+  <text x="137" y="63" text-anchor="middle" fill="#059669" font-size="9" font-family="sans-serif">Data loss: <tspan font-weight="700">ZERO</tspan></text>
+  <text x="137" y="78" text-anchor="middle" fill="#059669" font-size="9" font-family="sans-serif">Recovery: <tspan font-weight="700">&lt;60 seconds</tspan> (automatic)</text>
+
+  <rect x="278" y="12" width="245" height="80" rx="8" fill="white" stroke="#3B82F6" stroke-width="1.5"/>
+  <text x="400" y="32" text-anchor="middle" fill="#1e40af" font-size="10" font-weight="700" font-family="sans-serif">🔵 Layer 2: Point-in-Time</text>
+  <text x="400" y="48" text-anchor="middle" fill="#3b82f6" font-size="9" font-family="sans-serif">Continuous backup via binary log</text>
+  <text x="400" y="63" text-anchor="middle" fill="#3b82f6" font-size="9" font-family="sans-serif">Restore to <tspan font-weight="700">any second</tspan></text>
+  <text x="400" y="78" text-anchor="middle" fill="#3b82f6" font-size="9" font-family="sans-serif">Recovery: <tspan font-weight="700">~20 minutes</tspan></text>
+
+  <rect x="541" y="12" width="245" height="80" rx="8" fill="white" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="663" y="32" text-anchor="middle" fill="#92400e" font-size="10" font-weight="700" font-family="sans-serif">🟡 Layer 3: Off-site Backup</text>
+  <text x="663" y="48" text-anchor="middle" fill="#f59e0b" font-size="9" font-family="sans-serif">Daily export to Singapore</text>
+  <text x="663" y="63" text-anchor="middle" fill="#f59e0b" font-size="9" font-family="sans-serif">Survives <tspan font-weight="700">HK regional disaster</tspan></text>
+  <text x="663" y="78" text-anchor="middle" fill="#f59e0b" font-size="9" font-family="sans-serif">Recovery: <tspan font-weight="700">&lt;24 hours</tspan></text>
+</svg>
+
+<!-- ======================== C. COST ======================== -->
+<div class="page-break"></div>
+<h2>C. Cost Estimate</h2>
+
+<h3>Where the money goes</h3>
+<svg viewBox="0 0 800 280" width="100%" style="margin: 10px 0;">
+  <rect x="0" y="0" width="800" height="275" rx="10" fill="#f8fafc" stroke="#e2e8f0"/>
+  
+  <!-- Donut Chart -->
+  <!-- Cloud Run 29.6% -->
+  <circle cx="180" cy="140" r="100" fill="none" stroke="#3B82F6" stroke-width="40" stroke-dasharray="186 628" stroke-dashoffset="0" transform="rotate(-90,180,140)"/>
+  <!-- Cloud SQL 55% -->
+  <circle cx="180" cy="140" r="100" fill="none" stroke="#8B5CF6" stroke-width="40" stroke-dasharray="345 628" stroke-dashoffset="-186" transform="rotate(-90,180,140)"/>
+  <!-- CDN+LB 6.3% -->
+  <circle cx="180" cy="140" r="100" fill="none" stroke="#f59e0b" stroke-width="40" stroke-dasharray="40 628" stroke-dashoffset="-531" transform="rotate(-90,180,140)"/>
+  <!-- Other 9.1% -->
+  <circle cx="180" cy="140" r="100" fill="none" stroke="#94a3b8" stroke-width="40" stroke-dasharray="57 628" stroke-dashoffset="-571" transform="rotate(-90,180,140)"/>
+  <!-- Center -->
+  <circle cx="180" cy="140" r="78" fill="white"/>
+  <text x="180" y="128" text-anchor="middle" fill="#1f2937" font-size="22" font-weight="700" font-family="sans-serif">$946</text>
+  <text x="180" y="148" text-anchor="middle" fill="#64748b" font-size="10" font-family="sans-serif">USD/month</text>
+  <text x="180" y="163" text-anchor="middle" fill="#6366f1" font-size="10" font-weight="600" font-family="sans-serif">HKD 7,380</text>
+
+  <!-- Legend -->
+  <rect x="330" y="30" width="440" height="230" rx="8" fill="white" stroke="#e2e8f0"/>
+  <text x="550" y="55" text-anchor="middle" fill="#334155" font-size="12" font-weight="700" font-family="sans-serif">Monthly Breakdown</text>
+
+  <rect x="350" y="70" width="14" height="14" rx="3" fill="#3B82F6"/>
+  <text x="372" y="82" fill="#1f2937" font-size="11" font-family="sans-serif">Cloud Run (Website Hosting)</text>
+  <text x="720" y="82" text-anchor="end" fill="#1f2937" font-size="11" font-weight="600" font-family="sans-serif">$280 (30%)</text>
+
+  <rect x="350" y="95" width="14" height="14" rx="3" fill="#8B5CF6"/>
+  <text x="372" y="107" fill="#1f2937" font-size="11" font-family="sans-serif">Cloud SQL Database (HA + Backups)</text>
+  <text x="720" y="107" text-anchor="end" fill="#1f2937" font-size="11" font-weight="600" font-family="sans-serif">$545 (58%)</text>
+
+  <rect x="350" y="120" width="14" height="14" rx="3" fill="#f59e0b"/>
+  <text x="372" y="132" fill="#1f2937" font-size="11" font-family="sans-serif">CDN + Load Balancer + Armor</text>
+  <text x="720" y="132" text-anchor="end" fill="#1f2937" font-size="11" font-weight="600" font-family="sans-serif">$72 (8%)</text>
+
+  <rect x="350" y="145" width="14" height="14" rx="3" fill="#94a3b8"/>
+  <text x="372" y="157" fill="#1f2937" font-size="11" font-family="sans-serif">Storage, Monitoring, Secrets, DNS, VPC</text>
+  <text x="720" y="157" text-anchor="end" fill="#1f2937" font-size="11" font-weight="600" font-family="sans-serif">$49 (5%)</text>
+
+  <line x1="350" y1="175" x2="740" y2="175" stroke="#e2e8f0" stroke-width="1"/>
+
+  <text x="372" y="197" fill="#1f2937" font-size="12" font-weight="700" font-family="sans-serif">Steady State Total</text>
+  <text x="720" y="197" text-anchor="end" fill="#10b981" font-size="13" font-weight="700" font-family="sans-serif">$946/mo = HKD 7,380</text>
+
+  <text x="372" y="220" fill="#1f2937" font-size="12" font-weight="700" font-family="sans-serif">Campaign Month Total</text>
+  <text x="720" y="220" text-anchor="end" fill="#f59e0b" font-size="13" font-weight="700" font-family="sans-serif">$1,311/mo = HKD 10,225</text>
+
+  <text x="372" y="245" fill="#1f2937" font-size="12" font-weight="700" font-family="sans-serif">Budget Target</text>
+  <text x="720" y="245" text-anchor="end" fill="#64748b" font-size="13" font-weight="700" font-family="sans-serif">HKD 18,000/mo</text>
+</svg>
+
+<h3>Budget utilisation — well within target</h3>
+<p style="font-size:11px;"><strong>Steady State: HKD 7,380</strong> of HKD 18,000 budget</p>
+<div class="bar-bg"><div class="bar-fill green" style="width:41%;">41% used — HKD 10,620 headroom</div></div>
+<p style="font-size:11px;"><strong>Campaign Month: HKD 10,225</strong> of HKD 18,000 budget</p>
+<div class="bar-bg"><div class="bar-fill yellow" style="width:57%;">57% used — HKD 7,775 headroom</div></div>
+
+<div class="tip"><strong>The budget headroom is intentional.</strong> The ~$600/month savings is reserved for Phase 2 (Singapore & Taiwan expansion) where multi-region replication will increase costs. Estimated Phase 2: HKD 18,000 → HKD 30,000/month for three regions.</div>
+
+<!-- ======================== D. AUTOMATION ======================== -->
+<div class="page-break"></div>
+<h2>D. Automation — How Deployments Work</h2>
+
+<h3>How code gets from the developer to the live store</h3>
+<svg viewBox="0 0 800 130" width="100%" style="margin: 10px 0;">
+  <rect x="0" y="0" width="800" height="125" rx="10" fill="#f8fafc" stroke="#e2e8f0"/>
+  
+  <rect x="15" y="20" width="110" height="85" rx="10" fill="#f3e8ff" stroke="#a855f7" stroke-width="1.5"/>
+  <text x="70" y="48" text-anchor="middle" fill="#6b21a8" font-size="20" font-family="sans-serif">👨‍💻</text>
+  <text x="70" y="66" text-anchor="middle" fill="#6b21a8" font-size="10" font-weight="600" font-family="sans-serif">Developer</text>
+  <text x="70" y="80" text-anchor="middle" fill="#a855f7" font-size="8" font-family="sans-serif">Pushes code</text>
+  <text x="70" y="92" text-anchor="middle" fill="#a855f7" font-size="8" font-family="sans-serif">to GitHub</text>
+
+  <text x="140" y="60" fill="#6b7280" font-size="16" font-family="sans-serif">→</text>
+
+  <rect x="160" y="20" width="120" height="85" rx="10" fill="#ecfdf5" stroke="#10b981" stroke-width="1.5"/>
+  <text x="220" y="48" text-anchor="middle" fill="#065f46" font-size="20" font-family="sans-serif">🔨</text>
+  <text x="220" y="66" text-anchor="middle" fill="#065f46" font-size="10" font-weight="600" font-family="sans-serif">Cloud Build</text>
+  <text x="220" y="80" text-anchor="middle" fill="#10b981" font-size="8" font-family="sans-serif">Builds container</text>
+  <text x="220" y="92" text-anchor="middle" fill="#10b981" font-size="8" font-family="sans-serif">automatically</text>
+
+  <text x="295" y="60" fill="#6b7280" font-size="16" font-family="sans-serif">→</text>
+
+  <rect x="315" y="20" width="120" height="85" rx="10" fill="#fef9c3" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="375" y="48" text-anchor="middle" fill="#92400e" font-size="20" font-family="sans-serif">🧪</text>
+  <text x="375" y="66" text-anchor="middle" fill="#92400e" font-size="10" font-weight="600" font-family="sans-serif">Canary Test</text>
+  <text x="375" y="80" text-anchor="middle" fill="#f59e0b" font-size="8" font-family="sans-serif">Test with 0%</text>
+  <text x="375" y="92" text-anchor="middle" fill="#f59e0b" font-size="8" font-family="sans-serif">real traffic</text>
+
+  <text x="450" y="60" fill="#6b7280" font-size="16" font-family="sans-serif">→</text>
+
+  <rect x="470" y="20" width="120" height="85" rx="10" fill="#dbeafe" stroke="#3B82F6" stroke-width="1.5"/>
+  <text x="530" y="48" text-anchor="middle" fill="#1e40af" font-size="20" font-family="sans-serif">✅</text>
+  <text x="530" y="66" text-anchor="middle" fill="#1e40af" font-size="10" font-weight="600" font-family="sans-serif">Go Live</text>
+  <text x="530" y="80" text-anchor="middle" fill="#3b82f6" font-size="8" font-family="sans-serif">100% traffic</text>
+  <text x="530" y="92" text-anchor="middle" fill="#3b82f6" font-size="8" font-family="sans-serif">Zero downtime</text>
+
+  <text x="605" y="55" fill="#6b7280" font-size="10" font-family="sans-serif">or if</text>
+  <text x="605" y="68" fill="#6b7280" font-size="10" font-family="sans-serif">broken:</text>
+
+  <rect x="655" y="20" width="130" height="85" rx="10" fill="#fef2f2" stroke="#ef4444" stroke-width="1.5"/>
+  <text x="720" y="48" text-anchor="middle" fill="#991b1b" font-size="20" font-family="sans-serif">⏪</text>
+  <text x="720" y="66" text-anchor="middle" fill="#991b1b" font-size="10" font-weight="600" font-family="sans-serif">Instant Rollback</text>
+  <text x="720" y="80" text-anchor="middle" fill="#ef4444" font-size="8" font-family="sans-serif">Revert to previous</text>
+  <text x="720" y="92" text-anchor="middle" fill="#ef4444" font-size="8" font-family="sans-serif">in 1 command</text>
+</svg>
+
+<h3>Terraform Infrastructure-as-Code (representative excerpt)</h3>
+<pre><code>resource "google_cloud_run_v2_service" "storefront" {
+  name     = "northpoint-storefront"
+  location = "asia-east2"          # Hong Kong
+
+  template {
+    scaling {
+      min_instance_count = 2       # Always 2 for high availability
+      max_instance_count = 50      # Hard cap to control cost
+    }
+
+    containers {
+      image = "asia-east2-docker.pkg.dev/.../storefront:latest"
+      resources {
+        limits = { cpu = "2", memory = "4Gi" }
+      }
+
+      # Secrets from Secret Manager — never hardcoded
+      env {
+        name = "DB_PASSWORD"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.db_password.secret_id
+            version = "latest"
+          }
+        }
+      }
+
+      # Health check — auto-restart if unhealthy
+      liveness_probe {
+        http_get { path = "/api/health" }
+        period_seconds = 30
+      }
+    }
+  }
+}</code></pre>
+
+<h3>Automation priority after go-live</h3>
+<table>
+  <tr><th>#</th><th>What</th><th>Manual or Automated?</th><th>Why</th></tr>
+  <tr><td>1</td><td>🚀 Deployments</td><td style="color:#10b981; font-weight:600;">✅ Automated</td><td>No more manual file uploads</td></tr>
+  <tr><td>2</td><td>📊 Alerts</td><td style="color:#10b981; font-weight:600;">✅ Automated</td><td>Know before the client phones</td></tr>
+  <tr><td>3</td><td>🔒 SSL Certificates</td><td style="color:#10b981; font-weight:600;">✅ Automated</td><td>Never expire, zero involvement</td></tr>
+  <tr><td>4</td><td>💾 Database Backups</td><td style="color:#10b981; font-weight:600;">✅ Automated</td><td>Continuous + daily cross-region</td></tr>
+  <tr><td>5</td><td>📈 Campaign Scaling</td><td style="color:#10b981; font-weight:600;">✅ Scheduled</td><td>Pre-warm before campaign window</td></tr>
+  <tr><td>6</td><td>🔄 Disaster Recovery</td><td style="color:#f59e0b; font-weight:600;">⚠️ Manual</td><td>High-judgement decision by engineer</td></tr>
+  <tr><td>7</td><td>⬆️ Major Upgrades</td><td style="color:#f59e0b; font-weight:600;">⚠️ Manual</td><td>Requires testing before promotion</td></tr>
+  <tr><td>8</td><td>🛡️ Firewall Rules</td><td style="color:#f59e0b; font-weight:600;">⚠️ Manual</td><td>Security changes need PR review</td></tr>
+</table>
+
+<!-- ======================== E. MIGRATION ======================== -->
+<div class="page-break"></div>
+<h2>E. Migration & Rollback Plan</h2>
+
+<h3>4-week migration timeline</h3>
+<div class="timeline">
+  <div class="tl-phase" style="background:#dbeafe;">
+    <div style="font-size:10px; font-weight:700; color:#1e40af; margin-bottom:4px;">📐 WEEK 1–2: BUILD</div>
+    <ul style="font-size:9.5px; margin-left:14px;">
+      <li>Set up GCP with Terraform</li>
+      <li>Package PHP app in container</li>
+      <li>Create Cloud SQL HA database</li>
+      <li>Upload 180GB media → Storage</li>
+    </ul>
+  </div>
+  <div class="tl-phase" style="background:#dcfce7;">
+    <div style="font-size:10px; font-weight:700; color:#065f46; margin-bottom:4px;">🧪 WEEK 3: TEST</div>
+    <ul style="font-size:9.5px; margin-left:14px;">
+      <li>Copy all data from old server</li>
+      <li>Test every feature on new site</li>
+      <li>Stress test with 15× traffic</li>
+      <li>Security scan & review</li>
+    </ul>
+  </div>
+  <div class="tl-phase" style="background:#fef9c3;">
+    <div style="font-size:10px; font-weight:700; color:#92400e; margin-bottom:4px;">🔀 WEEK 4: SWITCH</div>
+    <ul style="font-size:9.5px; margin-left:14px;">
+      <li>Sunday 2am maintenance</li>
+      <li>Final data sync (20 min)</li>
+      <li>DNS switch to new site</li>
+      <li>Verify everything works ✅</li>
+    </ul>
+  </div>
+  <div class="tl-phase" style="background:#f3e8ff;">
+    <div style="font-size:10px; font-weight:700; color:#6b21a8; margin-bottom:4px;">🛡️ WEEK 5–8: SAFETY NET</div>
+    <ul style="font-size:9.5px; margin-left:14px;">
+      <li>Old server kept 30 days</li>
+      <li>Daily backup sync to old</li>
+      <li>Can rollback anytime</li>
+      <li>Decommission day 30</li>
+    </ul>
+  </div>
+</div>
+
+<h3>Cutover night — step by step</h3>
+<svg viewBox="0 0 800 220" width="100%" style="margin:10px 0;">
+  <rect x="0" y="0" width="800" height="215" rx="10" fill="#f8fafc" stroke="#e2e8f0"/>
+  <text x="400" y="22" text-anchor="middle" fill="#334155" font-size="11" font-weight="700" font-family="sans-serif">📅 Sunday 02:00 – 04:00 HKT (lowest traffic period: ~2-5 visitors/hour)</text>
+  
+  <rect x="15" y="35" width="110" height="55" rx="8" fill="#fef9c3" stroke="#f59e0b"/>
+  <text x="70" y="55" text-anchor="middle" fill="#92400e" font-size="9" font-weight="700" font-family="sans-serif">02:00</text>
+  <text x="70" y="68" text-anchor="middle" fill="#92400e" font-size="8" font-family="sans-serif">🚧 Maintenance</text>
+  <text x="70" y="80" text-anchor="middle" fill="#92400e" font-size="8" font-family="sans-serif">page shown</text>
+
+  <text x="135" y="60" fill="#94a3b8" font-size="14" font-family="sans-serif">→</text>
+
+  <rect x="150" y="35" width="110" height="55" rx="8" fill="#dbeafe" stroke="#3B82F6"/>
+  <text x="205" y="55" text-anchor="middle" fill="#1e40af" font-size="9" font-weight="700" font-family="sans-serif">02:05</text>
+  <text x="205" y="68" text-anchor="middle" fill="#1e40af" font-size="8" font-family="sans-serif">🗄️ Final data</text>
+  <text x="205" y="80" text-anchor="middle" fill="#1e40af" font-size="8" font-family="sans-serif">sync (~15 min)</text>
+
+  <text x="270" y="60" fill="#94a3b8" font-size="14" font-family="sans-serif">→</text>
+
+  <rect x="285" y="35" width="110" height="55" rx="8" fill="#e0e7ff" stroke="#6366f1"/>
+  <text x="340" y="55" text-anchor="middle" fill="#3730a3" font-size="9" font-weight="700" font-family="sans-serif">02:20</text>
+  <text x="340" y="68" text-anchor="middle" fill="#3730a3" font-size="8" font-family="sans-serif">✔️ Verify data</text>
+  <text x="340" y="80" text-anchor="middle" fill="#3730a3" font-size="8" font-family="sans-serif">counts match</text>
+
+  <text x="405" y="60" fill="#94a3b8" font-size="14" font-family="sans-serif">→</text>
+
+  <rect x="420" y="35" width="110" height="55" rx="8" fill="#ecfdf5" stroke="#10b981"/>
+  <text x="475" y="55" text-anchor="middle" fill="#065f46" font-size="9" font-weight="700" font-family="sans-serif">02:25</text>
+  <text x="475" y="68" text-anchor="middle" fill="#065f46" font-size="8" font-family="sans-serif">🧪 Smoke tests</text>
+  <text x="475" y="80" text-anchor="middle" fill="#065f46" font-size="8" font-family="sans-serif">automated</text>
+
+  <text x="540" y="60" fill="#94a3b8" font-size="14" font-family="sans-serif">→</text>
+
+  <rect x="555" y="35" width="110" height="55" rx="8" fill="#dcfce7" stroke="#22c55e"/>
+  <text x="610" y="55" text-anchor="middle" fill="#166534" font-size="9" font-weight="700" font-family="sans-serif">02:30</text>
+  <text x="610" y="68" text-anchor="middle" fill="#166534" font-size="8" font-family="sans-serif">🌐 DNS switch</text>
+  <text x="610" y="80" text-anchor="middle" fill="#166534" font-size="8" font-family="sans-serif">GO LIVE!</text>
+
+  <text x="675" y="60" fill="#94a3b8" font-size="14" font-family="sans-serif">→</text>
+
+  <rect x="690" y="35" width="95" height="55" rx="8" fill="#d1fae5" stroke="#10b981" stroke-width="2"/>
+  <text x="737" y="55" text-anchor="middle" fill="#065f46" font-size="9" font-weight="700" font-family="sans-serif">04:00</text>
+  <text x="737" y="68" text-anchor="middle" fill="#065f46" font-size="8" font-family="sans-serif">✅ Window</text>
+  <text x="737" y="80" text-anchor="middle" fill="#065f46" font-size="8" font-family="sans-serif">closed</text>
+
+  <!-- Rollback decisions -->
+  <text x="400" y="115" text-anchor="middle" fill="#334155" font-size="10" font-weight="700" font-family="sans-serif">Rollback Decision — Who Decides What</text>
+  <rect x="15" y="125" width="185" height="75" rx="8" fill="#fef2f2" stroke="#fca5a5"/>
+  <text x="107" y="145" text-anchor="middle" fill="#991b1b" font-size="9" font-weight="700" font-family="sans-serif">🔴 ABORT (tests fail)</text>
+  <text x="107" y="162" text-anchor="middle" fill="#991b1b" font-size="8" font-family="sans-serif">Switch back to old server</text>
+  <text x="107" y="177" text-anchor="middle" fill="#991b1b" font-size="8" font-family="sans-serif">immediately. No data lost.</text>
+  <text x="107" y="192" text-anchor="middle" fill="#7f1d1d" font-size="8" font-weight="600" font-family="sans-serif">Decision: DevOps Lead</text>
+
+  <rect x="210" y="125" width="185" height="75" rx="8" fill="#fef9c3" stroke="#fde68a"/>
+  <text x="302" y="145" text-anchor="middle" fill="#92400e" font-size="9" font-weight="700" font-family="sans-serif">🟡 REVERT (errors &gt;5%)</text>
+  <text x="302" y="162" text-anchor="middle" fill="#92400e" font-size="8" font-family="sans-serif">Revert DNS (1 min propagation).</text>
+  <text x="302" y="177" text-anchor="middle" fill="#92400e" font-size="8" font-family="sans-serif">Export new data → old server.</text>
+  <text x="302" y="192" text-anchor="middle" fill="#7f1d1d" font-size="8" font-weight="600" font-family="sans-serif">Decision: DevOps + IT Manager</text>
+
+  <rect x="405" y="125" width="185" height="75" rx="8" fill="#dbeafe" stroke="#93c5fd"/>
+  <text x="497" y="145" text-anchor="middle" fill="#1e40af" font-size="9" font-weight="700" font-family="sans-serif">🔵 MONITOR (minor issues)</text>
+  <text x="497" y="162" text-anchor="middle" fill="#1e40af" font-size="8" font-family="sans-serif">Stay on new platform.</text>
+  <text x="497" y="177" text-anchor="middle" fill="#1e40af" font-size="8" font-family="sans-serif">Investigate & fix. Revert if 4h+.</text>
+  <text x="497" y="192" text-anchor="middle" fill="#1e3a8a" font-size="8" font-weight="600" font-family="sans-serif">Decision: IT Manager</text>
+
+  <rect x="600" y="125" width="185" height="75" rx="8" fill="#f3e8ff" stroke="#d8b4fe"/>
+  <text x="692" y="145" text-anchor="middle" fill="#6b21a8" font-size="9" font-weight="700" font-family="sans-serif">🟣 CLIENT CALL (critical)</text>
+  <text x="692" y="162" text-anchor="middle" fill="#6b21a8" font-size="8" font-family="sans-serif">Immediate rollback,</text>
+  <text x="692" y="177" text-anchor="middle" fill="#6b21a8" font-size="8" font-family="sans-serif">regardless of metrics.</text>
+  <text x="692" y="192" text-anchor="middle" fill="#4c1d95" font-size="8" font-weight="600" font-family="sans-serif">Decision: Client + IT Manager</text>
+</svg>
+
+<div class="warn"><strong>Safety net:</strong> The old VPS server is kept running for 30 days post-migration. Daily database sync ensures rollback is always possible. After 30 stable days, the old server is decommissioned.</div>
+
+<!-- ======================== E2. EXISTING SERVER BACKUP ======================== -->
+
+<h3>Pre-Migration: Existing Server Backup Plan</h3>
+<div class="danger"><strong>⚠️ Rule #1:</strong> NEVER touch the existing server without a full verified backup first. The current VPS is a single point of failure — one mistake and both the live site AND the data could be lost.</div>
+
+<p>The current Northpoint Living server is a <strong>single VPS</strong> running PHP (WooCommerce), MySQL database, and 180GB of product media files — all on one machine with no backups, no redundancy, and no failover.</p>
+
+<h3>Step-by-Step Backup Procedure</h3>
+<table>
+<tr><th>#</th><th>Action</th><th>Command</th><th>Output</th></tr>
+<tr><td>1</td><td><strong>Full VPS Snapshot</strong><br><span style="font-size:10px;color:#64748b;">Complete disk image via hosting provider panel. Captures OS + application + database + media files.</span></td><td><code>Hosting panel → Snapshots → Create</code></td><td>Full disk image (~200GB)</td></tr>
+<tr><td>2</td><td><strong>MySQL Database Dump</strong><br><span style="font-size:10px;color:#64748b;">Export all databases with transactions, routines, and triggers intact. Single-transaction ensures consistency.</span></td><td><code>mysqldump -u root -p --all-databases --single-transaction --routines --triggers > full_backup.sql</code></td><td>SQL dump file (~2-5GB)</td></tr>
+<tr><td>3</td><td><strong>Media Files Archive</strong><br><span style="font-size:10px;color:#64748b;">Archive all product images. Use rsync for incremental transfer if 180GB is too large for single archive.</span></td><td><code>tar -czf media_backup.tar.gz /var/www/uploads/</code><br>or: <code>rsync -avz /var/www/uploads/ user@backup-server:/backups/media/</code></td><td>Archive (~180GB compressed)</td></tr>
+<tr><td>4</td><td><strong>Application Code + Configs</strong><br><span style="font-size:10px;color:#64748b;">Backup entire app directory plus all configuration files (env, nginx, PHP, SSL, crontab).</span></td><td><code>tar -czf app_backup.tar.gz /var/www/html/ /etc/nginx/ /etc/php/</code><br><code>crontab -l > crontab_backup.txt</code></td><td>App archive + config files</td></tr>
+<tr><td>5</td><td><strong>Document DNS & SSL</strong><br><span style="font-size:10px;color:#64748b;">Record all DNS records and export SSL certificates before any changes.</span></td><td><code>dig northpointliving.com ANY</code><br><code>cp /etc/letsencrypt/ ssl_backup/</code></td><td>DNS records + SSL certs</td></tr>
+<tr><td>6</td><td><strong>Verify & Store Off-Site</strong><br><span style="font-size:10px;color:#64748b;">Verify checksums match. Upload to GCS bucket AND keep local copy. Two copies in different locations.</span></td><td><code>sha256sum *.sql *.tar.gz > checksums.txt</code><br><code>gsutil cp -r ./backups gs://northpoint-pre-migration/</code></td><td>Checksums + 2 copies</td></tr>
+</table>
+
+<h3>Backup Verification Checklist</h3>
+<table>
+<tr><th>Check</th><th>How to Verify</th><th>Status</th></tr>
+<tr><td>VPS snapshot exists</td><td>Hosting panel → Snapshots → verify date</td><td>☐</td></tr>
+<tr><td>MySQL dump complete</td><td>Row count: <code>SELECT COUNT(*) FROM orders;</code> matches live</td><td>☐</td></tr>
+<tr><td>Media files complete</td><td>File count + total size matches: <code>find /uploads -type f | wc -l</code></td><td>☐</td></tr>
+<tr><td>App configs backed up</td><td>.env, wp-config.php, nginx.conf, php.ini present</td><td>☐</td></tr>
+<tr><td>SSL certificates exported</td><td>Cert + key files readable</td><td>☐</td></tr>
+<tr><td>DNS records documented</td><td>A, CNAME, MX, TXT all recorded</td><td>☐</td></tr>
+<tr><td>Cron jobs documented</td><td>All scheduled tasks listed</td><td>☐</td></tr>
+<tr><td>2 backup copies exist</td><td>GCS bucket + local drive verified</td><td>☐</td></tr>
+<tr><td>Checksums verified</td><td>sha256sum matches across all copies</td><td>☐</td></tr>
+</table>
+
+<h3>Data Migration: Old VPS → New GCP</h3>
+<div class="note"><strong>Flow:</strong> Old VPS → <code>mysqldump</code> → SQL file → <code>gsutil cp</code> → Cloud Storage → <code>gcloud sql import</code> → Cloud SQL<br>
+Media: Old VPS → <code>gsutil -m cp -r</code> → Cloud Storage bucket (parallel upload, ~2-4 hours for 180GB)</div>
+
+<div class="tip"><strong>Key principle:</strong> The old VPS server is NEVER modified or deleted until 30 days after successful migration. It serves as the instant rollback target — just switch DNS back (60-second propagation with pre-lowered TTL).</div>
+
+<h3>Design Rationale: Why Cloud Run, Not Kubernetes</h3>
+<div class="vs-grid">
+  <div class="vs-card">
+    <h3 style="color:#ef4444;">❌ GKE Kubernetes</h3>
+    <ul style="font-size:11px;">
+      <li>Requires node/VM management</li>
+      <li>Over-engineered for 1 application</li>
+      <li>Nodes run 24/7 (even idle) — expensive</li>
+      <li>50+ YAML config files</li>
+      <li>Needs dedicated DevOps team</li>
+      <li><strong>Cost: ~HKD 4,500+/month</strong></li>
+    </ul>
+  </div>
+  <div class="vs-arrow">→</div>
+  <div class="vs-card">
+    <h3 style="color:#10b981;">✅ Cloud Run (Our Choice)</h3>
+    <ul style="font-size:11px;">
+      <li>Zero server management</li>
+      <li>Auto-scales 2→50 instances</li>
+      <li>Pay per use (idle = almost free)</li>
+      <li>Just 1 Dockerfile needed</li>
+      <li>1 person sufficient for ops</li>
+      <li><strong>Cost: ~HKD 2,184/month</strong></li>
+    </ul>
+  </div>
+</div>
+
+<div class="note"><strong>Fully Managed = Google handles:</strong> OS patching, security updates, automated backups, HA failover, disk encryption (AES-256), auto-scaling, auto-healing, monitoring. Cloud SQL requires zero MySQL installation — configure via Terraform, Google runs it. The Dockerfile is a recipe for packaging the app; Cloud Run is the kitchen that cooks and serves it.</div>
+
+<!-- ======================== F. RISK REGISTER ======================== -->
+<div class="page-break"></div>
+<h2>F. Risk Register — Top 5 Risks</h2>
+
+<svg viewBox="0 0 800 400" width="100%" style="margin: 10px 0;">
+  <!-- Risk 1 -->
+  <rect x="0" y="0" width="800" height="70" rx="10" fill="#fef9c3" stroke="#f59e0b"/>
+  <circle cx="30" cy="35" r="18" fill="#f59e0b"/>
+  <text x="30" y="40" text-anchor="middle" fill="white" font-size="14" font-weight="700" font-family="sans-serif">1</text>
+  <text x="58" y="22" fill="#92400e" font-size="11" font-weight="700" font-family="sans-serif">Campaign spike exceeds 10× estimate</text>
+  <text x="58" y="37" fill="#92400e" font-size="9" font-family="sans-serif">Likelihood: Medium · Impact: High</text>
+  <text x="58" y="55" fill="#78350f" font-size="9" font-family="sans-serif">✅ Mitigation: max_instances=50 cap · Load-test at 15× before each campaign · Cloud Armor blocks bots · Read replica pre-provisioned</text>
+
+  <!-- Risk 2 -->
+  <rect x="0" y="80" width="800" height="70" rx="10" fill="#fef2f2" stroke="#ef4444"/>
+  <circle cx="30" cy="115" r="18" fill="#ef4444"/>
+  <text x="30" y="120" text-anchor="middle" fill="white" font-size="14" font-weight="700" font-family="sans-serif">2</text>
+  <text x="58" y="102" fill="#991b1b" font-size="11" font-weight="700" font-family="sans-serif">Data breach / PDPO non-compliance</text>
+  <text x="58" y="117" fill="#991b1b" font-size="9" font-family="sans-serif">Likelihood: Low · Impact: Critical</text>
+  <text x="58" y="135" fill="#7f1d1d" font-size="9" font-family="sans-serif">✅ Mitigation: All data in HK (asia-east2) · AES-256 encryption · TLS · VPC isolation · Access logging · Annual PDPO review</text>
+
+  <!-- Risk 3 -->
+  <rect x="0" y="160" width="800" height="70" rx="10" fill="#fef9c3" stroke="#f59e0b"/>
+  <circle cx="30" cy="195" r="18" fill="#ef4444"/>
+  <text x="30" y="200" text-anchor="middle" fill="white" font-size="14" font-weight="700" font-family="sans-serif">3</text>
+  <text x="58" y="182" fill="#92400e" font-size="11" font-weight="700" font-family="sans-serif">Bad deployment breaks production storefront</text>
+  <text x="58" y="197" fill="#92400e" font-size="9" font-family="sans-serif">Likelihood: Medium · Impact: High</text>
+  <text x="58" y="215" fill="#78350f" font-size="9" font-family="sans-serif">✅ Mitigation: Blue-green deploy (0% traffic test) · Instant 1-command rollback · Smoke tests before go-live · Canary pipeline</text>
+
+  <!-- Risk 4 -->
+  <rect x="0" y="240" width="800" height="70" rx="10" fill="#dbeafe" stroke="#3B82F6"/>
+  <circle cx="30" cy="275" r="18" fill="#3B82F6"/>
+  <text x="30" y="280" text-anchor="middle" fill="white" font-size="14" font-weight="700" font-family="sans-serif">4</text>
+  <text x="58" y="262" fill="#1e40af" font-size="11" font-weight="700" font-family="sans-serif">Cloud SQL failover takes longer than expected</text>
+  <text x="58" y="277" fill="#1e40af" font-size="9" font-family="sans-serif">Likelihood: Low · Impact: Medium</text>
+  <text x="58" y="295" fill="#1e3a8a" font-size="9" font-family="sans-serif">✅ Mitigation: RTO target is 60 min (not 60 sec) — even a 5-min failover is fine · Cloud Run auto-retries · CDN serves cached pages</text>
+
+  <!-- Risk 5 — Agency risk -->
+  <rect x="0" y="320" width="800" height="75" rx="10" fill="#f3e8ff" stroke="#8b5cf6" stroke-width="2"/>
+  <circle cx="30" cy="357" r="18" fill="#8b5cf6"/>
+  <text x="30" y="362" text-anchor="middle" fill="white" font-size="14" font-weight="700" font-family="sans-serif">5</text>
+  <text x="58" y="342" fill="#6b21a8" font-size="11" font-weight="700" font-family="sans-serif">🏢 AGENCY RISK: Key engineer leaves Visible One</text>
+  <text x="58" y="357" fill="#6b21a8" font-size="9" font-family="sans-serif">Likelihood: Medium · Impact: High · THIS IS A RISK TO US, NOT JUST THE CLIENT</text>
+  <text x="58" y="375" fill="#4c1d95" font-size="9" font-family="sans-serif">✅ Mitigation: All infra in Terraform (anyone can reproduce) · Runbooks in wiki · CI/CD = no deep knowledge for deploys</text>
+  <text x="58" y="388" fill="#4c1d95" font-size="9" font-family="sans-serif">✅ Cross-train at least 1 other engineer within 60 days of go-live</text>
+</svg>
+
+<!-- FOOTER -->
+<div class="footer">
+  <p><em>Submission prepared for Visible One Limited assessment panel · ~8 pages · Time invested: ≤ 4 hours</em></p>
+  <p style="margin-top:4px;"><em>With more time: Cloud Armor rule tuning for e-commerce attack patterns, Terraform test suite (terratest), quarterly failover drill runbook.</em></p>
+  <p style="margin-top:8px;">Visible One Limited — Scenario Assessment, IT Manager (Infrastructure, DevOps & Security)</p>
+</div>
+
+</body>
+</html>

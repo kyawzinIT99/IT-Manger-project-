@@ -1,0 +1,25 @@
+# ==============================================================================
+# 🛡️ ROOT .gitignore — NORTHPOINT LIVING (IT MANAGER PROJECT)
+# ==============================================================================
+# Prevents heavy binaries, Terraform state secrets, and node_modules from
+# bloating or leaking sensitive keys to GitHub:
+# https://github.com/kyawzinIT99/IT-Manger-project-.git
+# ==============================================================================
+
+# 1. macOS system files
+.DS_Store
+
+# 2. Terraform heavy plugin binaries (~500MB) and local state files
+Terraform/.terraform/
+Terraform/*.tfstate
+Terraform/*.tfstate.*
+Terraform/crash.log
+Terraform/.terraform.tfstate.lock.info
+
+# 3. Node.js dependencies (rebuilt automatically via Dockerfile / npm install)
+**/node_modules/
+
+# 4. Temporary local files
+*.swp
+*.tmp
+

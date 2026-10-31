@@ -1,0 +1,251 @@
+# ============================================================
+# main.yaml — The Master Entry Point of Our Kubernetes Project
+# ============================================================
+# Just like `main.tf` in Terraform is the entry point for GCP,
+# this file is the MASTER Kubernetes configuration for Northpoint
+# Living.
+#
+# In Kubernetes, how does "main" work with the other YAML files?
+# You have TWO ways to run Kubernetes:
+#
+#   OPTION 1 (Modular — via kustomization.yaml):
+#     Each resource lives in its own file (01-namespace.yaml through
+#     07-ingress.yaml), and `kustomization.yaml` links them together:
+#       kubectl apply -k .
+#
+#   OPTION 2 (Single Master File — this `main.yaml` file):
+#     In Kubernetes YAML, `---` (three dashes) separates multiple
+#     resources inside a single file. Running:
+#       kubectl apply -f main.yaml
+#     deploys the entire stack (Namespace + ConfigMap + Secret +
+#     Deployment + Service + HPA + Ingress) in one shot!
+# ============================================================
+
+
+# ------------------------------------------------------------
+# 1. NAMESPACE (Virtual Cluster Folder)
+#    Same as: 01-namespace.yaml
+# ------------------------------------------------------------
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: northpoint-living
+  labels:
+    project: northpoint-living
+    environment: production
+    managed-by: kubernetes
+
+---
+# ------------------------------------------------------------
+# 2. CONFIGMAP (Non-Secret Environment Variables)
+#    Same as: 02-configmap.yaml
+# ------------------------------------------------------------
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: storefront-config
+  namespace: northpoint-living
+data:
+  PORT: "8080"
+  NODE_ENV: "production"
+  APP_ENV: "prod"
+  DB_HOST: "10.0.0.5"
+  DB_PORT: "3306"
+  DB_NAME: "northpoint"
+  DB_USER: "northpoint_app"
+  MEDIA_BUCKET: "northpoint-media-prod"
+  MEDIA_URL: "https://storage.googleapis.com/northpoint-media-prod"
+
+---
+# ------------------------------------------------------------
+# 3. SECRET (Encrypted Passwords & Keys)
+#    Same as: 03-secret.yaml
+# ------------------------------------------------------------
+apiVersion: v1
+kind: Secret
+metadata:
+  name: storefront-secrets
+  namespace: northpoint-living
+type: Opaque
+stringData:
+  DB_PASSWORD: "CHANGE_ME_to_a_str0ng_passw0rd!"
+  JWT_SECRET: "super-secret-jwt-signing-key-32-chars-min"
+  APP_SECRET: "northpoint-living-app-encryption-secret-key-2026"
+  ADMIN_USERNAME: "admin@northpointliving.com"
+  ADMIN_PASSWORD: "Admin@Northpoint2026!"
+  USER_USERNAME: "staff@northpointliving.com"
+  USER_PASSWORD: "Staff@Northpoint2026!"
+
+---
+# ------------------------------------------------------------
+# 3B. PERSISTENT VOLUME CLAIM (Permanent Hard Drive)
+#     Same as: 08-pvc.yaml
+# ------------------------------------------------------------
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: northpoint-data-pvc
+  namespace: northpoint-living
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: standard
+  resources:
+    requests:
+      storage: 5Gi
+
+---
+# ------------------------------------------------------------
+# 4. DEPLOYMENT (Runs the Docker Image Built from Dockerfile)
+#    Same as: 04-deployment.yaml
+# ------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: northpoint-storefront
+  namespace: northpoint-living
+  labels:
+    app: storefront
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: storefront
+  template:
+    metadata:
+      labels:
+        app: storefront
+    spec:
+      containers:
+        - name: storefront
+          # Built from your Dockerfile (with all npm dependencies inside!)
+          image: northpoint-storefront:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+          envFrom:
+            - configMapRef:
+                name: storefront-config
+            - secretRef:
+                name: storefront-secrets
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+          startupProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 3
+            failureThreshold: 10
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            - name: persistent-storage
+              mountPath: /app/data
+      volumes:
+        - name: persistent-storage
+          persistentVolumeClaim:
+            claimName: northpoint-data-pvc
+
+---
+# ------------------------------------------------------------
+# 5. SERVICE (Internal Load Balancer & Stable DNS)
+#    Same as: 05-service.yaml
+# ------------------------------------------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: northpoint-storefront-svc
+  namespace: northpoint-living
+  labels:
+    app: storefront
+spec:
+  type: ClusterIP
+  selector:
+    app: storefront
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8080
+
+---
+# ------------------------------------------------------------
+# 6. HORIZONTAL POD AUTOSCALER (Auto-Scales 2 -> 50 Pods)
+#    Same as: 06-hpa.yaml
+# ------------------------------------------------------------
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: northpoint-storefront-hpa
+  namespace: northpoint-living
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: northpoint-storefront
+  minReplicas: 2
+  maxReplicas: 50
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+
+---
+# ------------------------------------------------------------
+# 7. INGRESS (Public HTTPS Front Door)
+#    Same as: 07-ingress.yaml
+# ------------------------------------------------------------
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: northpoint-storefront-ingress
+  namespace: northpoint-living
+  annotations:
+    kubernetes.io/ingress.allow-http: "true"
+spec:
+  ingressClassName: gce
+  rules:
+    - host: northpointliving.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: northpoint-storefront-svc
+                port:
+                  number: 80
+

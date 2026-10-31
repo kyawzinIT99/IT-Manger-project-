@@ -1,0 +1,50 @@
+# ==============================================================================
+# 🐳 NORTHPOINT LIVING — ANSIBLE TARGET SERVER DOCKERFILE
+# ==============================================================================
+# What is this file?
+# Normally, Docker containers only run 1 single app (like Node.js) and DO NOT
+# have an SSH server installed.
+#
+# To practice Ansible from your MacBook (Local Workstation), we need 3 real
+# Ubuntu Linux servers that accept SSH connections on port 22, have Python3
+# installed (which Ansible needs to run modules), and allow sudo commands.
+# ==============================================================================
+
+FROM ubuntu:22.04
+
+# Prevent Ubuntu from asking interactive questions (like timezone) during build
+ENV DEBIAN_FRONTEND=noninteractive
+
+# 1. Install OpenSSH Server, Python3 (required by Ansible), Sudo, and basic network tools
+RUN apt-get update && apt-get install -y \
+    openssh-server \
+    python3 \
+    python3-apt \
+    sudo \
+    iproute2 \
+    iputils-ping \
+    curl \
+    net-tools \
+    && rm -rf /var/lib/apt/lists/*
+
+# 2. Create the directory required by the SSH daemon (sshd)
+RUN mkdir -p /var/run/sshd
+
+# 3. Create an 'ansible' user with password 'northpoint' and grant passwordless sudo
+RUN useradd -m -s /bin/bash ansible && \
+    echo "ansible:northpoint" | chpasswd && \
+     echo "root:northpoint" | chpasswd && \
+    usermod -aG sudo ansible && \
+    echo "ansible ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+# 4. Enable Password Authentication in SSH config so your MacBook can connect easily
+RUN sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config && \
+    sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config && \
+    sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+
+# 5. Expose standard SSH port 22 inside the container
+EXPOSE 22
+
+# 6. Keep the SSH daemon running in the foreground so the container stays alive
+CMD ["/usr/sbin/sshd", "-D"]
+

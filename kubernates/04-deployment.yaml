@@ -1,0 +1,130 @@
+# ============================================================
+# 04-deployment.yaml — Running Your Docker Image in Kubernetes
+# ============================================================
+# HOW THIS CONNECTS TO YOUR DOCKERFILE:
+#   1. Your Dockerfile already installed Node.js + `npm install`
+#      (all dependencies are baked inside the Docker image).
+#   2. This Deployment tells Kubernetes:
+#      - WHICH Docker image to pull (`image: ...`)
+#      - HOW MANY copies ("Pods") to keep running (`replicas: 2`)
+#      - HOW MUCH CPU & RAM each Pod gets (`resources:`)
+#      - HOW to check if the app is healthy (`livenessProbe` / `readinessProbe`)
+#      - HOW to update to a new version with zero downtime (`strategy: RollingUpdate`)
+# ============================================================
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: northpoint-storefront      # Name of our Deployment
+  namespace: northpoint-living
+  labels:
+    app: storefront
+spec:
+  # ---- INITIAL REPLICA COUNT ----
+  # Start with 2 Pods (one per availability zone for High Availability).
+  # The HorizontalPodAutoscaler (06-hpa.yaml) will automatically adjust
+  # this between 2 and 50 based on live traffic!
+  replicas: 2
+
+  # ---- ZERO-DOWNTIME DEPLOYMENT STRATEGY ----
+  # RollingUpdate gradually replaces old Pods with new Pods one by one.
+  # - maxSurge: 1        -> Can create 1 extra Pod above desired count during update
+  # - maxUnavailable: 0  -> NEVER kill an old Pod until the new Pod is 100% Ready!
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+
+  # ---- SELECTOR ----
+  # Tells the Deployment which Pods belong to it (matches template.metadata.labels)
+  selector:
+    matchLabels:
+      app: storefront
+
+  # ---- POD TEMPLATE (The Blueprint for Each Copy) ----
+  template:
+    metadata:
+      labels:
+        app: storefront            # Must match selector.matchLabels above
+    spec:
+      containers:
+        - name: storefront
+
+          # ---- THE DOCKER IMAGE (Built from your Dockerfile!) ----
+          # For local testing (Kind / Docker Desktop):
+          #   image: northpoint-storefront:v1
+          # For Google Cloud Artifact Registry (from Terraform outputs.tf):
+          #   image: asia-east2-docker.pkg.dev/northpoint-living/northpoint-docker-dev/storefront:latest
+          image: northpoint-storefront:v1
+          imagePullPolicy: IfNotPresent   # Use local image if available, otherwise pull from registry
+
+          # ---- CONTAINER PORT ----
+          # Matches `EXPOSE 8080` in your Dockerfile
+          ports:
+            - containerPort: 8080
+              name: http
+
+          # ---- INJECT ENVIRONMENT VARIABLES ----
+          # Pulls all key-values from 02-configmap.yaml and 03-secret.yaml
+          envFrom:
+            - configMapRef:
+                name: storefront-config
+            - secretRef:
+                name: storefront-secrets
+
+          # ---- CPU & MEMORY (Requests vs Limits) ----
+          # - requests: Guaranteed minimum resources reserved on the Node
+          # - limits:   Hard ceiling so a memory leak can't crash the whole Node
+          resources:
+            requests:
+              cpu: "500m"          # 0.5 vCPU guaranteed per Pod
+              memory: "512Mi"      # 512 MB RAM guaranteed per Pod
+            limits:
+              cpu: "2000m"         # Burst up to 2 vCPU (matches Cloud Run prod spec)
+              memory: "4Gi"        # Max 4 GB RAM
+
+          # ---- STARTUP PROBE (Wait for app to finish booting) ----
+          startupProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 3
+            failureThreshold: 10   # Gives the container up to 30s to start
+
+          # ---- READINESS PROBE (Can this Pod receive customer traffic?) ----
+          # If this fails, Kubernetes removes the Pod from the Service load balancer
+          # until it recovers — preventing customers from seeing 502/503 errors!
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+          # ---- LIVENESS PROBE (Is the container frozen/deadlocked?) ----
+          # If this fails 3 times in a row, Kubernetes automatically kills
+          # the container and starts a fresh one ("Auto-Healing").
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          # ---- PERSISTENT VOLUME MOUNT (Permanent Folder Inside Container) ----
+          # Anything saved inside `/app/data` is stored on the permanent PVC
+          # (08-pvc.yaml), so it SURVIVES even if the Pod crashes or restarts!
+          volumeMounts:
+            - name: persistent-storage
+              mountPath: /app/data
+
+      # ---- VOLUMES ATTACHED TO THE POD ----
+      volumes:
+        - name: persistent-storage
+          persistentVolumeClaim:
+            claimName: northpoint-data-pvc
+

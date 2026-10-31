@@ -1,0 +1,118 @@
+# ============================================================
+# cloudbuild.yaml — CI/CD Pipeline Configuration
+# ============================================================
+# This file tells Google Cloud Build HOW to automatically
+# deploy our app when we push code to GitHub/GitLab.
+#
+# WORKFLOW:
+#   1. Developer pushes code to 'main' branch
+#   2. Cloud Build detects the push (via webhook trigger)
+#   3. Cloud Build runs these steps automatically:
+#      a. Build Docker image from our PHP app
+#      b. Push image to Artifact Registry
+#      c. Deploy new revision to Cloud Run (with 0% traffic)
+#      d. Run smoke test on the canary URL
+#      e. If test passes → shift 100% traffic to new version
+#      f. If test fails → deployment stops, old version keeps running
+#
+# This is called "Blue-Green Deployment" — zero downtime!
+# ============================================================
+
+
+# ---- STEP 1: Build the Docker Image ----
+# Takes our PHP application code and packages it into a
+# Docker container image that Cloud Run can execute.
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-image'
+    args:
+      - 'build'
+      - '-t'                    # Tag the image
+      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/storefront:${SHORT_SHA}'
+      # Image name format: asia-east2-docker.pkg.dev/project/repo/storefront:abc123
+      # SHORT_SHA = first 7 characters of the git commit hash (unique identifier)
+      - '.'                     # Build from current directory (where Dockerfile is)
+
+
+  # ---- STEP 2: Push Image to Artifact Registry ----
+  # Upload the built image to our private container registry
+  # so Cloud Run can pull and run it.
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-image'
+    args:
+      - 'push'
+      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/storefront:${SHORT_SHA}'
+
+
+  # ---- STEP 3: Deploy to Cloud Run (No Traffic Yet) ----
+  # Creates a new "revision" of our Cloud Run service with the
+  # new image, BUT sends 0% of traffic to it.
+  # This is the "green" in blue-green deployment.
+  # The "--tag=canary" gives this revision a special URL for testing.
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'deploy-canary'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'services'
+      - 'update'
+      - '${_SERVICE_NAME}'                # Cloud Run service name
+      - '--region=${_REGION}'             # asia-east2
+      - '--image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPO}/storefront:${SHORT_SHA}'
+      - '--no-traffic'                    # ← Don't send any real traffic yet!
+      - '--tag=canary'                    # ← Give it a testable URL
+
+
+  # ---- STEP 4: Smoke Test the Canary ----
+  # Hit the canary URL to make sure the new version is healthy.
+  # If this curl returns a non-200 status, the build FAILS
+  # and the old version keeps running (safe!).
+  - name: 'gcr.io/cloud-builders/curl'
+    id: 'smoke-test'
+    args:
+      - '-f'                              # Fail on HTTP errors (4xx, 5xx)
+      - '-s'                              # Silent (no progress bar)
+      - '-o'
+      - '/dev/null'                       # Discard response body
+      - '-w'
+      - '%{http_code}'                    # Print just the status code
+      - 'https://canary---${_SERVICE_NAME}-${_HASH}.a.run.app/api/health'
+    # Expected: returns 200 (healthy)
+    # If it returns 500 or connection fails → build stops → old version stays
+
+
+  # ---- STEP 5: Shift 100% Traffic to New Version ----
+  # Only runs if the smoke test passed!
+  # Routes ALL traffic to the new revision (blue → green cutover).
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'shift-traffic'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'services'
+      - 'update-traffic'
+      - '${_SERVICE_NAME}'
+      - '--region=${_REGION}'
+      - '--to-latest'                     # ← Send 100% to the newest revision
+
+
+# ---- SUBSTITUTION VARIABLES ----
+# These are "fill-in-the-blank" values that make the pipeline reusable.
+# Cloud Build automatically provides PROJECT_ID and SHORT_SHA.
+# We define the rest here (override per environment).
+substitutions:
+  _REGION: 'asia-east2'                            # Hong Kong
+  _REPO: 'northpoint-docker-dev'                   # Artifact Registry repo name
+  _SERVICE_NAME: 'northpoint-storefront-dev'       # Cloud Run service name
+  _HASH: 'xxxx'                                    # Cloud Run URL hash (find in console)
+
+
+# ---- BUILD OPTIONS ----
+options:
+  logging: CLOUD_LOGGING_ONLY   # Send build logs to Cloud Logging (not Storage)
+
+
+# ---- TIMEOUT ----
+# Maximum time for the entire build pipeline
+timeout: '600s'   # 10 minutes (more than enough)
+

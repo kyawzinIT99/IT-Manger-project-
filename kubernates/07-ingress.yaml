@@ -1,0 +1,55 @@
+# ============================================================
+# 07-ingress.yaml — Public HTTPS Front Door & Domain Router
+# ============================================================
+# WHY DO WE NEED INGRESS WHEN WE ALREADY HAVE `05-service.yaml`?
+#   - `05-service.yaml` (`type: ClusterIP`) is PRIVATE inside the
+#     cluster. To open it on your Mac, you had to run `kubectl port-forward`.
+#   - Real customers on the internet CANNOT run `kubectl port-forward`!
+#
+#   `07-ingress.yaml` is the PUBLIC FRONT DOOR. It sits at the edge
+#   of the cluster, holds the SSL certificate (HTTPS) and Cloud Armor
+#   WAF, and routes real domain names into your internal Services!
+#
+# COST-SAVING SUPERPOWER (1 Public IP -> Many Services):
+#   Instead of paying Google Cloud for separate Load Balancers for
+#   Storefront and Grafana, ONE Ingress routes both:
+#     - northpointliving.com         -> northpoint-storefront-svc:80
+#     - monitor.northpointliving.com -> northpoint-grafana-svc:3000
+# ============================================================
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: northpoint-storefront-ingress
+  namespace: northpoint-living
+  annotations:
+    # Allow HTTP traffic (or redirect to HTTPS in production)
+    kubernetes.io/ingress.allow-http: "true"
+spec:
+  # Ingress Controller Type (gce = Google Cloud Load Balancer, nginx = NGINX Ingress)
+  ingressClassName: gce
+
+  rules:
+    # ---- RULE 1: Customer Storefront Domain ----
+    - host: northpointliving.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: northpoint-storefront-svc   # Forwards to 05-service.yaml
+                port:
+                  number: 80
+
+    # ---- RULE 2: IT Manager Monitoring Dashboard Domain ----
+    - host: monitor.northpointliving.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: northpoint-grafana-svc      # Forwards to 11-grafana.yaml
+                port:
+                  number: 3000

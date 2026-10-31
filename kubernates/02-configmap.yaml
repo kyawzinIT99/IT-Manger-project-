@@ -1,0 +1,37 @@
+# ============================================================
+# 02-configmap.yaml — Non-Secret Environment Variables
+# ============================================================
+# WHAT IS A CONFIGMAP?
+#   In Docker, your app image is sealed — you don't want to
+#   rebuild the Docker image just to change a database IP or
+#   bucket name.
+#
+#   A ConfigMap stores non-sensitive settings (like DB_HOST,
+#   DB_PORT, MEDIA_URL) outside the Docker image, and injects
+#   them into your container as environment variables at startup.
+#
+# EQUIVALENT IN TERRAFORM (cloud-run.tf):
+#   The `env { name = "..." value = "..." }` blocks.
+# ============================================================
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: storefront-config          # Name of this ConfigMap
+  namespace: northpoint-living     # Must live in the same namespace as the app
+data:
+  # Application settings
+  PORT: "8080"                     # Port our Node/PHP container listens on
+  NODE_ENV: "production"
+  APP_ENV: "prod"
+
+  # Database connection settings (Private IP of Cloud SQL from Terraform)
+  DB_HOST: "10.0.0.5"              # Replace with `terraform output cloud_sql_private_ip`
+  DB_PORT: "3306"                  # Standard MySQL port
+  DB_NAME: "northpoint"            # Database name created in cloud-sql.tf
+  DB_USER: "northpoint_app"        # Database user created in cloud-sql.tf
+
+  # Cloud Storage media settings (from storage.tf)
+  MEDIA_BUCKET: "northpoint-media-prod"
+  MEDIA_URL: "https://storage.googleapis.com/northpoint-media-prod"
+

@@ -1,0 +1,98 @@
+# ==============================================================================
+# 📘 PLAYBOOK 3: GIT CONNECT & DEPLOYMENT ACROSS ALL 3 SERVERS
+# ==============================================================================
+# GitHub Repository: https://github.com/kyawzinIT99/IT-Manger-project-.git
+#
+# Run from your MacBook:
+#   ansible-playbook 03-git-connect-and-deploy.yml
+#
+# Why is Git crucial in Ansible classes?
+# 1. Your MacBook (Workstation) pushes Ansible Playbooks, Terraform, and K8s code
+#    to GitHub (`https://github.com/kyawzinIT99/IT-Manger-project-.git`).
+# 2. Ansible uses the built-in `ansible.builtin.git` module to connect all 3
+#    servers directly to your GitHub repo and pull the exact same code version
+#    automatically (or `ansible-pull` so servers pull their own config from Git!).
+# 3. All verification results are saved inside `./test-outputs/<server>/git-status.txt`.
+# ==============================================================================
+
+---
+- name: "Play 1: Configure Git & Clone/Pull Repository on All 3 Servers"
+  hosts: northpoint_servers
+  become: true
+
+  vars:
+    git_repo_url: "https://github.com/kyawzinIT99/IT-Manger-project-.git"
+    deploy_dir: "/opt/northpoint-git-repo"
+
+  tasks:
+    # --------------------------------------------------------------------------
+    # TASK 1: Ensure Git & CA Certificates (for HTTPS GitHub) are installed
+    # --------------------------------------------------------------------------
+    - name: "1. Ensure Git and HTTPS certificates are installed on all 3 servers"
+      ansible.builtin.apt:
+        name:
+          - git
+          - ca-certificates
+          - curl
+        state: present
+        update_cache: true
+
+    # --------------------------------------------------------------------------
+    # TASK 2: Configure Git Global Identity on all 3 servers
+    # --------------------------------------------------------------------------
+    - name: "2. Configure Git user.name and user.email on all 3 servers"
+      ansible.builtin.shell: |
+        git config --global user.name "kyawzinIT99"
+        git config --global user.email "kyawzin.ccna@gmail.com"
+        git config --global --add safe.directory {{ deploy_dir }}
+      changed_when: false
+
+    # --------------------------------------------------------------------------
+    # TASK 3: Clone or Pull your GitHub Repo onto all 3 servers using Ansible
+    # --------------------------------------------------------------------------
+    - name: "3. Clone/Pull https://github.com/kyawzinIT99/IT-Manger-project-.git"
+      ansible.builtin.git:
+        repo: "{{ git_repo_url }}"
+        dest: "{{ deploy_dir }}"
+        version: HEAD
+        update: true
+        force: true
+      register: git_clone_result
+      ignore_errors: true
+
+    # --------------------------------------------------------------------------
+    # TASK 4: Check the latest Git commit & branch on each server
+    # --------------------------------------------------------------------------
+    - name: "4. Verify Git remote URL and latest commit on each server"
+      ansible.builtin.shell: |
+        cd {{ deploy_dir }}
+        echo "=== GIT REMOTE (-v) ==="
+        git remote -v
+        echo ""
+        echo "=== LATEST GIT COMMIT ==="
+        git log -n 3 --oneline || echo "Repo initialized, waiting for first commit"
+        echo ""
+        echo "=== FILES PULLED FROM GITHUB ==="
+        ls -la
+      register: git_verify_out
+      changed_when: false
+      ignore_errors: true
+
+    # --------------------------------------------------------------------------
+    # TASK 5: Save Git Verification Report into ./test-outputs/<server>/
+    # --------------------------------------------------------------------------
+    - name: "5. Save Git Connection Report to MacBook ./test-outputs/ folder"
+      ansible.builtin.copy:
+        dest: "/var/northpoint_backups/git-connection-report.txt"
+        mode: '0644'
+        content: |
+          ================================================================
+          🔗 ANSIBLE GIT CONNECTION REPORT — {{ inventory_hostname }}
+          ================================================================
+          Server Hostname : {{ ansible_hostname }} ({{ internal_ip }})
+          GitHub Repo URL : {{ git_repo_url }}
+          Server Path     : {{ deploy_dir }}
+
+          {{ git_verify_out.stdout | default('Git repo checked') }}
+          ================================================================
+

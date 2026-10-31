@@ -1,0 +1,100 @@
+# ==============================================================================
+# 📘 PLAYBOOK 1: INSTALL TMUX & DEVOPS TOOLS ON ALL 3 SERVERS
+# ==============================================================================
+# Run from your MacBook:
+#   ansible-playbook 01-setup-tmux-and-tools.yml
+#
+# What does this playbook do?
+# 1. Connects from your MacBook over SSH to server1 (2221), server2 (2222), server3 (2223)
+# 2. Installs `tmux` (Terminal Multiplexer), `htop`, `vim`, `git`, `tree`, and `ufw`
+# 3. Creates a custom `.tmux.conf` on every server so when you flip between servers,
+#    the bottom status bar clearly displays the Server Hostname, Role, and IP!
+# 4. Saves a verification report into `./test-outputs/` right inside this folder.
+# ==============================================================================
+
+---
+- name: "Play 1: Configure All 3 Docker Servers with tmux & DevOps Tools"
+  hosts: northpoint_servers
+  become: true   # Run commands with sudo (root privileges)
+
+  tasks:
+    # --------------------------------------------------------------------------
+    # TASK 1: Update apt cache & install tmux + admin utilities
+    # --------------------------------------------------------------------------
+    - name: "1. Install tmux, htop, vim, tree, and network utilities"
+      ansible.builtin.apt:
+        name:
+          - tmux
+          - htop
+          - vim
+          - tree
+          - git
+          - jq
+        state: present
+        update_cache: true
+
+    # --------------------------------------------------------------------------
+    # TASK 2: Configure custom tmux status bar on each server
+    # --------------------------------------------------------------------------
+    # Why? When you use tmux to flip between Server 1, Server 2, and Server 3,
+    # this puts a bright status bar at the bottom showing WHICH server you are on!
+    - name: "2. Configure ~/.tmux.conf for ansible user on each server"
+      ansible.builtin.copy:
+        dest: /home/ansible/.tmux.conf
+        owner: ansible
+        group: ansible
+        mode: '0644'
+        content: |
+          # Enable mouse mode (click panes/windows easily from MacBook)
+          set -g mouse on
+          # Status bar colors
+          set -g status-bg colour235
+          set -g status-fg white
+          # Show Server Hostname, Role, and Internal IP on the left/right
+          set -g status-left-length 50
+          set -g status-left "#[fg=green,bold] 🖥️ {{ inventory_hostname }} ({{ ansible_hostname }}) | "
+          set -g status-right "#[fg=yellow] {{ server_role }} #[fg=cyan]| IP: {{ internal_ip }} | %H:%M "
+
+    # --------------------------------------------------------------------------
+    # TASK 3: Create a custom login banner (MOTD) so SSH shows server identity
+    # --------------------------------------------------------------------------
+    - name: "3. Create Northpoint Server Identification Banner (/etc/profile.d/banner.sh)"
+      ansible.builtin.copy:
+        dest: /etc/profile.d/northpoint-banner.sh
+        mode: '0755'
+        content: |
+          echo "================================================================"
+          echo " 🏢 NORTHPOINT LIVING — MANAGED BY ANSIBLE"
+          echo " 🖥️  Node Name   : {{ inventory_hostname }} ({{ ansible_hostname }})"
+          echo " 🎯 Server Role : {{ server_role }}"
+          echo " 🌐 Docker IP   : {{ internal_ip }}"
+          echo "================================================================"
+
+    # --------------------------------------------------------------------------
+    # TASK 4: Verify tmux version installed on each server
+    # --------------------------------------------------------------------------
+    - name: "4. Check installed tmux version"
+      ansible.builtin.command: tmux -V
+      register: tmux_version_out
+      changed_when: false
+
+    # --------------------------------------------------------------------------
+    # TASK 5: Write a test verification file inside the mounted volume
+    #         (Automatically appears in ./test-outputs/<server>/ on your MacBook!)
+    # --------------------------------------------------------------------------
+    - name: "5. Save Server Setup Verification Report to Local Folder"
+      ansible.builtin.copy:
+        dest: "/var/northpoint_backups/setup-verified.txt"
+        mode: '0644'
+        content: |
+          =====================================================
+          ANSIBLE PROVISIONING REPORT — {{ inventory_hostname }}
+          =====================================================
+          Hostname      : {{ ansible_hostname }}
+          Server Role   : {{ server_role }}
+          Internal IP   : {{ internal_ip }}
+          OS Version    : {{ ansible_distribution }} {{ ansible_distribution_version }}
+          Tmux Version  : {{ tmux_version_out.stdout }}
+          Status        : READY FOR TMUX WORKSTATION CONTROL
+          =====================================================
+

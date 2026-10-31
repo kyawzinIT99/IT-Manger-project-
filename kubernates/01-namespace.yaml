@@ -1,0 +1,21 @@
+# ============================================================
+# 01-namespace.yaml — Virtual Cluster Folder (Namespace)
+# ============================================================
+# WHAT IS A NAMESPACE?
+#   Think of a Namespace as a separate "room" or "folder" inside
+#   your Kubernetes cluster. It keeps all Northpoint Living
+#   resources isolated from other projects or environments.
+#
+# COMMAND TO APPLY:
+#   kubectl apply -f 01-namespace.yaml
+# ============================================================
+
+apiVersion: v1                  # Core Kubernetes API version
+kind: Namespace                 # Type of object we are creating
+metadata:
+  name: northpoint-living       # Name of our namespace (referenced in all other files)
+  labels:
+    project: northpoint-living  # Label for organization & cost tracking
+    environment: production
+    managed-by: kubectl
+

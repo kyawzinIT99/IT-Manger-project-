@@ -1,0 +1,110 @@
+# ============================================================
+# 11-grafana.yaml — Visual Executive Dashboard for Prometheus
+# ============================================================
+# WHY DO WE USE GRAFANA WITH PROMETHEUS?
+#   - Prometheus (`10-monitoring.yaml`) is the "Database of Metrics"
+#     that scrapes `/metrics` every 15 seconds.
+#   - Grafana (`11-grafana.yaml`) is the "Visual TV Dashboard"
+#     that connects to Prometheus and draws live gauges, charts,
+#     and alert panels for the IT Manager & Managing Director!
+#
+# ZERO MANUAL SETUP:
+#   The ConfigMap below automatically connects Grafana to
+#   `http://northpoint-prometheus-svc:9090` on startup!
+# ============================================================
+
+
+# ------------------------------------------------------------
+# 1. AUTO-CONFIGURE PROMETHEUS DATA SOURCE IN GRAFANA
+# ------------------------------------------------------------
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasources
+  namespace: northpoint-living
+data:
+  prometheus-datasource.yaml: |
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        url: http://northpoint-prometheus-svc:9090
+        isDefault: true
+        editable: true
+
+---
+# ------------------------------------------------------------
+# 2. GRAFANA DEPLOYMENT
+# ------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: northpoint-grafana
+  namespace: northpoint-living
+  labels:
+    app: grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+        - name: grafana
+          image: grafana/grafana:11.1.0
+          ports:
+            - containerPort: 3000
+              name: http
+
+          # Use the Admin Password from 03-secret.yaml!
+          env:
+            - name: GF_SECURITY_ADMIN_USER
+              value: "admin"
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: storefront-secrets
+                  key: ADMIN_PASSWORD
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+          volumeMounts:
+            - name: grafana-datasources
+              mountPath: /etc/grafana/provisioning/datasources
+
+      volumes:
+        - name: grafana-datasources
+          configMap:
+            name: grafana-datasources
+
+---
+# ------------------------------------------------------------
+# 3. GRAFANA SERVICE (Port 3000)
+# ------------------------------------------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: northpoint-grafana-svc
+  namespace: northpoint-living
+  labels:
+    app: grafana
+spec:
+  type: ClusterIP
+  selector:
+    app: grafana
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+

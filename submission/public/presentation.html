@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    .slide { display: none; }
+    .slide.active { display: block; }
+    .node { transition: all 0.3s ease; }
+    .node:hover { transform: scale(1.05); filter: brightness(1.1); }
+    .pulse { animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+    .flow-line { stroke-dasharray: 8 4; animation: dash 1.5s linear infinite; }
+    @keyframes dash { to { stroke-dashoffset: -24; } }
+    .fade-in { animation: fadeIn 0.5s ease-in; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .bar-animate { transition: height 0.8s ease, background-color 0.3s; }
+    .glow { box-shadow: 0 0 15px rgba(59, 130, 246, 0.3); }
+    canvas { display: block; }
+  </style>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased p-0 m-0 min-h-screen">
+
+  <!-- Navigation Bar -->
+  <div class="sticky top-0 z-50 bg-[var(--card)] border-b border-[var(--border)] shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm">NP</div>
+        <div>
+          <div class="font-semibold text-sm text-[var(--foreground)]">Northpoint Living — Cloud Migration</div>
+          <div class="text-xs text-[var(--muted-foreground)]">Visible One · IT Manager Assessment</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-xs text-[var(--muted-foreground)]" id="slideCounter">1 / 6</span>
+        <button onclick="prevSlide()" class="px-3 py-1.5 rounded-lg border border-[var(--border)] text-sm hover:bg-[var(--accent)] transition-colors">← Prev</button>
+        <button onclick="nextSlide()" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white text-sm hover:bg-blue-700 transition-colors">Next →</button>
+      </div>
+    </div>
+    <!-- Slide tabs -->
+    <div class="max-w-7xl mx-auto px-4 pb-2 flex gap-1 overflow-x-auto">
+      <button onclick="goToSlide(0)" class="slide-tab px-3 py-1 rounded-full text-xs whitespace-nowrap border border-[var(--border)] hover:bg-[var(--accent)] transition-colors" data-slide="0">🏗️ Architecture</button>
+      <button onclick="goToSlide(1)" class="slide-tab px-3 py-1 rounded-full text-xs whitespace-nowrap border border-[var(--border)] hover:bg-[var(--accent)] transition-colors" data-slide="1">📈 Scaling</button>
+      <button onclick="goToSlide(2)" class="slide-tab px-3 py-1 rounded-full text-xs whitespace-nowrap border border-[var(--border)] hover:bg-[var(--accent)] transition-colors" data-slide="2">🗄️ Database HA</button>
+      <button onclick="goToSlide(3)" class="slide-tab px-3 py-1 rounded-full text-xs whitespace-nowrap border border-[var(--border)] hover:bg-[var(--accent)] transition-colors" data-slide="3">💰 Cost</button>
+      <button onclick="goToSlide(4)" class="slide-tab px-3 py-1 rounded-full text-xs whitespace-nowrap border border-[var(--border)] hover:bg-[var(--accent)] transition-colors" data-slide="4">🚀 Migration</button>
+      <button onclick="goToSlide(5)" class="slide-tab px-3 py-1 rounded-full text-xs whitespace-nowrap border border-[var(--border)] hover:bg-[var(--accent)] transition-colors" data-slide="5">⚠️ Risks</button>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 py-6">
+
+    <!-- ==================== SLIDE 1: Architecture Overview ==================== -->
+    <div class="slide active fade-in" id="slide-0">
+      <div class="mb-6">
+        <h1 class="text-2xl font-bold text-[var(--foreground)]">A. Target-State Architecture</h1>
+        <p class="text-[var(--muted-foreground)] text-sm mt-1">Google Cloud Platform · asia-east2 (Hong Kong) · Fully Managed / Serverless — No servers to manage</p>
+      </div>
+
+      <svg viewBox="0 0 1100 620" class="w-full" style="max-height: 520px;">
+        <!-- Background regions -->
+        <rect x="20" y="10" width="1060" height="600" rx="16" fill="none" stroke="var(--border)" stroke-width="1.5" stroke-dasharray="6 3"/>
+        <text x="40" y="35" fill="var(--muted-foreground)" font-size="13" font-weight="600">Google Cloud Platform — asia-east2 (Hong Kong)</text>
+
+        <!-- Internet / Users -->
+        <rect x="40" y="55" width="180" height="80" rx="12" fill="#3B82F6" opacity="0.15"/>
+        <text x="130" y="82" text-anchor="middle" fill="var(--foreground)" font-size="13" font-weight="600">🌏 End Users</text>
+        <text x="130" y="100" text-anchor="middle" fill="var(--muted-foreground)" font-size="11">HK · SG · TW</text>
+        <text x="130" y="118" text-anchor="middle" fill="var(--muted-foreground)" font-size="10">~45K sessions/mo</text>
+
+        <!-- Developer -->
+        <rect x="40" y="480" width="180" height="70" rx="12" fill="#8B5CF6" opacity="0.15"/>
+        <text x="130" y="510" text-anchor="middle" fill="var(--foreground)" font-size="13" font-weight="600">👨‍💻 Developer</text>
+        <text x="130" y="528" text-anchor="middle" fill="var(--muted-foreground)" font-size="11">Git Push → CI/CD</text>
+
+        <!-- Edge Layer -->
+        <rect x="270" y="50" width="260" height="100" rx="12" fill="#F59E0B" opacity="0.1" stroke="#F59E0B" stroke-width="1"/>
+        <text x="400" y="72" text-anchor="middle" fill="#F59E0B" font-size="11" font-weight="600">EDGE & SECURITY LAYER</text>
+        <rect x="285" y="82" width="110" height="55" rx="8" fill="var(--card)" stroke="var(--border)" stroke-width="1" class="node"/>
+        <text x="340" y="104" text-anchor="middle" fill="var(--foreground)" font-size="12" font-weight="600">Cloud CDN</text>
+        <text x="340" y="120" text-anchor="middle" fill="var(--muted-foreground)" font-size="10">+ Global LB</text>
+        <rect x="405" y="82" width="110" height="55" rx="8" fill="var(--card)" stroke="#EF4444" stroke-width="1.5" class="node"/>
+        <text x="460" y="104" text-anchor="middle" fill="var(--foreground)" font-size="12" font-weight="600">Cloud Armor</text>
+        <text x="460" y="120" text-anchor="middle" fill="#EF4444" font-size="10">WAF · DDoS</text>
+
+        <!-- Compute Layer -->
+        <rect x="270" y="170" width="360" height="130" rx="12" fill="#10B981" opacity="0.1" stroke="#10B981" stroke-width="1"/>
+        <text x="450" y="192" text-anchor="middle" fill="#10B981" font-size="11" font-weight="600">SERVERLESS COMPUTE — Cloud Run</text>
+        <rect x="285" y="205" width="100" height="80" rx="8" fill="var(--card)" stroke="var(--border)" stroke-width="1" class="node"/>
+        <text x="335" y="232" text-anchor="middle" fill="var(--foreground)" font-size="11" font-weight="600">Instance A</text>
+        <text x="335" y="248" text-anchor="middle" fill="var(--muted-foreground)" font-size="10">Zone A</text>
+        <text x="335" y="264" text-anchor="middle" fill="#10B981" font-size="10">2 vCPU · 4GB</text>
+        <rect x="395" y="205" width="100" height="80" rx="8" fill="var(--card)" stroke="var(--border)" stroke-width="1" class="node"/>
+        <text x="445" y="232" text-anchor="middle" fill="var(--foreground)" font-size="11" font-weight="600">Instance B</text>
+        <text x="445" y="248" text-anchor="middle" fill="var(--muted-foreground)" font-size="10">Zone B</text>
+        <text x="445" y="264" text-anchor="middle" fill="#10B981" font-size="10">2 vCPU · 4GB</text>
+        <rect x="505" y="205" width="110" height="80" rx="8" fill="var(--card)" stroke="#10B981" stroke-width="1.5" stroke-dasharray="5 3" class="node pulse"/>
+        <text x="560" y="228" text-anchor="middle" fill="#10B981" font-size="11" font-weight="600">Auto-scale</text>
+        <text x="560" y="248" text-anchor="middle" fill="var(--muted-foreground)" font-size="10">up to 50</text>
+        <text x="560" y="264" text-anchor="middle" fill="var(--muted-foreground)" font-size="10">instances</text>
+        <text x="560" y="278" text-anchor="middle" fill="#10B981" font-size="9">⚡ 10× peak</text>
+
+        <!-- Data Layer -->
+        <rect x="270" y="320" width="360" height="160" rx="12" fill="#6366F1" opacity="0.1" stroke="#6366F1" stroke-width="1"/>
+        <text x="450" y="342" text-anchor="middle" fill="#6366F1" font-size="11" font-weight="600">MANAGED DATA LAYER</text>
+        <rect x="285" y="355" width="150" height="55" rx="8" fill="var(--card)" stroke="#6366F1" stroke-width="1.5" class="node"/>
+        <text x="360" y="377" text-anchor="middle" fill="var(--foreground)" font-size="12" font-weight="600">Cloud SQL</text>
+        <text x="360" y="395" text-anchor="middle" fill="var(--muted-foreground)" font-size="10">MySQL Primary (Zone A)</text>
+        <rect x="285" y="418" width="150" height="50" rx="8" fill="var(--card)" stroke="var(--border)" stroke-width="1" class="node"/>
+        <text x="360" y="440" text-anchor="middle" fill="var(--foreground)" font-size="11">HA Standby</text>
+        <text x="360" y="456" text-anchor="middle" fill="var(--muted-foreground)" font-size="10">(Zone B) · Sync Repl.</text>
+        <rect x="465" y="355" width="150" height="55" rx="8" fill="var(--card)" stroke="var(--border)" stroke-width="1" class="node"/>
+        <text x="540" y="377" text-anchor="middle" fill="var(--foreground)" font-size="12" font-weight="600">Cloud Storage</text>
+        <text x="540" y="395" text-anchor="middle" fill="var(--muted-foreground)" font-size="10">180 GB Product Media</text>
+        <rect x="465" y="418" width="150" height="50" rx="8" fill="var(--card)" stroke="var(--border)" stroke-width="1" class="node"/>
+        <text x="540" y="440" text-anchor="middle" fill="var(--foreground)" font-size="11">Backups → GCS</text>
+        <text x="540" y="456" text-anchor="middle" fill="var(--muted-foreground)" font-size="10">PITR · 15min RPO</text>
+
+        <!-- Operations Panel -->
+        <rect x="680" y="55" width="380" height="220" rx="12" fill="var(--card)" stroke="var(--border)" stroke-width="1"/>
+        <text x="870" y="78" text-anchor="middle" fill="var(--foreground)" font-size="12" font-weight="600">🔧 Operations & Security</text>
+        
+        <rect x="700" y="92" width="160" height="40" rx="6" fill="#3B82F6" opacity="0.1" class="node"/>
+        <text x="780" y="112" text-anchor="middle" fill="var(--foreground)" font-size="11">📊 Cloud Monitoring</text>
+        <text x="780" y="126" text-anchor="middle" fill="var(--muted-foreground)" font-size="9">Uptime · Alerts · Dashboards</text>
+        
+        <rect x="700" y="138" width="160" height="40" rx="6" fill="#3B82F6" opacity="0.1" class="node"/>
+        <text x="780" y="158" text-anchor="middle" fill="var(--foreground)" font-size="11">📋 Cloud Logging</text>
+        <text x="780" y="172" text-anchor="middle" fill="var(--muted-foreground)" font-size="9">Structured · 30-day retention</text>
+        
+        <rect x="700" y="184" width="160" height="40" rx="6" fill="#8B5CF6" opacity="0.1" class="node"/>
+        <text x="780" y="204" text-anchor="middle" fill="var(--foreground)" font-size="11">🔑 Secret Manager</text>
+        <text x="780" y="218" text-anchor="middle" fill="var(--muted-foreground)" font-size="9">DB creds · API keys</text>
+        
+        <rect x="880" y="92" width="160" height="40" rx="6" fill="#10B981" opacity="0.1" class="node"/>
+        <text x="960" y="112" text-anchor="middle" fill="var(--foreground)" font-size="11">🚀 Cloud Build</text>
+        <text x="960" y="126" text-anchor="middle" fill="var(--muted-foreground)" font-size="9">CI/CD · Blue-Green Deploy</text>
+        
+        <rect x="880" y="138" width="160" height="40" rx="6" fill="#F59E0B" opacity="0.1" class="node"/>
+        <text x="960" y="158" text-anchor="middle" fill="var(--foreground)" font-size="11">🌐 VPC Connector</text>
+        <text x="960" y="172" text-anchor="middle" fill="var(--muted-foreground)" font-size="9">Private DB connection</text>
+
+        <rect x="880" y="184" width="160" height="40" rx="6" fill="#EF4444" opacity="0.1" class="node"/>
+        <text x="960" y="204" text-anchor="middle" fill="var(--foreground)" font-size="11">🔒 IAM & Encryption</text>
+        <text x="960" y="218" text-anchor="middle" fill="var(--muted-foreground)" font-size="9">AES-256 · TLS · PDPO</text>
+
+        <!-- External Services -->
+        <rect x="680" y="320" width="380" height="70" rx="12" fill="var(--card)" stroke="var(--border)" stroke-width="1"/>
+        <text x="870" y="345" text-anchor="middle" fill="var(--foreground)" font-size="12" font-weight="600">External Services</text>
+        <rect x="700" y="355" width="160" height="28" rx="6" fill="#EC4899" opacity="0.1" class="node"/>
+        <text x="780" y="374" text-anchor="middle" fill="var(--foreground)" font-size="11">💳 Payment Gateway</text>
+        <rect x="880" y="355" width="160" height="28" rx="6" fill="#8B5CF6" opacity="0.1" class="node"/>
+        <text x="960" y="374" text-anchor="middle" fill="var(--foreground)" font-size="11">📁 GitHub Repo</text>
+
+        <!-- Flow arrows -->
+        <defs>
+          <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#3B82F6"/>
+          </marker>
+          <marker id="arrowGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#10B981"/>
+          </marker>
+          <marker id="arrowPurple" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#8B5CF6"/>
+          </marker>
+        </defs>
+        
+        <!-- User → CDN -->
+        <line x1="220" y1="95" x2="283" y2="105" stroke="#3B82F6" stroke-width="2" marker-end="url(#arrow)" class="flow-line"/>
+        <!-- CDN → Cloud Armor -->
+        <line x1="395" y1="109" x2="403" y2="109" stroke="#F59E0B" stroke-width="1.5"/>
+        <!-- Cloud Armor → Compute -->
+        <line x1="460" y1="137" x2="420" y2="205" stroke="#10B981" stroke-width="2" marker-end="url(#arrowGreen)" class="flow-line"/>
+        <!-- Compute → DB -->
+        <line x1="390" y1="285" x2="370" y2="355" stroke="#6366F1" stroke-width="2" marker-end="url(#arrowPurple)"/>
+        <!-- Compute → Storage -->
+        <line x1="500" y1="285" x2="520" y2="355" stroke="#6366F1" stroke-width="1.5" marker-end="url(#arrowPurple)"/>
+        <!-- DB Primary → Standby -->
+        <line x1="360" y1="410" x2="360" y2="418" stroke="#6366F1" stroke-width="1.5" stroke-dasharray="3 2"/>
+        <!-- Developer → GitHub -->
+        <line x1="220" y1="515" x2="878" y2="369" stroke="#8B5CF6" stroke-width="1.5" marker-end="url(#arrowPurple)" stroke-dasharray="5 3"/>
+        <!-- GitHub → Cloud Build -->
+        <line x1="960" y1="355" x2="960" y2="230" stroke="#10B981" stroke-width="1.5" marker-end="url(#arrowGreen)" stroke-dasharray="5 3"/>
+
+        <!-- Key Metrics Badges -->
+        <rect x="680" y="420" width="115" height="55" rx="8" fill="#10B981" opacity="0.15" class="node"/>
+        <text x="737" y="442" text-anchor="middle" fill="#10B981" font-size="18" font-weight="700">99.9%</text>
+        <text x="737" y="460" text-anchor="middle" fill="var(--muted-foreground)" font-size="10">Uptime SLA</text>
+
+        <rect x="805" y="420" width="115" height="55" rx="8" fill="#3B82F6" opacity="0.15" class="node"/>
+        <text x="862" y="442" text-anchor="middle" fill="#3B82F6" font-size="18" font-weight="700">≤15 min</text>
+        <text x="862" y="460" text-anchor="middle" fill="var(--muted-foreground)" font-size="10">RPO</text>
+
+        <rect x="930" y="420" width="115" height="55" rx="8" fill="#F59E0B" opacity="0.15" class="node"/>
+        <text x="987" y="442" text-anchor="middle" fill="#F59E0B" font-size="18" font-weight="700">≤60 min</text>
+        <text x="987" y="460" text-anchor="middle" fill="var(--muted-foreground)" font-size="10">RTO</text>
+
+        <!-- HKD budget badge -->
+        <rect x="680" y="490" width="365" height="50" rx="8" fill="#6366F1" opacity="0.1"/>
+        <text x="862" y="515" text-anchor="middle" fill="var(--foreground)" font-size="13" font-weight="600">💰 Steady State: HKD 7,380/mo (59% under HKD 18,000 budget)</text>
+        <text x="862" y="532" text-anchor="middle" fill="var(--muted-foreground)" font-size="10">Campaign month: HKD 10,225 — still 43% under budget</text>
+
+        <!-- PDPO badge -->
+        <rect x="680" y="555" width="365" height="40" rx="8" fill="#EF4444" opacity="0.1"/>
+        <text x="862" y="579" text-anchor="middle" fill="var(--foreground)" font-size="12" font-weight="600">🔒 PDPO Compliant — All PII stays in Hong Kong (asia-east2)</text>
+      </svg>
+    </div>
+
+    <!-- ==================== SLIDE 2: Traffic & Scaling ==================== -->
+    <div class="slide fade-in" id="slide-1">
+      <div class="mb-6">
+        <h1 class="text-2xl font-bold text-[var(--foreground)]">B. Traffic Scaling — 10× Campaign Spike</h1>
+        <p class="text-[var(--muted-foreground)] text-sm mt-1">Cloud Run auto-scales from 2 min instances to 20 in under 60 seconds · No manual intervention</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Scaling Simulation -->
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-semibold text-[var(--foreground)]">Live Scaling Simulation</h3>
+            <button onclick="runScalingSimulation()" class="px-3 py-1.5 rounded-lg bg-blue-600 text-white text-sm hover:bg-blue-700 transition-colors">▶ Run Simulation</button>
+          </div>
+          <canvas id="scalingChart" width="500" height="280"></canvas>
+          <div class="flex justify-between mt-3 text-xs text-[var(--muted-foreground)]">
+            <span>T-30 min (Normal)</span>
+            <span>T+0 (Campaign Start)</span>
+            <span>T+2h (Peak)</span>
+            <span>T+6h (End)</span>
+          </div>
+        </div>
+
+        <!-- Scaling Stats -->
+        <div class="space-y-4">
+          <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5">
+            <h3 class="font-semibold text-[var(--foreground)] mb-3">Scaling Comparison</h3>
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="border-b border-[var(--border)]">
+                  <th class="text-left py-2 text-[var(--muted-foreground)] font-medium">Metric</th>
+                  <th class="text-right py-2 text-[var(--muted-foreground)] font-medium">Normal</th>
+                  <th class="text-right py-2 text-[var(--muted-foreground)] font-medium">Campaign 10×</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-b border-[var(--border)]">
+                  <td class="py-2 text-[var(--foreground)]">Sessions/hour</td>
+                  <td class="text-right text-[var(--foreground)]">62</td>
+                  <td class="text-right font-semibold text-blue-500">620</td>
+                </tr>
+                <tr class="border-b border-[var(--border)]">
+                  <td class="py-2 text-[var(--foreground)]">Cloud Run instances</td>
+                  <td class="text-right text-[var(--foreground)]">2</td>
+                  <td class="text-right font-semibold text-blue-500">15–20</td>
+                </tr>
+                <tr class="border-b border-[var(--border)]">
+                  <td class="py-2 text-[var(--foreground)]">Scale-up time</td>
+                  <td class="text-right text-[var(--foreground)]">—</td>
+                  <td class="text-right font-semibold text-green-500">15–30 sec</td>
+                </tr>
+                <tr class="border-b border-[var(--border)]">
+                  <td class="py-2 text-[var(--foreground)]">CDN cache hit rate</td>
+                  <td class="text-right text-[var(--foreground)]">60%</td>
+                  <td class="text-right font-semibold text-green-500">85%+</td>
+                </tr>
+                <tr>
+                  <td class="py-2 text-[var(--foreground)]">DB read replica</td>
+                  <td class="text-right text-[var(--muted-foreground)]">Off</td>
+                  <td class="text-right font-semibold text-yellow-500">Active</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5">
+            <h3 class="font-semibold text-[var(--foreground)] mb-3">Auto-Scale Configuration</h3>
+            <div class="space-y-3">
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-[var(--muted-foreground)]">Min instances</span>
+                <span class="px-2 py-0.5 bg-green-500/20 text-green-500 rounded text-sm font-mono">2</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-[var(--muted-foreground)]">Max instances</span>
+                <span class="px-2 py-0.5 bg-yellow-500/20 text-yellow-500 rounded text-sm font-mono">50</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-[var(--muted-foreground)]">Concurrency/instance</span>
+                <span class="px-2 py-0.5 bg-blue-500/20 text-blue-500 rounded text-sm font-mono">80</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-sm text-[var(--muted-foreground)]">CPU allocation</span>
+                <span class="px-2 py-0.5 bg-purple-500/20 text-purple-500 rounded text-sm font-mono">Always-on</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 3: Database HA ==================== -->
+    <div class="slide fade-in" id="slide-2">
+      <div class="mb-6">
+        <h1 class="text-2xl font-bold text-[var(--foreground)]">B. Database High Availability & Recovery</h1>
+        <p class="text-[var(--muted-foreground)] text-sm mt-1">Cloud SQL MySQL with synchronous HA · RPO ≤ 15 min · RTO ≤ 60 min</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <!-- HA Architecture -->
+        <div class="lg:col-span-2 bg-[var(--card)] border border-[var(--border)] rounded-xl p-5">
+          <h3 class="font-semibold mb-4 text-[var(--foreground)]">Failover Architecture</h3>
+          <svg viewBox="0 0 600 320" class="w-full">
+            <!-- Zone A -->
+            <rect x="20" y="20" width="250" height="280" rx="12" fill="#10B981" opacity="0.05" stroke="#10B981" stroke-width="1"/>
+            <text x="145" y="45" text-anchor="middle" fill="#10B981" font-size="12" font-weight="600">Availability Zone A</text>
+
+            <!-- Zone B -->
+            <rect x="330" y="20" width="250" height="280" rx="12" fill="#3B82F6" opacity="0.05" stroke="#3B82F6" stroke-width="1"/>
+            <text x="455" y="45" text-anchor="middle" fill="#3B82F6" font-size="12" font-weight="600">Availability Zone B</text>
+
+            <!-- Primary DB -->
+            <rect x="55" y="65" width="180" height="90" rx="10" fill="var(--card)" stroke="#10B981" stroke-width="2" class="node glow"/>
+            <text x="145" y="95" text-anchor="middle" fill="var(--foreground)" font-size="14" font-weight="700">🗄️ Primary</text>
+            <text x="145" y="115" text-anchor="middle" fill="var(--muted-foreground)" font-size="11">4 vCPU · 15 GB RAM</text>
+            <text x="145" y="135" text-anchor="middle" fill="#10B981" font-size="11">Active · Read/Write</text>
+
+            <!-- Standby DB -->
+            <rect x="365" y="65" width="180" height="90" rx="10" fill="var(--card)" stroke="#3B82F6" stroke-width="1.5" class="node"/>
+            <text x="455" y="95" text-anchor="middle" fill="var(--foreground)" font-size="14" font-weight="700">🗄️ Standby</text>
+            <text x="455" y="115" text-anchor="middle" fill="var(--muted-foreground)" font-size="11">4 vCPU · 15 GB RAM</text>
+            <text x="455" y="135" text-anchor="middle" fill="#3B82F6" font-size="11">Passive · Sync Replication</text>
+
+            <!-- Replication arrow -->
+            <line x1="235" y1="110" x2="365" y2="110" stroke="#6366F1" stroke-width="2" marker-end="url(#arrowPurple)" class="flow-line"/>
+            <text x="300" y="100" text-anchor="middle" fill="#6366F1" font-size="10" font-weight="600">SYNC</text>
+
+            <!-- Backups -->
+            <rect x="55" y="185" width="180" height="55" rx="8" fill="var(--card)" stroke="var(--border)" stroke-width="1" class="node"/>
+            <text x="145" y="210" text-anchor="middle" fill="var(--foreground)" font-size="12" font-weight="600">📦 PITR Backups</text>
+            <text x="145" y="228" text-anchor="middle" fill="var(--muted-foreground)" font-size="10">Binary log · Any-second recovery</text>
+
+            <!-- Cross-region backup -->
+            <rect x="365" y="185" width="180" height="55" rx="8" fill="var(--card)" stroke="var(--border)" stroke-width="1" class="node"/>
+            <text x="455" y="210" text-anchor="middle" fill="var(--foreground)" font-size="12" font-weight="600">☁️ GCS Export</text>
+            <text x="455" y="228" text-anchor="middle" fill="var(--muted-foreground)" font-size="10">Daily → asia-southeast1 (SG)</text>
+
+            <!-- Failover indicator -->
+            <rect x="150" y="260" width="300" height="30" rx="15" fill="#F59E0B" opacity="0.2"/>
+            <text x="300" y="280" text-anchor="middle" fill="#F59E0B" font-size="11" font-weight="600">⚡ Auto-failover: Primary fails → Standby promoted in &lt; 60s</text>
+          </svg>
+        </div>
+
+        <!-- Recovery Guarantees -->
+        <div class="space-y-4">
+          <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5">
+            <h3 class="font-semibold text-[var(--foreground)] mb-3">Recovery Guarantees</h3>
+            <div class="space-y-4">
+              <div>
+                <div class="flex justify-between text-sm mb-1">
+                  <span class="text-[var(--muted-foreground)]">RPO Target</span>
+                  <span class="font-semibold text-green-500">≤ 15 min</span>
+                </div>
+                <div class="w-full bg-[var(--accent)] rounded-full h-2">
+                  <div class="bg-green-500 h-2 rounded-full" style="width: 100%"></div>
+                </div>
+                <p class="text-xs text-[var(--muted-foreground)] mt-1">HA sync = 0 min · PITR = any second · Exceeded ✅</p>
+              </div>
+              <div>
+                <div class="flex justify-between text-sm mb-1">
+                  <span class="text-[var(--muted-foreground)]">RTO Target</span>
+                  <span class="font-semibold text-green-500">≤ 60 min</span>
+                </div>
+                <div class="w-full bg-[var(--accent)] rounded-full h-2">
+                  <div class="bg-green-500 h-2 rounded-full" style="width: 100%"></div>
+                </div>
+                <p class="text-xs text-[var(--muted-foreground)] mt-1">HA failover &lt; 60s · Full PITR restore ~20 min ✅</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5">
+            <h3 class="font-semibold text-[var(--foreground)] mb-3">Protection Layers</h3>
+            <div class="space-y-2">
+              <div class="flex items-start gap-2">
+                <span class="text-green-500 mt-0.5">●</span>
+                <div>
+                  <p class="text-sm font-medium text-[var(--foreground)]">Layer 1: HA Sync</p>
+                  <p class="text-xs text-[var(--muted-foreground)]">0 data loss, auto-failover</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-2">
+                <span class="text-blue-500 mt-0.5">●</span>
+                <div>
+                  <p class="text-sm font-medium text-[var(--foreground)]">Layer 2: PITR</p>
+                  <p class="text-xs text-[var(--muted-foreground)]">Any-second recovery via binlog</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-2">
+                <span class="text-yellow-500 mt-0.5">●</span>
+                <div>
+                  <p class="text-sm font-medium text-[var(--foreground)]">Layer 3: Cross-Region</p>
+                  <p class="text-xs text-[var(--muted-foreground)]">Daily export to Singapore GCS</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 4: Cost Breakdown ==================== -->
+    <div class="slide fade-in" id="slide-3">
+      <div class="mb-6">
+        <h1 class="text-2xl font-bold text-[var(--foreground)]">C. Cost Estimate</h1>
+        <p class="text-[var(--muted-foreground)] text-sm mt-1">Target: HKD 18,000/month · Actual steady state: HKD 7,380 (59% under budget)</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Cost Chart -->
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-semibold text-[var(--foreground)]">Monthly Cost Breakdown (USD)</h3>
+            <div class="flex gap-2">
+              <button onclick="showCostMode('steady')" id="btn-steady" class="px-3 py-1 rounded-lg text-xs bg-blue-600 text-white">Steady State</button>
+              <button onclick="showCostMode('campaign')" id="btn-campaign" class="px-3 py-1 rounded-lg text-xs border border-[var(--border)] text-[var(--muted-foreground)]">Campaign</button>
+            </div>
+          </div>
+          <canvas id="costChart" width="450" height="300"></canvas>
+        </div>
+
+        <!-- Cost Table -->
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5">
+          <h3 class="font-semibold text-[var(--foreground)] mb-3">Itemised Cost</h3>
+          <table class="w-full text-sm" id="costTable">
+            <thead>
+              <tr class="border-b border-[var(--border)]">
+                <th class="text-left py-2 text-[var(--muted-foreground)] font-medium">Component</th>
+                <th class="text-right py-2 text-[var(--muted-foreground)] font-medium">Steady</th>
+                <th class="text-right py-2 text-[var(--muted-foreground)] font-medium">Campaign</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="border-b border-[var(--border)]">
+                <td class="py-2 text-[var(--foreground)]"><span class="inline-block w-2.5 h-2.5 rounded-full bg-blue-500 mr-2"></span>Cloud Run</td>
+                <td class="text-right text-[var(--foreground)]">$280</td>
+                <td class="text-right text-[var(--foreground)]">$400</td>
+              </tr>
+              <tr class="border-b border-[var(--border)]">
+                <td class="py-2 text-[var(--foreground)]"><span class="inline-block w-2.5 h-2.5 rounded-full bg-purple-500 mr-2"></span>Cloud SQL HA</td>
+                <td class="text-right text-[var(--foreground)]">$520</td>
+                <td class="text-right text-[var(--foreground)]">$700</td>
+              </tr>
+              <tr class="border-b border-[var(--border)]">
+                <td class="py-2 text-[var(--foreground)]"><span class="inline-block w-2.5 h-2.5 rounded-full bg-green-500 mr-2"></span>Cloud Storage</td>
+                <td class="text-right text-[var(--foreground)]">$8</td>
+                <td class="text-right text-[var(--foreground)]">$8</td>
+              </tr>
+              <tr class="border-b border-[var(--border)]">
+                <td class="py-2 text-[var(--foreground)]"><span class="inline-block w-2.5 h-2.5 rounded-full bg-yellow-500 mr-2"></span>CDN + LB</td>
+                <td class="text-right text-[var(--foreground)]">$60</td>
+                <td class="text-right text-[var(--foreground)]">$120</td>
+              </tr>
+              <tr class="border-b border-[var(--border)]">
+                <td class="py-2 text-[var(--foreground)]"><span class="inline-block w-2.5 h-2.5 rounded-full bg-red-500 mr-2"></span>Cloud Armor</td>
+                <td class="text-right text-[var(--foreground)]">$12</td>
+                <td class="text-right text-[var(--foreground)]">$17</td>
+              </tr>
+              <tr class="border-b border-[var(--border)]">
+                <td class="py-2 text-[var(--foreground)]"><span class="inline-block w-2.5 h-2.5 rounded-full bg-cyan-500 mr-2"></span>Monitoring/Ops</td>
+                <td class="text-right text-[var(--foreground)]">$25</td>
+                <td class="text-right text-[var(--foreground)]">$25</td>
+              </tr>
+              <tr class="border-b border-[var(--border)]">
+                <td class="py-2 text-[var(--foreground)]"><span class="inline-block w-2.5 h-2.5 rounded-full bg-gray-400 mr-2"></span>Other</td>
+                <td class="text-right text-[var(--foreground)]">$41</td>
+                <td class="text-right text-[var(--foreground)]">$41</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr class="border-t-2 border-[var(--border)]">
+                <td class="py-3 font-bold text-[var(--foreground)]">Total (USD)</td>
+                <td class="text-right font-bold text-green-500">$946</td>
+                <td class="text-right font-bold text-yellow-500">$1,311</td>
+              </tr>
+              <tr>
+                <td class="py-1 font-bold text-[var(--foreground)]">Total (HKD)</td>
+                <td class="text-right font-bold text-green-500">HKD 7,380</td>
+                <td class="text-right font-bold text-yellow-500">HKD 10,225</td>
+              </tr>
+              <tr>
+                <td class="py-1 text-[var(--muted-foreground)]">vs Budget</td>
+                <td class="text-right font-semibold text-green-500">59% under ✅</td>
+                <td class="text-right font-semibold text-green-500">43% under ✅</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+
+      <!-- Budget Gauge -->
+      <div class="mt-6 bg-[var(--card)] border border-[var(--border)] rounded-xl p-5">
+        <h3 class="font-semibold text-[var(--foreground)] mb-3">Budget Utilisation</h3>
+        <div class="space-y-3">
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-[var(--foreground)]">Steady State: HKD 7,380</span>
+              <span class="text-[var(--muted-foreground)]">Budget: HKD 18,000</span>
+            </div>
+            <div class="w-full bg-[var(--accent)] rounded-full h-4 relative">
+              <div class="bg-green-500 h-4 rounded-full flex items-center justify-end pr-2" style="width: 41%">
+                <span class="text-xs text-white font-semibold">41%</span>
+              </div>
+              <div class="absolute top-0 right-0 h-4 flex items-center pr-2">
+                <span class="text-xs text-[var(--muted-foreground)]">HKD 10,620 headroom</span>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-[var(--foreground)]">Campaign Month: HKD 10,225</span>
+              <span class="text-[var(--muted-foreground)]">Budget: HKD 18,000</span>
+            </div>
+            <div class="w-full bg-[var(--accent)] rounded-full h-4 relative">
+              <div class="bg-yellow-500 h-4 rounded-full flex items-center justify-end pr-2" style="width: 57%">
+                <span class="text-xs text-white font-semibold">57%</span>
+              </div>
+              <div class="absolute top-0 right-0 h-4 flex items-center pr-2">
+                <span class="text-xs text-[var(--muted-foreground)]">HKD 7,775 headroom</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 5: Migration Timeline ==================== -->
+    <div class="slide fade-in" id="slide-4">
+      <div class="mb-6">
+        <h1 class="text-2xl font-bold text-[var(--foreground)]">E. Migration & Rollback Plan</h1>
+        <p class="text-[var(--muted-foreground)] text-sm mt-1">4-week migration · 2-hour cutover window (Sun 02:00 HKT) · 30-day rollback safety net</p>
+      </div>
+
+      <!-- Timeline -->
+      <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5 mb-6">
+        <h3 class="font-semibold text-[var(--foreground)] mb-4">Migration Timeline</h3>
+        <div class="relative">
+          <!-- Timeline bar -->
+          <div class="h-2 bg-[var(--accent)] rounded-full mb-8 relative">
+            <div class="absolute top-0 left-0 h-2 bg-gradient-to-r from-blue-500 via-green-500 to-yellow-500 rounded-full" style="width: 100%"></div>
+            <!-- Week markers -->
+            <div class="absolute top-4 left-0 text-xs text-[var(--muted-foreground)]">Week 1</div>
+            <div class="absolute top-4 left-1/4 text-xs text-[var(--muted-foreground)]">Week 2</div>
+            <div class="absolute top-4 left-1/2 text-xs text-[var(--muted-foreground)]">Week 3</div>
+            <div class="absolute top-4 left-3/4 text-xs text-[var(--muted-foreground)]">Week 4</div>
+            <div class="absolute top-4 right-0 text-xs text-green-500 font-semibold">✅ Live</div>
+          </div>
+
+          <!-- Phase cards -->
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mt-8">
+            <div class="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
+              <div class="text-xs font-semibold text-blue-500 mb-1">WEEK 1–2: BUILD</div>
+              <ul class="text-xs text-[var(--muted-foreground)] space-y-1">
+                <li>✦ Provision GCP via Terraform</li>
+                <li>✦ Containerise PHP app</li>
+                <li>✦ Set up Cloud SQL HA</li>
+                <li>✦ Migrate 180GB media → GCS</li>
+              </ul>
+            </div>
+            <div class="bg-green-500/10 border border-green-500/30 rounded-lg p-3">
+              <div class="text-xs font-semibold text-green-500 mb-1">WEEK 3: TEST</div>
+              <ul class="text-xs text-[var(--muted-foreground)] space-y-1">
+                <li>✦ Full DB sync from VPS</li>
+                <li>✦ Smoke test on canary URL</li>
+                <li>✦ Load test at 15× traffic</li>
+                <li>✦ Security scan & review</li>
+              </ul>
+            </div>
+            <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3">
+              <div class="text-xs font-semibold text-yellow-500 mb-1">WEEK 4: CUTOVER</div>
+              <ul class="text-xs text-[var(--muted-foreground)] space-y-1">
+                <li>✦ DNS TTL ↓ 60s (48h before)</li>
+                <li>✦ Maintenance window 02:00</li>
+                <li>✦ Final DB sync + DNS switch</li>
+                <li>✦ Verify live traffic ✅</li>
+              </ul>
+            </div>
+            <div class="bg-purple-500/10 border border-purple-500/30 rounded-lg p-3">
+              <div class="text-xs font-semibold text-purple-500 mb-1">POST: STABILISE</div>
+              <ul class="text-xs text-[var(--muted-foreground)] space-y-1">
+                <li>✦ 30-day parallel run</li>
+                <li>✦ VPS kept as warm standby</li>
+                <li>✦ Daily DB export → VPS</li>
+                <li>✦ Decommission VPS day 30</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cutover Sequence -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5">
+          <h3 class="font-semibold text-[var(--foreground)] mb-3">Cutover Night Sequence (02:00 – 04:00 HKT)</h3>
+          <div class="space-y-2">
+            <div class="flex gap-3 items-start">
+              <div class="w-16 shrink-0 text-xs text-[var(--muted-foreground)] pt-1">02:00</div>
+              <div class="w-2 h-2 rounded-full bg-yellow-500 mt-1.5 shrink-0"></div>
+              <div class="text-sm text-[var(--foreground)]">Enable maintenance mode (static CDN page)</div>
+            </div>
+            <div class="flex gap-3 items-start">
+              <div class="w-16 shrink-0 text-xs text-[var(--muted-foreground)] pt-1">02:05</div>
+              <div class="w-2 h-2 rounded-full bg-blue-500 mt-1.5 shrink-0"></div>
+              <div class="text-sm text-[var(--foreground)]">Final mysqldump → Cloud SQL import</div>
+            </div>
+            <div class="flex gap-3 items-start">
+              <div class="w-16 shrink-0 text-xs text-[var(--muted-foreground)] pt-1">02:20</div>
+              <div class="w-2 h-2 rounded-full bg-blue-500 mt-1.5 shrink-0"></div>
+              <div class="text-sm text-[var(--foreground)]">Verify row counts match across all tables</div>
+            </div>
+            <div class="flex gap-3 items-start">
+              <div class="w-16 shrink-0 text-xs text-[var(--muted-foreground)] pt-1">02:25</div>
+              <div class="w-2 h-2 rounded-full bg-green-500 mt-1.5 shrink-0"></div>
+              <div class="text-sm text-[var(--foreground)]">Run automated smoke tests (reg, cart, checkout)</div>
+            </div>
+            <div class="flex gap-3 items-start">
+              <div class="w-16 shrink-0 text-xs text-[var(--muted-foreground)] pt-1">02:30</div>
+              <div class="w-2 h-2 rounded-full bg-green-500 mt-1.5 shrink-0"></div>
+              <div class="text-sm text-[var(--foreground)]">Switch DNS A record → Global LB IP</div>
+            </div>
+            <div class="flex gap-3 items-start">
+              <div class="w-16 shrink-0 text-xs text-[var(--muted-foreground)] pt-1">02:35</div>
+              <div class="w-2 h-2 rounded-full bg-green-500 mt-1.5 shrink-0"></div>
+              <div class="text-sm text-[var(--foreground)]">Verify traffic in Cloud Run dashboard</div>
+            </div>
+            <div class="flex gap-3 items-start">
+              <div class="w-16 shrink-0 text-xs text-[var(--muted-foreground)] pt-1">04:00</div>
+              <div class="w-2 h-2 rounded-full bg-green-500 mt-1.5 shrink-0"></div>
+              <div class="text-sm font-semibold text-green-500">✅ Close maintenance window</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5">
+          <h3 class="font-semibold text-[var(--foreground)] mb-3">Rollback Decision Matrix</h3>
+          <div class="space-y-3">
+            <div class="bg-red-500/10 border border-red-500/30 rounded-lg p-3">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-red-500 text-sm font-bold">🔴 ABORT</span>
+                <span class="text-xs text-[var(--muted-foreground)]">Smoke tests fail</span>
+              </div>
+              <p class="text-xs text-[var(--foreground)]">Restore DNS to VPS IP immediately. No data modified on old system. DevOps lead decides.</p>
+            </div>
+            <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-yellow-500 text-sm font-bold">🟡 REVERT</span>
+                <span class="text-xs text-[var(--muted-foreground)]">Error rate &gt; 5% in first 2h</span>
+              </div>
+              <p class="text-xs text-[var(--foreground)]">Revert DNS (60s TTL = fast). Export Cloud SQL data, replay on VPS. IT Manager + DevOps decide jointly.</p>
+            </div>
+            <div class="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-blue-500 text-sm font-bold">🔵 MONITOR</span>
+                <span class="text-xs text-[var(--muted-foreground)]">Minor issues, &lt; 5% errors</span>
+              </div>
+              <p class="text-xs text-[var(--foreground)]">Stay on new platform, investigate & hotfix. Rollback only if unresolved after 4h.</p>
+            </div>
+            <div class="bg-purple-500/10 border border-purple-500/30 rounded-lg p-3">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="text-purple-500 text-sm font-bold">🟣 CLIENT CALL</span>
+                <span class="text-xs text-[var(--muted-foreground)]">Critical business function broken</span>
+              </div>
+              <p class="text-xs text-[var(--foreground)]">Immediate rollback regardless of metrics. Client + IT Manager decide jointly.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 6: Risk Register ==================== -->
+    <div class="slide fade-in" id="slide-5">
+      <div class="mb-6">
+        <h1 class="text-2xl font-bold text-[var(--foreground)]">F. Risk Register — Top 5 Risks</h1>
+        <p class="text-[var(--muted-foreground)] text-sm mt-1">Likelihood × Impact matrix · Includes agency risk (#5)</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Risk Matrix Visual -->
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-xl p-5">
+          <h3 class="font-semibold text-[var(--foreground)] mb-4">Risk Matrix</h3>
+          <svg viewBox="0 0 300 300" class="w-full">
+            <!-- Grid -->
+            <rect x="60" y="0" width="60" height="60" fill="#10B981" opacity="0.1"/>
+            <rect x="120" y="0" width="60" height="60" fill="#F59E0B" opacity="0.1"/>
+            <rect x="180" y="0" width="60" height="60" fill="#EF4444" opacity="0.15"/>
+            <rect x="240" y="0" width="60" height="60" fill="#EF4444" opacity="0.25"/>
+            <rect x="60" y="60" width="60" height="60" fill="#10B981" opacity="0.1"/>
+            <rect x="120" y="60" width="60" height="60" fill="#F59E0B" opacity="0.1"/>
+            <rect x="180" y="60" width="60" height="60" fill="#F59E0B" opacity="0.15"/>
+            <rect x="240" y="60" width="60" height="60" fill="#EF4444" opacity="0.15"/>
+            <rect x="60" y="120" width="60" height="60" fill="#10B981" opacity="0.1"/>
+            <rect x="120" y="120" width="60" height="60" fill="#10B981" opacity="0.1"/>
+            <rect x="180" y="120" width="60" height="60" fill="#F59E0B" opacity="0.1"/>
+            <rect x="240" y="120" width="60" height="60" fill="#F59E0B" opacity="0.15"/>
+            <rect x="60" y="180" width="60" height="60" fill="#10B981" opacity="0.05"/>
+            <rect x="120" y="180" width="60" height="60" fill="#10B981" opacity="0.1"/>
+            <rect x="180" y="180" width="60" height="60" fill="#10B981" opacity="0.1"/>
+            <rect x="240" y="180" width="60" height="60" fill="#F59E0B" opacity="0.1"/>
+
+            <!-- Grid lines -->
+            <line x1="60" y1="0" x2="60" y2="240" stroke="var(--border)" stroke-width="0.5"/>
+            <line x1="120" y1="0" x2="120" y2="240" stroke="var(--border)" stroke-width="0.5"/>
+            <line x1="180" y1="0" x2="180" y2="240" stroke="var(--border)" stroke-width="0.5"/>
+            <line x1="240" y1="0" x2="240" y2="240" stroke="var(--border)" stroke-width="0.5"/>
+            <line x1="300" y1="0" x2="300" y2="240" stroke="var(--border)" stroke-width="0.5"/>
+            <line x1="60" y1="0" x2="300" y2="0" stroke="var(--border)" stroke-width="0.5"/>
+            <line x1="60" y1="60" x2="300" y2="60" stroke="var(--border)" stroke-width="0.5"/>
+            <line x1="60" y1="120" x2="300" y2="120" stroke="var(--border)" stroke-width="0.5"/>
+            <line x1="60" y1="180" x2="300" y2="180" stroke="var(--border)" stroke-width="0.5"/>
+            <line x1="60" y1="240" x2="300" y2="240" stroke="var(--border)" stroke-width="0.5"/>
+
+            <!-- Axis labels -->
+            <text x="180" y="270" text-anchor="middle" fill="var(--muted-foreground)" font-size="11" font-weight="600">IMPACT →</text>
+            <text x="25" y="120" text-anchor="middle" fill="var(--muted-foreground)" font-size="11" font-weight="600" transform="rotate(-90, 25, 120)">LIKELIHOOD →</text>
+            <text x="90" y="255" text-anchor="middle" fill="var(--muted-foreground)" font-size="9">Low</text>
+            <text x="150" y="255" text-anchor="middle" fill="var(--muted-foreground)" font-size="9">Med</text>
+            <text x="210" y="255" text-anchor="middle" fill="var(--muted-foreground)" font-size="9">High</text>
+            <text x="270" y="255" text-anchor="middle" fill="var(--muted-foreground)" font-size="9">Critical</text>
+            <text x="50" y="215" text-anchor="end" fill="var(--muted-foreground)" font-size="9">Low</text>
+            <text x="50" y="155" text-anchor="end" fill="var(--muted-foreground)" font-size="9">Med</text>
+            <text x="50" y="95" text-anchor="end" fill="var(--muted-foreground)" font-size="9">High</text>
+
+            <!-- Risk dots -->
+            <!-- Risk 1: Campaign spike (Med likelihood, High impact) -->
+            <circle cx="210" cy="90" r="18" fill="#F59E0B" opacity="0.8" class="node"/>
+            <text x="210" y="95" text-anchor="middle" fill="white" font-size="12" font-weight="700">1</text>
+
+            <!-- Risk 2: Data breach (Low likelihood, Critical impact) -->
+            <circle cx="270" cy="150" r="18" fill="#EF4444" opacity="0.8" class="node"/>
+            <text x="270" y="155" text-anchor="middle" fill="white" font-size="12" font-weight="700">2</text>
+
+            <!-- Risk 3: Bad deployment (Med likelihood, High impact) -->
+            <circle cx="210" cy="90" r="18" fill="#F59E0B" opacity="0" stroke="none"/>
+            <circle cx="225" cy="105" r="16" fill="#EF4444" opacity="0.7" class="node"/>
+            <text x="225" y="110" text-anchor="middle" fill="white" font-size="11" font-weight="700">3</text>
+
+            <!-- Risk 4: SQL failover slow (Low likelihood, Med impact) -->
+            <circle cx="150" cy="150" r="16" fill="#3B82F6" opacity="0.7" class="node"/>
+            <text x="150" y="155" text-anchor="middle" fill="white" font-size="11" font-weight="700">4</text>
+
+            <!-- Risk 5: Key-person risk (Med likelihood, High impact) -->
+            <circle cx="200" cy="100" r="16" fill="#8B5CF6" opacity="0.8" class="node"/>
+            <text x="200" y="105" text-anchor="middle" fill="white" font-size="11" font-weight="700">5</text>
+          </svg>
+        </div>
+
+        <!-- Risk Details -->
+        <div class="lg:col-span-2 space-y-3">
+          <div class="bg-[var(--card)] border border-yellow-500/30 rounded-xl p-4 hover:shadow-md transition-shadow cursor-pointer" onclick="toggleRisk(this)">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full bg-yellow-500 flex items-center justify-center text-white font-bold text-sm shrink-0">1</div>
+              <div class="flex-1">
+                <div class="flex items-center justify-between">
+                  <h4 class="font-semibold text-[var(--foreground)] text-sm">Campaign spike exceeds 10× estimate</h4>
+                  <div class="flex gap-2">
+                    <span class="px-2 py-0.5 bg-yellow-500/20 text-yellow-500 rounded text-xs">Med likelihood</span>
+                    <span class="px-2 py-0.5 bg-red-500/20 text-red-500 rounded text-xs">High impact</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-2 ml-11 text-xs text-[var(--muted-foreground)] risk-detail" style="display:none;">
+              <strong class="text-[var(--foreground)]">Mitigation:</strong> Set max_instances=50 (not 20). Pre-provision read replica. Load-test at 15× before each campaign. Cloud Armor rate-limits bot traffic.
+            </div>
+          </div>
+
+          <div class="bg-[var(--card)] border border-red-500/30 rounded-xl p-4 hover:shadow-md transition-shadow cursor-pointer" onclick="toggleRisk(this)">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center text-white font-bold text-sm shrink-0">2</div>
+              <div class="flex-1">
+                <div class="flex items-center justify-between">
+                  <h4 class="font-semibold text-[var(--foreground)] text-sm">Data breach / PDPO non-compliance</h4>
+                  <div class="flex gap-2">
+                    <span class="px-2 py-0.5 bg-green-500/20 text-green-500 rounded text-xs">Low likelihood</span>
+                    <span class="px-2 py-0.5 bg-red-500/20 text-red-500 rounded text-xs">Critical impact</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-2 ml-11 text-xs text-[var(--muted-foreground)] risk-detail" style="display:none;">
+              <strong class="text-[var(--foreground)]">Mitigation:</strong> All data in asia-east2 (HK). AES-256 encryption at rest, TLS in transit. VPC Service Controls. Access logging on all admin ops. Annual PDPO review.
+            </div>
+          </div>
+
+          <div class="bg-[var(--card)] border border-red-500/30 rounded-xl p-4 hover:shadow-md transition-shadow cursor-pointer" onclick="toggleRisk(this)">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center text-white font-bold text-sm shrink-0">3</div>
+              <div class="flex-1">
+                <div class="flex items-center justify-between">
+                  <h4 class="font-semibold text-[var(--foreground)] text-sm">Bad deployment breaks production</h4>
+                  <div class="flex gap-2">
+                    <span class="px-2 py-0.5 bg-yellow-500/20 text-yellow-500 rounded text-xs">Med likelihood</span>
+                    <span class="px-2 py-0.5 bg-red-500/20 text-red-500 rounded text-xs">High impact</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-2 ml-11 text-xs text-[var(--muted-foreground)] risk-detail" style="display:none;">
+              <strong class="text-[var(--foreground)]">Mitigation:</strong> Blue-green deploy: new revision gets 0% traffic until smoke test passes. Instant rollback via gcloud CLI. Canary → full rollout pipeline.
+            </div>
+          </div>
+
+          <div class="bg-[var(--card)] border border-blue-500/30 rounded-xl p-4 hover:shadow-md transition-shadow cursor-pointer" onclick="toggleRisk(this)">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-sm shrink-0">4</div>
+              <div class="flex-1">
+                <div class="flex items-center justify-between">
+                  <h4 class="font-semibold text-[var(--foreground)] text-sm">Cloud SQL failover exceeds 60s RTO</h4>
+                  <div class="flex gap-2">
+                    <span class="px-2 py-0.5 bg-green-500/20 text-green-500 rounded text-xs">Low likelihood</span>
+                    <span class="px-2 py-0.5 bg-yellow-500/20 text-yellow-500 rounded text-xs">Med impact</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-2 ml-11 text-xs text-[var(--muted-foreground)] risk-detail" style="display:none;">
+              <strong class="text-[var(--foreground)]">Mitigation:</strong> RTO target is 60 min, not 60 sec. Even a 5-min failover is well within RTO. Cloud Run retries automatically. CDN serves cached pages during the gap.
+            </div>
+          </div>
+
+          <div class="bg-[var(--card)] border border-purple-500/30 rounded-xl p-4 hover:shadow-md transition-shadow cursor-pointer" onclick="toggleRisk(this)">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-white font-bold text-sm shrink-0">5</div>
+              <div class="flex-1">
+                <div class="flex items-center justify-between">
+                  <h4 class="font-semibold text-[var(--foreground)] text-sm">🏢 Agency key-person risk (Visible One)</h4>
+                  <div class="flex gap-2">
+                    <span class="px-2 py-0.5 bg-yellow-500/20 text-yellow-500 rounded text-xs">Med likelihood</span>
+                    <span class="px-2 py-0.5 bg-red-500/20 text-red-500 rounded text-xs">High impact</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-2 ml-11 text-xs text-[var(--muted-foreground)] risk-detail" style="display:none;">
+              <strong class="text-[var(--foreground)]">Mitigation:</strong> All infra is in Terraform (reproducible). Runbooks in shared wiki. CI/CD pipeline = no deep knowledge needed for deploys. Cross-train at least 1 other engineer within 60 days.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // ── Slide Navigation ──
+    let currentSlide = 0;
+    const totalSlides = 6;
+
+    function updateSlide() {
+      document.querySelectorAll('.slide').forEach((s, i) => {
+        s.classList.toggle('active', i === currentSlide);
+      });
+      document.getElementById('slideCounter').textContent = `${currentSlide + 1} / ${totalSlides}`;
+      document.querySelectorAll('.slide-tab').forEach((tab, i) => {
+        if (i === currentSlide) {
+          tab.classList.add('bg-blue-600', 'text-white', 'border-blue-600');
+          tab.classList.remove('text-[var(--muted-foreground)]');
+        } else {
+          tab.classList.remove('bg-blue-600', 'text-white', 'border-blue-600');
+          tab.classList.add('text-[var(--muted-foreground)]');
+        }
+      });
+      // Run slide-specific inits
+      if (currentSlide === 1) initScalingChart();
+      if (currentSlide === 3) drawCostChart('steady');
+    }
+
+    function nextSlide() { currentSlide = (currentSlide + 1) % totalSlides; updateSlide(); }
+    function prevSlide() { currentSlide = (currentSlide - 1 + totalSlides) % totalSlides; updateSlide(); }
+    function goToSlide(n) { currentSlide = n; updateSlide(); }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+    });
+
+    // ── Risk toggle ──
+    function toggleRisk(el) {
+      const detail = el.querySelector('.risk-detail');
+      detail.style.display = detail.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // ── Scaling Chart ──
+    let scalingChartInited = false;
+    function initScalingChart() {
+      if (scalingChartInited) return;
+      scalingChartInited = true;
+      drawScalingChart(false);
+    }
+
+    function drawScalingChart(animated) {
+      const canvas = document.getElementById('scalingChart');
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width, h = canvas.height;
+      const isLight = document.documentElement.classList.contains('light');
+
+      // Data points: [time_pct, traffic_multiplier, instances]
+      const trafficData = [
+        [0, 1], [0.1, 1], [0.15, 1.5], [0.2, 3], [0.25, 5],
+        [0.3, 7], [0.35, 9], [0.4, 10], [0.5, 10], [0.6, 9],
+        [0.7, 6], [0.8, 3], [0.9, 1.5], [1, 1]
+      ];
+      const instanceData = [
+        [0, 2], [0.1, 2], [0.15, 3], [0.2, 6], [0.25, 10],
+        [0.3, 14], [0.35, 18], [0.4, 20], [0.5, 20], [0.6, 17],
+        [0.7, 10], [0.8, 5], [0.9, 2], [1, 2]
+      ];
+
+      const padL = 50, padR = 20, padT = 20, padB = 30;
+      const chartW = w - padL - padR;
+      const chartH = h - padT - padB;
+
+      function drawFrame(progress) {
+        ctx.clearRect(0, 0, w, h);
+
+        // Grid
+        ctx.strokeStyle = isLight ? '#e5e7eb' : '#374151';
+        ctx.lineWidth = 0.5;
+        for (let i = 0; i <= 10; i++) {
+          const y = padT + (chartH / 10) * i;
+          ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(w - padR, y); ctx.stroke();
+        }
+
+        // Y-axis labels
+        ctx.fillStyle = isLight ? '#6b7280' : '#9ca3af';
+        ctx.font = '10px sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText('10×', padL - 8, padT + 5);
+        ctx.fillText('5×', padL - 8, padT + chartH / 2 + 5);
+        ctx.fillText('1×', padL - 8, padT + chartH + 5);
+
+        // Y-axis right (instances)
+        ctx.textAlign = 'left';
+        ctx.fillText('20', w - padR + 5, padT + 5);
+        ctx.fillText('10', w - padR + 5, padT + chartH / 2 + 5);
+        ctx.fillText('0', w - padR + 5, padT + chartH + 5);
+
+        // Traffic line
+        const pLen = Math.floor(trafficData.length * progress);
+        ctx.strokeStyle = '#3B82F6';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        for (let i = 0; i <= pLen && i < trafficData.length; i++) {
+          const x = padL + trafficData[i][0] * chartW;
+          const y = padT + chartH - ((trafficData[i][1] - 1) / 9) * chartH;
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        // Traffic area fill
+        if (pLen > 0) {
+          ctx.fillStyle = 'rgba(59, 130, 246, 0.1)';
+          ctx.beginPath();
+          ctx.moveTo(padL + trafficData[0][0] * chartW, padT + chartH);
+          for (let i = 0; i <= pLen && i < trafficData.length; i++) {
+            const x = padL + trafficData[i][0] * chartW;
+            const y = padT + chartH - ((trafficData[i][1] - 1) / 9) * chartH;
+            ctx.lineTo(x, y);
+          }
+          const lastX = padL + trafficData[Math.min(pLen, trafficData.length - 1)][0] * chartW;
+          ctx.lineTo(lastX, padT + chartH);
+          ctx.closePath();
+          ctx.fill();
+        }
+
+        // Instance bars
+        ctx.fillStyle = 'rgba(16, 185, 129, 0.6)';
+        for (let i = 0; i <= pLen && i < instanceData.length; i++) {
+          const x = padL + instanceData[i][0] * chartW - 8;
+          const barH = (instanceData[i][1] / 20) * chartH;
+          const y = padT + chartH - barH;
+          ctx.fillRect(x, y, 16, barH);
+        }
+
+        // Legend
+        ctx.fillStyle = '#3B82F6';
+        ctx.fillRect(padL, h - 15, 12, 3);
+        ctx.fillStyle = isLight ? '#374151' : '#d1d5db';
+        ctx.font = '10px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText('Traffic (×)', padL + 16, h - 11);
+        ctx.fillStyle = 'rgba(16, 185, 129, 0.6)';
+        ctx.fillRect(padL + 90, h - 18, 12, 8);
+        ctx.fillStyle = isLight ? '#374151' : '#d1d5db';
+        ctx.fillText('Instances', padL + 106, h - 11);
+      }
+
+      if (animated) {
+        let frame = 0;
+        const totalFrames = 60;
+        function animate() {
+          frame++;
+          drawFrame(frame / totalFrames);
+          if (frame < totalFrames) requestAnimationFrame(animate);
+        }
+        animate();
+      } else {
+        drawFrame(1);
+      }
+    }
+
+    function runScalingSimulation() {
+      scalingChartInited = true;
+      drawScalingChart(true);
+    }
+
+    // ── Cost Chart ──
+    function drawCostChart(mode) {
+      const canvas = document.getElementById('costChart');
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width, h = canvas.height;
+      const isLight = document.documentElement.classList.contains('light');
+
+      const steadyData = [280, 520, 8, 60, 12, 25, 41];
+      const campaignData = [400, 700, 8, 120, 17, 25, 41];
+      const labels = ['Cloud Run', 'SQL HA', 'Storage', 'CDN+LB', 'Armor', 'Monitor', 'Other'];
+      const colors = ['#3B82F6', '#8B5CF6', '#10B981', '#F59E0B', '#EF4444', '#06B6D4', '#9CA3AF'];
+
+      const data = mode === 'steady' ? steadyData : campaignData;
+      const total = data.reduce((a, b) => a + b, 0);
+
+      ctx.clearRect(0, 0, w, h);
+
+      // Draw donut chart
+      const cx = 150, cy = 140, r = 100, innerR = 55;
+      let startAngle = -Math.PI / 2;
+
+      data.forEach((val, i) => {
+        const sliceAngle = (val / total) * Math.PI * 2;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, startAngle, startAngle + sliceAngle);
+        ctx.arc(cx, cy, innerR, startAngle + sliceAngle, startAngle, true);
+        ctx.closePath();
+        ctx.fillStyle = colors[i];
+        ctx.fill();
+        startAngle += sliceAngle;
+      });
+
+      // Center text
+      ctx.fillStyle = isLight ? '#111827' : '#f3f4f6';
+      ctx.font = 'bold 20px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(`$${total}`, cx, cy - 5);
+      ctx.font = '11px sans-serif';
+      ctx.fillStyle = isLight ? '#6b7280' : '#9ca3af';
+      ctx.fillText('USD/month', cx, cy + 12);
+      ctx.font = '10px sans-serif';
+      const hkd = Math.round(total * 7.8);
+      ctx.fillText(`HKD ${hkd.toLocaleString()}`, cx, cy + 28);
+
+      // Legend
+      const legX = 290, legStartY = 35;
+      labels.forEach((label, i) => {
+        const ly = legStartY + i * 36;
+        ctx.fillStyle = colors[i];
+        ctx.beginPath();
+        ctx.arc(legX, ly, 6, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = isLight ? '#111827' : '#f3f4f6';
+        ctx.font = '12px sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(label, legX + 14, ly + 1);
+
+        ctx.fillStyle = isLight ? '#6b7280' : '#9ca3af';
+        ctx.font = '11px sans-serif';
+        ctx.fillText(`$${data[i]} (${Math.round(data[i] / total * 100)}%)`, legX + 14, ly + 16);
+      });
+
+      // Update buttons
+      document.getElementById('btn-steady').className = mode === 'steady'
+        ? 'px-3 py-1 rounded-lg text-xs bg-blue-600 text-white'
+        : 'px-3 py-1 rounded-lg text-xs border border-[var(--border)] text-[var(--muted-foreground)]';
+      document.getElementById('btn-campaign').className = mode === 'campaign'
+        ? 'px-3 py-1 rounded-lg text-xs bg-yellow-500 text-white'
+        : 'px-3 py-1 rounded-lg text-xs border border-[var(--border)] text-[var(--muted-foreground)]';
+    }
+
+    function showCostMode(mode) { drawCostChart(mode); }
+
+    // Init
+    updateSlide();
+  </script>
+</body>
+</html>

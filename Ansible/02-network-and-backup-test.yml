@@ -1,0 +1,76 @@
+# ==============================================================================
+# 📘 PLAYBOOK 2: NETWORK AUDIT + PRE-MIGRATION SERVER BACKUP
+# ==============================================================================
+# Run from your MacBook:
+#   ansible-playbook 02-network-and-backup-test.yml
+#
+# What does this playbook do? (Combines Network Engineer + DevOps skills!)
+# 1. Network Check: Pings across the 172.28.0.0/16 subnet between all 3 servers
+#    and captures routing tables (`ip route`) and open listening ports (`ss -tulnp`).
+# 2. DevOps Check: Simulates Northpoint Living's Pre-Migration Backup (Slide 8 of
+#    your presentation!) by creating a compressed `.tar.gz` backup archive with
+#    a SHA-256 checksum inside `./test-outputs/server1..3/` on your MacBook.
+# ==============================================================================
+
+---
+- name: "Play 1: Network Connectivity Audit & Pre-Migration Backup"
+  hosts: northpoint_servers
+  become: true
+
+  tasks:
+    # --------------------------------------------------------------------------
+    # TASK 1: Gather Network Interfaces & Routing Table (CCNA Network Check)
+    # --------------------------------------------------------------------------
+    - name: "1. Capture IP Routing Table and Listening Ports"
+      ansible.builtin.shell: |
+        echo "=== IP ADDRESSES ==="
+        ip -br addr
+        echo ""
+        echo "=== ROUTING TABLE ==="
+        ip route
+        echo ""
+        echo "=== LISTENING TCP PORTS ==="
+        ss -tlnp
+      register: net_audit
+      changed_when: false
+
+    # --------------------------------------------------------------------------
+    # TASK 2: Test Ping Connectivity to Server 3 (172.28.0.13 - Database Node)
+    # --------------------------------------------------------------------------
+    - name: "2. Ping Database Server (172.28.0.13) from every node"
+      ansible.builtin.command: ping -c 2 172.28.0.13
+      register: ping_result
+      changed_when: false
+
+    # --------------------------------------------------------------------------
+    # TASK 3: Save Network Audit Report into ./test-outputs/<server>/
+    # --------------------------------------------------------------------------
+    - name: "3. Save Network Audit Report to MacBook ./test-outputs/ folder"
+      ansible.builtin.copy:
+        dest: "/var/northpoint_backups/network-audit-report.txt"
+        mode: '0644'
+        content: |
+          ================================================================
+          🌐 NETWORK & CONNECTIVITY AUDIT — {{ inventory_hostname }}
+          ================================================================
+          Node Hostname : {{ ansible_hostname }}
+          Internal IP   : {{ internal_ip }}
+
+          {{ net_audit.stdout }}
+
+          === PING TEST TO DB NODE (172.28.0.13) ===
+          {{ ping_result.stdout }}
+          ================================================================
+
+    # --------------------------------------------------------------------------
+    # TASK 4: Create Sample Application Data & Compress Backup + SHA256 Checksum
+    # --------------------------------------------------------------------------
+    - name: "4. Run Pre-Migration Backup & Generate SHA-256 Checksum"
+      ansible.builtin.shell: |
+        mkdir -p /var/www/northpoint
+        echo "Northpoint Production Config on {{ inventory_hostname }} ({{ internal_ip }})" > /var/www/northpoint/config.env
+        tar -czf /var/northpoint_backups/{{ inventory_hostname }}-backup.tar.gz -C /var/www northpoint
+        sha256sum /var/northpoint_backups/{{ inventory_hostname }}-backup.tar.gz > /var/northpoint_backups/{{ inventory_hostname }}-backup.sha256
+      args:
+        creates: "/var/northpoint_backups/{{ inventory_hostname }}-backup.tar.gz"
+

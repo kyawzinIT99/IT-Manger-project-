@@ -1,0 +1,39 @@
+# ============================================================
+# 08-pvc.yaml — Persistent Volume Claim (Permanent Hard Drive!)
+# ============================================================
+# WHY DO WE NEED A VOLUME (PVC)?
+#   By default, Kubernetes Pods are "Ephemeral" (temporary).
+#   If your app writes a file or SQLite database inside the
+#   container and the Pod crashes or scales down ("Terminating"),
+#   ALL DATA INSIDE THAT CONTAINER IS GONE FOREVER!
+#
+#   A PersistentVolumeClaim (PVC) requests a permanent virtual
+#   hard drive outside the Pod (managed by `local-path-provisioner`
+#   locally, or Google Persistent Disk SSD on GKE).
+#
+#   When a Pod dies and a new Pod replaces it (`AGE: 1s`),
+#   Kubernetes automatically unplugs this hard drive from the
+#   dead Pod and plugs it into the new Pod — ZERO DATA LOST!
+# ============================================================
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: northpoint-data-pvc        # Name of the permanent hard drive claim
+  namespace: northpoint-living
+spec:
+  # Access Mode:
+  # - ReadWriteOnce (RWO): Mounted by 1 node at a time (Standard SSD disk)
+  # - ReadWriteMany (RWX): Shared across many nodes simultaneously (Filestore/NFS)
+  accessModes:
+    - ReadWriteOnce
+
+  # Storage Class:
+  # On your local `kind` cluster, this uses `standard` (powered by the
+  # `local-path-provisioner` Pod you spotted earlier in `local-path-storage`!)
+  storageClassName: standard
+
+  resources:
+    requests:
+      storage: 5Gi                 # Request a 5 GB permanent disk
+

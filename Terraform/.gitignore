@@ -1,0 +1,38 @@
+# ============================================================
+# .gitignore — Protect sensitive files from being pushed to Git
+# ============================================================
+# These files contain passwords, state, and local configs
+# that should NEVER be in your Git repository.
+# ============================================================
+
+# --- Terraform State Files ---
+# State files track what infrastructure exists.
+# They contain sensitive data (IPs, passwords, resource IDs).
+# Store state remotely (GCS bucket) in production.
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+
+# --- Terraform Working Directory ---
+# Downloaded provider binaries (large files, auto-downloaded by 'terraform init')
+.terraform/
+.terraform.lock.hcl
+
+# --- Your Secret Variables ---
+# terraform.tfvars contains YOUR passwords and project IDs.
+# The .example file is safe to commit (it has placeholder values).
+terraform.tfvars
+*.auto.tfvars
+
+# --- Crash Logs ---
+crash.log
+crash.*.log
+
+# --- Plan Output Files ---
+# Binary plan files may contain secrets
+*.tfplan
+out.plan
+
+# --- macOS System Files ---
+.DS_Store
+
