@@ -1,0 +1,8 @@
+================================================================
+🔑 PASSWORDLESS SSH KEY INSTALLED — server2
+================================================================
+Server Hostname : northpoint-srv-02 (172.28.0.12)
+Authorized Key  : /home/ansible/.ssh/authorized_keys
+Permissions     : 0600 (ansible:ansible)
+Status          : PASSWORDLESS SSH ACTIVE
+================================================================

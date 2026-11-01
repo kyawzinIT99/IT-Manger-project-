@@ -1,0 +1,61 @@
+# ==============================================================================
+# 🔑 PLAYBOOK 0: PUSH WORKSTATION SSH PUBLIC KEY TO ALL 3 SERVERS
+# ==============================================================================
+# Why do we use this in real DevOps / Ansible?
+# Typing a password (or passphrase) on every server is repetitive and slow.
+#
+# How this works:
+# 1. We generate an Ed25519 SSH Keypair on your MacBook inside `./ssh-keys/ansible_key`
+#    with NO passphrase (`-N ""`) specifically for Ansible automation.
+# 2. This Playbook reads `./ssh-keys/ansible_key.pub` from your MacBook and
+#    installs it into `/home/ansible/.ssh/authorized_keys` on ALL 3 SERVERS at once!
+# 3. After this runs once, your MacBook logs into Server 1, Server 2, and Server 3
+#    instantly using the SSH Key — ZERO passwords or passphrases ever again!
+# ==============================================================================
+
+---
+- name: "Play 0: Install MacBook SSH Public Key onto All 3 Servers (Passwordless Login)"
+  hosts: northpoint_servers
+  become: true
+
+  tasks:
+    # --------------------------------------------------------------------------
+    # TASK 1: Create /home/ansible/.ssh directory with strict 0700 permissions
+    # --------------------------------------------------------------------------
+    - name: "1. Ensure /home/ansible/.ssh directory exists with 0700 permissions"
+      ansible.builtin.file:
+        path: /home/ansible/.ssh
+        state: directory
+        owner: ansible
+        group: ansible
+        mode: '0700'
+
+    # --------------------------------------------------------------------------
+    # TASK 2: Push the MacBook's Public Key (./ssh-keys/ansible_key.pub) to
+    #         /home/ansible/.ssh/authorized_keys on all 3 servers
+    # --------------------------------------------------------------------------
+    - name: "2. Install MacBook Public Key into authorized_keys on all 3 servers"
+      ansible.builtin.copy:
+        src: ./ssh-keys/ansible_key.pub
+        dest: /home/ansible/.ssh/authorized_keys
+        owner: ansible
+        group: ansible
+        mode: '0600'
+
+    # --------------------------------------------------------------------------
+    # TASK 3: Save SSH Key Verification Report to ./test-outputs/<server>/
+    # --------------------------------------------------------------------------
+    - name: "3. Save SSH Key Setup Report to ./test-outputs/"
+      ansible.builtin.copy:
+        dest: "/var/northpoint_backups/ssh-key-verified.txt"
+        mode: '0644'
+        content: |
+          ================================================================
+          🔑 PASSWORDLESS SSH KEY INSTALLED — {{ inventory_hostname }}
+          ================================================================
+          Server Hostname : {{ ansible_hostname }} ({{ internal_ip }})
+          Authorized Key  : /home/ansible/.ssh/authorized_keys
+          Permissions     : 0600 (ansible:ansible)
+          Status          : PASSWORDLESS SSH ACTIVE
+          ================================================================
+

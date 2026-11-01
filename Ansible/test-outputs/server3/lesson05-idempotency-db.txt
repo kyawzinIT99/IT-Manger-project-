@@ -1,0 +1,9 @@
+================================================================
+📘 LESSON 5 — DATABASE SERVER VERIFIED (server3)
+================================================================
+Server Name  : northpoint-srv-03
+Database IP  : 172.28.0.13 (Port 3306)
+Database     : northpoint_db (Table: products)
+Remote User  : np_user (Password: northpoint123)
+Status       : LISTENING ON 172.28.0.13:3306
+================================================================

@@ -1,0 +1,8 @@
+================================================================
+📘 LESSON 6 REPORT — server1 (172.28.0.11)
+================================================================
+Server Groups : northpoint_servers, webservers
+OS Verified   : Ubuntu 22.04
+Web UI Active : YES (http://localhost:8881 or 8882)
+DB Port 3306  : Connected remotely to 172.28.0.13:3306
+================================================================

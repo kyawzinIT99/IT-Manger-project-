@@ -1,0 +1,752 @@
+2026-10-31 15:14:54,605 p=61475 u=berry n=ansible INFO| server2 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3.10"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+2026-10-31 15:14:54,605 p=61475 u=berry n=ansible INFO| server3 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3.10"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+2026-10-31 15:14:54,605 p=61475 u=berry n=ansible INFO| server1 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3.10"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+2026-10-31 15:21:42,704 p=69519 u=berry n=ansible INFO| PLAY [Play 1: Configure All 3 Docker Servers with tmux & DevOps Tools] ****************************************************
+2026-10-31 15:21:42,709 p=69519 u=berry n=ansible INFO| TASK [Gathering Facts] ****************************************************************************************************
+2026-10-31 15:21:43,600 p=69519 u=berry n=ansible INFO| ok: [server1]
+2026-10-31 15:21:43,601 p=69519 u=berry n=ansible INFO| ok: [server3]
+2026-10-31 15:21:43,665 p=69519 u=berry n=ansible INFO| ok: [server2]
+2026-10-31 15:21:43,667 p=69519 u=berry n=ansible INFO| TASK [1. Install tmux, htop, vim, tree, and network utilities] ************************************************************
+2026-10-31 15:22:02,137 p=69519 u=berry n=ansible INFO| changed: [server2]
+2026-10-31 15:22:02,376 p=69519 u=berry n=ansible INFO| changed: [server1]
+2026-10-31 15:22:02,482 p=69519 u=berry n=ansible INFO| changed: [server3]
+2026-10-31 15:22:02,490 p=69519 u=berry n=ansible INFO| TASK [2. Configure ~/.tmux.conf for ansible user on each server] **********************************************************
+2026-10-31 15:22:02,967 p=69519 u=berry n=ansible WARNING| [WARNING]: Deprecation warnings can be disabled by setting `deprecation_warnings=False` in ansible.cfg.
+
+2026-10-31 15:22:02,967 p=69519 u=berry n=ansible INFO| [DEPRECATION WARNING]: INJECT_FACTS_AS_VARS default to `True` is deprecated, top-level facts will not be auto injected after the change. This feature will be removed from ansible-core version 2.24.
+Origin: /Users/berry/Antigravity/IT Manager project /Ansible/01-setup-tmux-and-tools.yml:47:18
+
+45         group: ansible
+46         mode: '0644'
+47         content: |
+                    ^ column 18
+
+Use `ansible_facts["fact_name"]` (no `ansible_` prefix) instead.
+
+
+2026-10-31 15:22:02,967 p=69519 u=berry n=ansible INFO| changed: [server1]
+2026-10-31 15:22:02,969 p=69519 u=berry n=ansible INFO| changed: [server2]
+2026-10-31 15:22:02,970 p=69519 u=berry n=ansible INFO| changed: [server3]
+2026-10-31 15:22:02,972 p=69519 u=berry n=ansible INFO| TASK [3. Create Northpoint Server Identification Banner (/etc/profile.d/banner.sh)] ***************************************
+2026-10-31 15:22:03,322 p=69519 u=berry n=ansible INFO| [DEPRECATION WARNING]: INJECT_FACTS_AS_VARS default to `True` is deprecated, top-level facts will not be auto injected after the change. This feature will be removed from ansible-core version 2.24.
+Origin: /Users/berry/Antigravity/IT Manager project /Ansible/01-setup-tmux-and-tools.yml:65:18
+
+63         dest: /etc/profile.d/northpoint-banner.sh
+64         mode: '0755'
+65         content: |
+                    ^ column 18
+
+Use `ansible_facts["fact_name"]` (no `ansible_` prefix) instead.
+
+
+2026-10-31 15:22:03,322 p=69519 u=berry n=ansible INFO| changed: [server1]
+2026-10-31 15:22:03,322 p=69519 u=berry n=ansible INFO| changed: [server2]
+2026-10-31 15:22:03,329 p=69519 u=berry n=ansible INFO| changed: [server3]
+2026-10-31 15:22:03,332 p=69519 u=berry n=ansible INFO| TASK [4. Check installed tmux version] ************************************************************************************
+2026-10-31 15:22:03,585 p=69519 u=berry n=ansible INFO| ok: [server2]
+2026-10-31 15:22:03,586 p=69519 u=berry n=ansible INFO| ok: [server3]
+2026-10-31 15:22:03,586 p=69519 u=berry n=ansible INFO| ok: [server1]
+2026-10-31 15:22:03,587 p=69519 u=berry n=ansible INFO| TASK [5. Save Server Setup Verification Report to Local Folder] ***********************************************************
+2026-10-31 15:22:03,981 p=69519 u=berry n=ansible INFO| [DEPRECATION WARNING]: INJECT_FACTS_AS_VARS default to `True` is deprecated, top-level facts will not be auto injected after the change. This feature will be removed from ansible-core version 2.24.
+Origin: /Users/berry/Antigravity/IT Manager project /Ansible/01-setup-tmux-and-tools.yml:89:18
+
+87         dest: "/var/northpoint_backups/setup-verified.txt"
+88         mode: '0644'
+89         content: |
+                    ^ column 18
+
+Use `ansible_facts["fact_name"]` (no `ansible_` prefix) instead.
+
+
+2026-10-31 15:22:03,981 p=69519 u=berry n=ansible INFO| changed: [server2]
+2026-10-31 15:22:03,984 p=69519 u=berry n=ansible INFO| changed: [server1]
+2026-10-31 15:22:03,987 p=69519 u=berry n=ansible INFO| changed: [server3]
+2026-10-31 15:22:03,988 p=69519 u=berry n=ansible INFO| PLAY RECAP ****************************************************************************************************************
+2026-10-31 15:22:03,988 p=69519 u=berry n=ansible INFO| server1                    : ok=6    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-10-31 15:22:03,988 p=69519 u=berry n=ansible INFO| server2                    : ok=6    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-10-31 15:22:03,988 p=69519 u=berry n=ansible INFO| server3                    : ok=6    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-10-31 16:09:30,390 p=28527 u=berry n=ansible INFO| PLAY [Play 0: Install MacBook SSH Public Key onto All 3 Servers (Passwordless Login)] ***
+2026-10-31 16:09:30,394 p=28527 u=berry n=ansible INFO| TASK [Gathering Facts] *********************************************************
+2026-10-31 16:09:31,268 p=28527 u=berry n=ansible INFO| ok: [server1]
+2026-10-31 16:09:31,270 p=28527 u=berry n=ansible INFO| ok: [server2]
+2026-10-31 16:09:31,271 p=28527 u=berry n=ansible INFO| ok: [server3]
+2026-10-31 16:09:31,273 p=28527 u=berry n=ansible INFO| TASK [1. Ensure /home/ansible/.ssh directory exists with 0700 permissions] *****
+2026-10-31 16:09:31,513 p=28527 u=berry n=ansible INFO| changed: [server2]
+2026-10-31 16:09:31,513 p=28527 u=berry n=ansible INFO| changed: [server1]
+2026-10-31 16:09:31,513 p=28527 u=berry n=ansible INFO| changed: [server3]
+2026-10-31 16:09:31,516 p=28527 u=berry n=ansible INFO| TASK [2. Install MacBook Public Key into authorized_keys on all 3 servers] *****
+2026-10-31 16:09:31,940 p=28527 u=berry n=ansible INFO| changed: [server2]
+2026-10-31 16:09:31,941 p=28527 u=berry n=ansible INFO| changed: [server1]
+2026-10-31 16:09:31,941 p=28527 u=berry n=ansible INFO| changed: [server3]
+2026-10-31 16:09:31,943 p=28527 u=berry n=ansible INFO| TASK [3. Save SSH Key Setup Report to ./test-outputs/] *************************
+2026-10-31 16:09:32,279 p=28527 u=berry n=ansible WARNING| [WARNING]: Deprecation warnings can be disabled by setting `deprecation_warnings=False` in ansible.cfg.
+
+2026-10-31 16:09:32,279 p=28527 u=berry n=ansible INFO| [DEPRECATION WARNING]: INJECT_FACTS_AS_VARS default to `True` is deprecated, top-level facts will not be auto injected after the change. This feature will be removed from ansible-core version 2.24.
+Origin: /Users/berry/Antigravity/IT Manager project /Ansible/00-setup-ssh-keys.yml:52:18
+
+50         dest: "/var/northpoint_backups/ssh-key-verified.txt"
+51         mode: '0644'
+52         content: |
+                    ^ column 18
+
+Use `ansible_facts["fact_name"]` (no `ansible_` prefix) instead.
+
+
+2026-10-31 16:09:32,279 p=28527 u=berry n=ansible INFO| changed: [server2]
+2026-10-31 16:09:32,280 p=28527 u=berry n=ansible INFO| changed: [server1]
+2026-10-31 16:09:32,280 p=28527 u=berry n=ansible INFO| changed: [server3]
+2026-10-31 16:09:32,280 p=28527 u=berry n=ansible INFO| PLAY RECAP *********************************************************************
+2026-10-31 16:09:32,280 p=28527 u=berry n=ansible INFO| server1                    : ok=4    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-10-31 16:09:32,280 p=28527 u=berry n=ansible INFO| server2                    : ok=4    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-10-31 16:09:32,280 p=28527 u=berry n=ansible INFO| server3                    : ok=4    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-10-31 22:35:54,493 p=8162 u=berry n=ansible INFO| server3 | CHANGED | rc=0 >>
+ 15:35:54 up 2 days,  6:02,  0 users,  load average: 3.71, 4.29, 4.40
+
+2026-10-31 22:35:54,493 p=8162 u=berry n=ansible INFO| server2 | CHANGED | rc=0 >>
+ 15:35:54 up 2 days,  6:02,  0 users,  load average: 3.71, 4.29, 4.40
+
+2026-10-31 22:35:55,510 p=8162 u=berry n=ansible INFO| server1 | CHANGED | rc=0 >>
+ 15:35:54 up 2 days,  6:02,  0 users,  load average: 3.71, 4.29, 4.40
+
+2026-10-31 22:36:17,053 p=8646 u=berry n=ansible INFO| server2 | CHANGED | rc=0 >>
+               total        used        free      shared  buff/cache   available
+Mem:           7.7Gi       2.5Gi       640Mi        11Mi       4.6Gi       5.0Gi
+Swap:          1.0Gi       1.0Mi       1.0Gi
+
+2026-10-31 22:36:17,054 p=8646 u=berry n=ansible INFO| server3 | CHANGED | rc=0 >>
+               total        used        free      shared  buff/cache   available
+Mem:           7.7Gi       2.5Gi       639Mi        11Mi       4.6Gi       5.0Gi
+Swap:          1.0Gi       1.0Mi       1.0Gi
+
+2026-10-31 22:36:18,088 p=8646 u=berry n=ansible INFO| server1 | CHANGED | rc=0 >>
+               total        used        free      shared  buff/cache   available
+Mem:           7.7Gi       2.5Gi       640Mi        11Mi       4.6Gi       5.0Gi
+Swap:          1.0Gi       1.0Mi       1.0Gi
+
+2026-10-31 22:36:57,505 p=9468 u=berry n=ansible INFO| server2 | CHANGED | rc=0 >>
+172.28.0.12 
+
+2026-10-31 22:36:57,506 p=9468 u=berry n=ansible INFO| server1 | CHANGED | rc=0 >>
+172.28.0.11 
+
+2026-10-31 22:37:21,940 p=9965 u=berry n=ansible INFO| server3 | CHANGED | rc=0 >>
+Filesystem            Size  Used Avail Use% Mounted on
+overlay               453G   13G  417G   3% /
+tmpfs                  64M     0   64M   0% /dev
+shm                    64M     0   64M   0% /dev/shm
+/run/host_mark/Users  461G  428G   33G  93% /var/northpoint_backups
+/dev/vda1             453G   13G  417G   3% /etc/hosts
+tmpfs                 3.9G     0  3.9G   0% /proc/scsi
+tmpfs                 3.9G     0  3.9G   0% /sys/firmware
+
+2026-10-31 22:38:01,269 p=10769 u=berry n=ansible INFO| server1 | SUCCESS => {
+    "ansible_facts": {
+        "ansible_default_ipv4": {
+            "address": "172.28.0.11",
+            "alias": "eth0",
+            "broadcast": "172.28.255.255",
+            "gateway": "172.28.0.1",
+            "interface": "eth0",
+            "macaddress": "a2:13:9f:46:c0:35",
+            "mtu": 1500,
+            "netmask": "255.255.0.0",
+            "network": "172.28.0.0",
+            "prefix": "16",
+            "type": "ether"
+        },
+        "discovered_interpreter_python": "/usr/bin/python3.10"
+    },
+    "changed": false
+}
+2026-10-31 22:43:07,114 p=16775 u=berry n=ansible INFO| PLAY [Lesson 4 (Play 1): Check Uptime, Memory & Network Facts on ALL Servers] ***
+2026-10-31 22:43:07,120 p=16775 u=berry n=ansible INFO| TASK [Gathering Facts] *********************************************************
+2026-10-31 22:43:07,979 p=16775 u=berry n=ansible INFO| ok: [server2]
+2026-10-31 22:43:07,980 p=16775 u=berry n=ansible INFO| ok: [server3]
+2026-10-31 22:43:07,981 p=16775 u=berry n=ansible INFO| ok: [server1]
+2026-10-31 22:43:07,984 p=16775 u=berry n=ansible INFO| TASK [1. Check Uptime and Free Memory on all 3 servers] ************************
+2026-10-31 22:43:08,210 p=16775 u=berry n=ansible INFO| ok: [server1]
+2026-10-31 22:43:08,210 p=16775 u=berry n=ansible INFO| ok: [server2]
+2026-10-31 22:43:08,210 p=16775 u=berry n=ansible INFO| ok: [server3]
+2026-10-31 22:43:08,214 p=16775 u=berry n=ansible INFO| TASK [2. Display Discovered Network Facts (IP, Interface, MAC, Gateway)] *******
+2026-10-31 22:43:08,274 p=16775 u=berry n=ansible WARNING| [WARNING]: Deprecation warnings can be disabled by setting `deprecation_warnings=False` in ansible.cfg.
+
+2026-10-31 22:43:08,274 p=16775 u=berry n=ansible INFO| [DEPRECATION WARNING]: INJECT_FACTS_AS_VARS default to `True` is deprecated, top-level facts will not be auto injected after the change. This feature will be removed from ansible-core version 2.24.
+Origin: /Users/berry/Antigravity/IT Manager project /Ansible/04-inventory-groups-and-facts.yml:36:13
+
+34       ansible.builtin.debug:
+35         msg:
+36           - "Server Name : {{ inventory_hostname }} ({{ ansible_hostname }})"
+               ^ column 13
+
+Use `ansible_facts["fact_name"]` (no `ansible_` prefix) instead.
+
+
+2026-10-31 22:43:08,275 p=16775 u=berry n=ansible INFO| ok: [server2] => {
+    "msg": [
+        "Server Name : server2 (northpoint-srv-02)",
+        "Role        : Web Storefront Secondary",
+        "OS Version  : Ubuntu 22.04",
+        "Interface   : eth0",
+        "IPv4 Address: 172.28.0.12",
+        "MAC Address : 0e:0d:ca:f2:ff:17",
+        "Gateway IP  : 172.28.0.1"
+    ]
+}
+2026-10-31 22:43:08,275 p=16775 u=berry n=ansible INFO| ok: [server3] => {
+    "msg": [
+        "Server Name : server3 (northpoint-srv-03)",
+        "Role        : Legacy DB & Backup Node",
+        "OS Version  : Ubuntu 22.04",
+        "Interface   : eth0",
+        "IPv4 Address: 172.28.0.13",
+        "MAC Address : fa:4c:59:e9:d8:d4",
+        "Gateway IP  : 172.28.0.1"
+    ]
+}
+2026-10-31 22:43:08,275 p=16775 u=berry n=ansible INFO| ok: [server1] => {
+    "msg": [
+        "Server Name : server1 (northpoint-srv-01)",
+        "Role        : Web Storefront Primary",
+        "OS Version  : Ubuntu 22.04",
+        "Interface   : eth0",
+        "IPv4 Address: 172.28.0.11",
+        "MAC Address : a2:13:9f:46:c0:35",
+        "Gateway IP  : 172.28.0.1"
+    ]
+}
+2026-10-31 22:43:08,276 p=16775 u=berry n=ansible INFO| PLAY [Lesson 4 (Play 2): Target ONLY [webservers] (server1 & server2)] *********
+2026-10-31 22:43:08,278 p=16775 u=berry n=ansible INFO| TASK [1. Get Webserver Hostname & IP (hostname -I)] ****************************
+2026-10-31 22:43:08,448 p=16775 u=berry n=ansible INFO| ok: [server1]
+2026-10-31 22:43:08,448 p=16775 u=berry n=ansible INFO| ok: [server2]
+2026-10-31 22:43:08,453 p=16775 u=berry n=ansible INFO| TASK [2. Save Lesson 4 Webserver Report to ./test-outputs/] ********************
+2026-10-31 22:43:09,049 p=16775 u=berry n=ansible INFO| changed: [server1]
+2026-10-31 22:43:09,049 p=16775 u=berry n=ansible INFO| changed: [server2]
+2026-10-31 22:43:09,051 p=16775 u=berry n=ansible INFO| PLAY [Lesson 4 (Play 3): Target ONLY [dbservers] (server3)] ********************
+2026-10-31 22:43:09,053 p=16775 u=berry n=ansible INFO| TASK [1. Get Database Server Disk Usage (df -h)] *******************************
+2026-10-31 22:43:09,236 p=16775 u=berry n=ansible INFO| ok: [server3]
+2026-10-31 22:43:09,239 p=16775 u=berry n=ansible INFO| TASK [2. Save Lesson 4 Database Report to ./test-outputs/] *********************
+2026-10-31 22:43:09,566 p=16775 u=berry n=ansible INFO| changed: [server3]
+2026-10-31 22:43:09,567 p=16775 u=berry n=ansible INFO| PLAY RECAP *********************************************************************
+2026-10-31 22:43:09,567 p=16775 u=berry n=ansible INFO| server1                    : ok=5    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-10-31 22:43:09,567 p=16775 u=berry n=ansible INFO| server2                    : ok=5    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-10-31 22:43:09,567 p=16775 u=berry n=ansible INFO| server3                    : ok=5    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-10-31 22:54:00,118 p=29586 u=berry n=ansible INFO| PLAY [Lesson 5 (Play 1): Install & Start Nginx on [webservers] (server1 & server2)] ***
+2026-10-31 22:54:00,123 p=29586 u=berry n=ansible INFO| TASK [Gathering Facts] *********************************************************
+2026-10-31 22:54:00,848 p=29586 u=berry n=ansible INFO| ok: [server2]
+2026-10-31 22:54:00,948 p=29586 u=berry n=ansible INFO| ok: [server1]
+2026-10-31 22:54:00,951 p=29586 u=berry n=ansible INFO| TASK [1. Ensure Nginx web server is installed on Webservers] *******************
+2026-10-31 22:54:13,573 p=29586 u=berry n=ansible INFO| changed: [server2]
+2026-10-31 22:54:13,573 p=29586 u=berry n=ansible INFO| changed: [server1]
+2026-10-31 22:54:13,576 p=29586 u=berry n=ansible INFO| TASK [2. Deploy Northpoint Living Storefront HTML page] ************************
+2026-10-31 22:54:14,068 p=29586 u=berry n=ansible WARNING| [WARNING]: Deprecation warnings can be disabled by setting `deprecation_warnings=False` in ansible.cfg.
+
+2026-10-31 22:54:14,069 p=29586 u=berry n=ansible INFO| [DEPRECATION WARNING]: INJECT_FACTS_AS_VARS default to `True` is deprecated, top-level facts will not be auto injected after the change. This feature will be removed from ansible-core version 2.24.
+Origin: /Users/berry/Antigravity/IT Manager project /Ansible/05-playbooks-and-idempotency.yml:43:18
+
+41         dest: /var/www/html/index.html
+42         mode: '0644'
+43         content: |
+                    ^ column 18
+
+Use `ansible_facts["fact_name"]` (no `ansible_` prefix) instead.
+
+
+2026-10-31 22:54:14,069 p=29586 u=berry n=ansible INFO| changed: [server2]
+2026-10-31 22:54:14,069 p=29586 u=berry n=ansible INFO| changed: [server1]
+2026-10-31 22:54:14,072 p=29586 u=berry n=ansible INFO| TASK [3. Ensure Nginx service is running] **************************************
+2026-10-31 22:54:14,356 p=29586 u=berry n=ansible INFO| changed: [server2]
+2026-10-31 22:54:14,356 p=29586 u=berry n=ansible INFO| changed: [server1]
+2026-10-31 22:54:14,359 p=29586 u=berry n=ansible INFO| TASK [4. Test Nginx Web Page and save proof to ./test-outputs/] ****************
+2026-10-31 22:54:14,615 p=29586 u=berry n=ansible INFO| ok: [server1]
+2026-10-31 22:54:14,615 p=29586 u=berry n=ansible INFO| ok: [server2]
+2026-10-31 22:54:14,617 p=29586 u=berry n=ansible INFO| TASK [5. Save Webserver HTTP Verification to ./test-outputs/] ******************
+2026-10-31 22:54:14,953 p=29586 u=berry n=ansible INFO| changed: [server1]
+2026-10-31 22:54:14,953 p=29586 u=berry n=ansible INFO| changed: [server2]
+2026-10-31 22:54:14,955 p=29586 u=berry n=ansible INFO| PLAY [Lesson 5 (Play 2): Install Database Tools on [dbservers] (server3)] ******
+2026-10-31 22:54:14,956 p=29586 u=berry n=ansible INFO| TASK [Gathering Facts] *********************************************************
+2026-10-31 22:54:15,610 p=29586 u=berry n=ansible INFO| ok: [server3]
+2026-10-31 22:54:15,612 p=29586 u=berry n=ansible INFO| TASK [1. Ensure MariaDB/MySQL client & database backup tools are installed] ****
+2026-10-31 22:54:26,725 p=29586 u=berry n=ansible INFO| changed: [server3]
+2026-10-31 22:54:26,729 p=29586 u=berry n=ansible INFO| TASK [2. Save Database Node Verification to ./test-outputs/] *******************
+2026-10-31 22:54:27,160 p=29586 u=berry n=ansible INFO| [DEPRECATION WARNING]: INJECT_FACTS_AS_VARS default to `True` is deprecated, top-level facts will not be auto injected after the change. This feature will be removed from ansible-core version 2.24.
+Origin: /Users/berry/Antigravity/IT Manager project /Ansible/05-playbooks-and-idempotency.yml:105:18
+
+103         dest: "/var/northpoint_backups/lesson05-idempotency-db.txt"
+104         mode: '0644'
+105         content: |
+                     ^ column 18
+
+Use `ansible_facts["fact_name"]` (no `ansible_` prefix) instead.
+
+
+2026-10-31 22:54:27,160 p=29586 u=berry n=ansible INFO| changed: [server3]
+2026-10-31 22:54:27,160 p=29586 u=berry n=ansible INFO| PLAY RECAP *********************************************************************
+2026-10-31 22:54:27,161 p=29586 u=berry n=ansible INFO| server1                    : ok=6    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-10-31 22:54:27,161 p=29586 u=berry n=ansible INFO| server2                    : ok=6    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-10-31 22:54:27,161 p=29586 u=berry n=ansible INFO| server3                    : ok=3    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-10-31 23:02:14,150 p=39585 u=berry n=ansible INFO| PLAY [Lesson 5 (Play 1): Install & Configure Live MariaDB Server on [dbservers] (172.28.0.13)] ***
+2026-10-31 23:02:14,155 p=39585 u=berry n=ansible INFO| TASK [Gathering Facts] *********************************************************
+2026-10-31 23:02:15,502 p=39585 u=berry n=ansible INFO| ok: [server3]
+2026-10-31 23:02:15,505 p=39585 u=berry n=ansible INFO| TASK [1. Install MariaDB Server & Client on server3 (172.28.0.13)] *************
+2026-10-31 23:03:40,230 p=39585 u=berry n=ansible INFO| changed: [server3]
+2026-10-31 23:03:40,234 p=39585 u=berry n=ansible INFO| TASK [2. Configure MariaDB to listen on 0.0.0.0 (so 172.28.0.11 & .12 can connect)] ***
+2026-10-31 23:03:40,486 p=39585 u=berry n=ansible INFO| changed: [server3]
+2026-10-31 23:03:40,489 p=39585 u=berry n=ansible INFO| TASK [3. Start MariaDB Service inside server3] *********************************
+2026-10-31 23:03:42,009 p=39585 u=berry n=ansible INFO| changed: [server3]
+2026-10-31 23:03:42,012 p=39585 u=berry n=ansible INFO| TASK [4. Create northpoint_db, user 'np_user', and sample products table] ******
+2026-10-31 23:03:42,279 p=39585 u=berry n=ansible INFO| ok: [server3]
+2026-10-31 23:03:42,283 p=39585 u=berry n=ansible INFO| TASK [5. Save Database Node Verification to ./test-outputs/server3/] ***********
+2026-10-31 23:03:42,742 p=39585 u=berry n=ansible WARNING| [WARNING]: Deprecation warnings can be disabled by setting `deprecation_warnings=False` in ansible.cfg.
+
+2026-10-31 23:03:42,743 p=39585 u=berry n=ansible INFO| [DEPRECATION WARNING]: INJECT_FACTS_AS_VARS default to `True` is deprecated, top-level facts will not be auto injected after the change. This feature will be removed from ansible-core version 2.24.
+Origin: /Users/berry/Antigravity/IT Manager project /Ansible/05-playbooks-and-idempotency.yml:70:18
+
+68         dest: "/var/northpoint_backups/lesson05-idempotency-db.txt"
+69         mode: '0644'
+70         content: |
+                    ^ column 18
+
+Use `ansible_facts["fact_name"]` (no `ansible_` prefix) instead.
+
+
+2026-10-31 23:03:42,743 p=39585 u=berry n=ansible INFO| changed: [server3]
+2026-10-31 23:03:42,744 p=39585 u=berry n=ansible INFO| PLAY [Lesson 5 (Play 2): Install Nginx on [webservers] & Query DB at 172.28.0.13] ***
+2026-10-31 23:03:42,745 p=39585 u=berry n=ansible INFO| TASK [Gathering Facts] *********************************************************
+2026-10-31 23:03:43,473 p=39585 u=berry n=ansible INFO| ok: [server2]
+2026-10-31 23:03:43,481 p=39585 u=berry n=ansible INFO| ok: [server1]
+2026-10-31 23:03:43,484 p=39585 u=berry n=ansible INFO| TASK [1. Ensure Nginx and MariaDB client are installed on Webservers] **********
+2026-10-31 23:04:02,099 p=39585 u=berry n=ansible INFO| changed: [server1]
+2026-10-31 23:04:02,529 p=39585 u=berry n=ansible INFO| changed: [server2]
+2026-10-31 23:04:02,532 p=39585 u=berry n=ansible INFO| TASK [2. Deploy Northpoint Living Storefront HTML page] ************************
+2026-10-31 23:04:02,901 p=39585 u=berry n=ansible INFO| [DEPRECATION WARNING]: INJECT_FACTS_AS_VARS default to `True` is deprecated, top-level facts will not be auto injected after the change. This feature will be removed from ansible-core version 2.24.
+Origin: /Users/berry/Antigravity/IT Manager project /Ansible/05-playbooks-and-idempotency.yml:101:18
+
+ 99         dest: /var/www/html/index.html
+100         mode: '0644'
+101         content: |
+                     ^ column 18
+
+Use `ansible_facts["fact_name"]` (no `ansible_` prefix) instead.
+
+
+2026-10-31 23:04:02,901 p=39585 u=berry n=ansible INFO| changed: [server2]
+2026-10-31 23:04:02,909 p=39585 u=berry n=ansible INFO| changed: [server1]
+2026-10-31 23:04:02,911 p=39585 u=berry n=ansible INFO| TASK [3. Ensure Nginx service is running] **************************************
+2026-10-31 23:04:03,149 p=39585 u=berry n=ansible INFO| changed: [server1]
+2026-10-31 23:04:03,150 p=39585 u=berry n=ansible INFO| changed: [server2]
+2026-10-31 23:04:03,152 p=39585 u=berry n=ansible INFO| TASK [4. Query Live Database at 172.28.0.13 from Webserver (172.28.0.11)] ******
+2026-10-31 23:04:03,342 p=39585 u=berry n=ansible INFO| ok: [server1]
+2026-10-31 23:04:03,342 p=39585 u=berry n=ansible INFO| ok: [server2]
+2026-10-31 23:04:03,344 p=39585 u=berry n=ansible INFO| TASK [5. Save Web + DB Cross-IP Test Report to ./test-outputs/] ****************
+2026-10-31 23:04:03,669 p=39585 u=berry n=ansible INFO| changed: [server1]
+2026-10-31 23:04:03,669 p=39585 u=berry n=ansible INFO| changed: [server2]
+2026-10-31 23:04:03,670 p=39585 u=berry n=ansible INFO| PLAY RECAP *********************************************************************
+2026-10-31 23:04:03,670 p=39585 u=berry n=ansible INFO| server1                    : ok=6    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-10-31 23:04:03,670 p=39585 u=berry n=ansible INFO| server2                    : ok=6    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-10-31 23:04:03,670 p=39585 u=berry n=ansible INFO| server3                    : ok=6    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-10-31 23:07:17,737 p=45709 u=berry n=ansible INFO| server1 | CHANGED | rc=0 >>
+<!DOCTYPE html>
+<html>
+<head><title>Northpoint Living - server1</title></head>
+<body style="font-family: sans-serif; background: #0f172a; color: #f8fafc; padding: 40px;">
+  <h1>🏢 Northpoint Living Storefront (Managed by Ansible)</h1>
+  <p><strong>Served by Web Node:</strong> server1 (northpoint-srv-01)</p>
+  <p><strong>Web Node IP:</strong> 172.28.0.11 (Port 80)</p>
+  <p><strong>Connected Database IP:</strong> 172.28.0.13 (Port 3306 - northpoint_db)</p>
+</body>
+</html>
+
+2026-10-31 23:07:17,737 p=45709 u=berry n=ansible INFO| server2 | CHANGED | rc=0 >>
+<!DOCTYPE html>
+<html>
+<head><title>Northpoint Living - server1</title></head>
+<body style="font-family: sans-serif; background: #0f172a; color: #f8fafc; padding: 40px;">
+  <h1>🏢 Northpoint Living Storefront (Managed by Ansible)</h1>
+  <p><strong>Served by Web Node:</strong> server1 (northpoint-srv-01)</p>
+  <p><strong>Web Node IP:</strong> 172.28.0.11 (Port 80)</p>
+  <p><strong>Connected Database IP:</strong> 172.28.0.13 (Port 3306 - northpoint_db)</p>
+</body>
+</html>
+
+2026-10-31 23:07:18,440 p=45738 u=berry n=ansible INFO| server1 | CHANGED | rc=0 >>
+<!DOCTYPE html>
+<html>
+<head><title>Northpoint Living - server2</title></head>
+<body style="font-family: sans-serif; background: #0f172a; color: #f8fafc; padding: 40px;">
+  <h1>🏢 Northpoint Living Storefront (Managed by Ansible)</h1>
+  <p><strong>Served by Web Node:</strong> server2 (northpoint-srv-02)</p>
+  <p><strong>Web Node IP:</strong> 172.28.0.12 (Port 80)</p>
+  <p><strong>Connected Database IP:</strong> 172.28.0.13 (Port 3306 - northpoint_db)</p>
+</body>
+</html>
+
+2026-10-31 23:07:18,440 p=45738 u=berry n=ansible INFO| server2 | CHANGED | rc=0 >>
+<!DOCTYPE html>
+<html>
+<head><title>Northpoint Living - server2</title></head>
+<body style="font-family: sans-serif; background: #0f172a; color: #f8fafc; padding: 40px;">
+  <h1>🏢 Northpoint Living Storefront (Managed by Ansible)</h1>
+  <p><strong>Served by Web Node:</strong> server2 (northpoint-srv-02)</p>
+  <p><strong>Web Node IP:</strong> 172.28.0.12 (Port 80)</p>
+  <p><strong>Connected Database IP:</strong> 172.28.0.13 (Port 3306 - northpoint_db)</p>
+</body>
+</html>
+
+2026-10-31 23:07:37,036 p=46114 u=berry n=ansible INFO| server3 | CHANGED | rc=0 >>
+<!DOCTYPE html>
+<html>
+<head><title>Northpoint Living - server1</title></head>
+<body style="font-family: sans-serif; background: #0f172a; color: #f8fafc; padding: 40px;">
+  <h1>🏢 Northpoint Living Storefront (Managed by Ansible)</h1>
+  <p><strong>Served by Web Node:</strong> server1 (northpoint-srv-01)</p>
+  <p><strong>Web Node IP:</strong> 172.28.0.11 (Port 80)</p>
+  <p><strong>Connected Database IP:</strong> 172.28.0.13 (Port 3306 - northpoint_db)</p>
+</body>
+</html>
+
+2026-10-31 23:08:27,161 p=47112 u=berry n=ansible INFO| server2 | CHANGED | rc=0 >>
+id	item_name	price_hkd	db_server_ip
+1	Hong Kong Teak Dining Table	4800.00	172.28.0.13
+2	Victoria Peak Ceramic Lamp	850.00	172.28.0.13
+3	Kowloon Linen Sofa Set	9200.00	172.28.0.13
+
+2026-10-31 23:08:27,161 p=47112 u=berry n=ansible INFO| server1 | CHANGED | rc=0 >>
+id	item_name	price_hkd	db_server_ip
+1	Hong Kong Teak Dining Table	4800.00	172.28.0.13
+2	Victoria Peak Ceramic Lamp	850.00	172.28.0.13
+3	Kowloon Linen Sofa Set	9200.00	172.28.0.13
+
+2026-11-01 10:03:29,025 p=208 u=berry n=ansible INFO| PLAY [Lesson 6: Single Play Using 'when:' Conditions + Handlers + Live DB Web UI] ***
+2026-11-01 10:03:29,031 p=208 u=berry n=ansible INFO| TASK [Gathering Facts] *********************************************************
+2026-11-01 10:03:29,939 p=208 u=berry n=ansible INFO| ok: [server2]
+2026-11-01 10:03:29,950 p=208 u=berry n=ansible INFO| ok: [server1]
+2026-11-01 10:03:29,951 p=208 u=berry n=ansible INFO| ok: [server3]
+2026-11-01 10:03:29,954 p=208 u=berry n=ansible INFO| TASK [1. [when: OS == Ubuntu] Verify Ubuntu OS across all 3 servers] ***********
+2026-11-01 10:03:29,969 p=208 u=berry n=ansible WARNING| [WARNING]: Deprecation warnings can be disabled by setting `deprecation_warnings=False` in ansible.cfg.
+
+2026-11-01 10:03:29,969 p=208 u=berry n=ansible INFO| [DEPRECATION WARNING]: INJECT_FACTS_AS_VARS default to `True` is deprecated, top-level facts will not be auto injected after the change. This feature will be removed from ansible-core version 2.24.
+Origin: /Users/berry/Antigravity/IT Manager project /Ansible/06-when-conditions-and-db-web-ui.yml:32:13
+
+30       ansible.builtin.debug:
+31         msg: "Node {{ inventory_hostname }} ({{ internal_ip }}) is running {{ ansible_distribution }} {{ ansible_d...
+32       when: ansible_distribution == "Ubuntu"
+               ^ column 13
+
+Use `ansible_facts["fact_name"]` (no `ansible_` prefix) instead.
+
+
+2026-11-01 10:03:29,969 p=208 u=berry n=ansible INFO| [DEPRECATION WARNING]: INJECT_FACTS_AS_VARS default to `True` is deprecated, top-level facts will not be auto injected after the change. This feature will be removed from ansible-core version 2.24.
+Origin: /Users/berry/Antigravity/IT Manager project /Ansible/06-when-conditions-and-db-web-ui.yml:31:14
+
+29     - name: "1. [when: OS == Ubuntu] Verify Ubuntu OS across all 3 servers"
+30       ansible.builtin.debug:
+31         msg: "Node {{ inventory_hostname }} ({{ internal_ip }}) is running {{ ansible_distribution }} {{ ansible_d...
+                ^ column 14
+
+Use `ansible_facts["fact_name"]` (no `ansible_` prefix) instead.
+
+
+2026-11-01 10:03:29,969 p=208 u=berry n=ansible INFO| ok: [server1] => {
+    "msg": "Node server1 (172.28.0.11) is running Ubuntu 22.04"
+}
+2026-11-01 10:03:29,971 p=208 u=berry n=ansible INFO| ok: [server2] => {
+    "msg": "Node server2 (172.28.0.12) is running Ubuntu 22.04"
+}
+2026-11-01 10:03:29,976 p=208 u=berry n=ansible INFO| ok: [server3] => {
+    "msg": "Node server3 (172.28.0.13) is running Ubuntu 22.04"
+}
+2026-11-01 10:03:29,979 p=208 u=berry n=ansible INFO| TASK [2. [when: dbservers] Add a 4th VIP Product into MariaDB on 172.28.0.13:3306] ***
+2026-11-01 10:03:29,992 p=208 u=berry n=ansible INFO| skipping: [server1]
+2026-11-01 10:03:29,994 p=208 u=berry n=ansible INFO| skipping: [server2]
+2026-11-01 10:03:30,273 p=208 u=berry n=ansible INFO| ok: [server3]
+2026-11-01 10:03:30,276 p=208 u=berry n=ansible INFO| TASK [3. [when: webservers] Fetch Live Products Table from DB (172.28.0.13:3306) as HTML] ***
+2026-11-01 10:03:30,295 p=208 u=berry n=ansible INFO| skipping: [server3]
+2026-11-01 10:03:30,462 p=208 u=berry n=ansible INFO| ok: [server1]
+2026-11-01 10:03:30,462 p=208 u=berry n=ansible INFO| ok: [server2]
+2026-11-01 10:03:30,465 p=208 u=berry n=ansible INFO| TASK [4. [when: webservers] Render Live MySQL Data into Web Dashboard] *********
+2026-11-01 10:03:30,484 p=208 u=berry n=ansible INFO| skipping: [server3]
+2026-11-01 10:03:30,889 p=208 u=berry n=ansible INFO| [DEPRECATION WARNING]: INJECT_FACTS_AS_VARS default to `True` is deprecated, top-level facts will not be auto injected after the change. This feature will be removed from ansible-core version 2.24.
+Origin: /Users/berry/Antigravity/IT Manager project /Ansible/06-when-conditions-and-db-web-ui.yml:71:18
+
+69         dest: /var/www/html/index.html
+70         mode: '0644'
+71         content: |
+                    ^ column 18
+
+Use `ansible_facts["fact_name"]` (no `ansible_` prefix) instead.
+
+
+2026-11-01 10:03:30,889 p=208 u=berry n=ansible INFO| changed: [server1]
+2026-11-01 10:03:30,890 p=208 u=berry n=ansible INFO| changed: [server2]
+2026-11-01 10:03:30,892 p=208 u=berry n=ansible INFO| TASK [5. Save Lesson 6 Report into ./test-outputs/<server>/] *******************
+2026-11-01 10:03:31,248 p=208 u=berry n=ansible INFO| [DEPRECATION WARNING]: INJECT_FACTS_AS_VARS default to `True` is deprecated, top-level facts will not be auto injected after the change. This feature will be removed from ansible-core version 2.24.
+Origin: /Users/berry/Antigravity/IT Manager project /Ansible/06-when-conditions-and-db-web-ui.yml:113:18
+
+111         dest: "/var/northpoint_backups/lesson06-when-and-handlers.txt"
+112         mode: '0644'
+113         content: |
+                     ^ column 18
+
+Use `ansible_facts["fact_name"]` (no `ansible_` prefix) instead.
+
+
+2026-11-01 10:03:31,248 p=208 u=berry n=ansible INFO| changed: [server3]
+2026-11-01 10:03:31,248 p=208 u=berry n=ansible INFO| changed: [server1]
+2026-11-01 10:03:31,249 p=208 u=berry n=ansible INFO| changed: [server2]
+2026-11-01 10:03:31,255 p=208 u=berry n=ansible INFO| RUNNING HANDLER [Reload Nginx] *************************************************
+2026-11-01 10:03:32,587 p=208 u=berry n=ansible INFO| changed: [server1]
+2026-11-01 10:03:32,587 p=208 u=berry n=ansible INFO| changed: [server2]
+2026-11-01 10:03:32,588 p=208 u=berry n=ansible INFO| PLAY RECAP *********************************************************************
+2026-11-01 10:03:32,588 p=208 u=berry n=ansible INFO| server1                    : ok=6    changed=3    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+2026-11-01 10:03:32,588 p=208 u=berry n=ansible INFO| server2                    : ok=6    changed=3    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+2026-11-01 10:03:32,588 p=208 u=berry n=ansible INFO| server3                    : ok=4    changed=1    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+2026-11-01 10:12:56,184 p=11808 u=berry n=ansible INFO| PLAY [Lesson 6: Single Play Using 'when:' Conditions + Handlers + Live DB Web UI] ***
+2026-11-01 10:12:56,188 p=11808 u=berry n=ansible INFO| TASK [Gathering Facts] *********************************************************
+2026-11-01 10:12:57,034 p=11808 u=berry n=ansible INFO| ok: [server1]
+2026-11-01 10:12:57,039 p=11808 u=berry n=ansible INFO| ok: [server3]
+2026-11-01 10:12:57,040 p=11808 u=berry n=ansible INFO| ok: [server2]
+2026-11-01 10:12:57,043 p=11808 u=berry n=ansible INFO| TASK [1. [when: OS == Ubuntu] Verify Ubuntu OS across all 3 servers] ***********
+2026-11-01 10:12:57,057 p=11808 u=berry n=ansible WARNING| [WARNING]: Deprecation warnings can be disabled by setting `deprecation_warnings=False` in ansible.cfg.
+
+2026-11-01 10:12:57,057 p=11808 u=berry n=ansible INFO| [DEPRECATION WARNING]: INJECT_FACTS_AS_VARS default to `True` is deprecated, top-level facts will not be auto injected after the change. This feature will be removed from ansible-core version 2.24.
+Origin: /Users/berry/Antigravity/IT Manager project /Ansible/06-when-conditions-and-db-web-ui.yml:32:13
+
+30       ansible.builtin.debug:
+31         msg: "Node {{ inventory_hostname }} ({{ internal_ip }}) is running {{ ansible_distribution }} {{ ansible_d...
+32       when: ansible_distribution == "Ubuntu"
+               ^ column 13
+
+Use `ansible_facts["fact_name"]` (no `ansible_` prefix) instead.
+
+
+2026-11-01 10:12:57,057 p=11808 u=berry n=ansible INFO| [DEPRECATION WARNING]: INJECT_FACTS_AS_VARS default to `True` is deprecated, top-level facts will not be auto injected after the change. This feature will be removed from ansible-core version 2.24.
+Origin: /Users/berry/Antigravity/IT Manager project /Ansible/06-when-conditions-and-db-web-ui.yml:31:14
+
+29     - name: "1. [when: OS == Ubuntu] Verify Ubuntu OS across all 3 servers"
+30       ansible.builtin.debug:
+31         msg: "Node {{ inventory_hostname }} ({{ internal_ip }}) is running {{ ansible_distribution }} {{ ansible_d...
+                ^ column 14
+
+Use `ansible_facts["fact_name"]` (no `ansible_` prefix) instead.
+
+
+2026-11-01 10:12:57,057 p=11808 u=berry n=ansible INFO| ok: [server1] => {
+    "msg": "Node server1 (172.28.0.11) is running Ubuntu 22.04"
+}
+2026-11-01 10:12:57,059 p=11808 u=berry n=ansible INFO| ok: [server2] => {
+    "msg": "Node server2 (172.28.0.12) is running Ubuntu 22.04"
+}
+2026-11-01 10:12:57,065 p=11808 u=berry n=ansible INFO| ok: [server3] => {
+    "msg": "Node server3 (172.28.0.13) is running Ubuntu 22.04"
+}
+2026-11-01 10:12:57,068 p=11808 u=berry n=ansible INFO| TASK [2. [when: dbservers] Add a 4th VIP Product into MariaDB on 172.28.0.13:3306] ***
+2026-11-01 10:12:57,081 p=11808 u=berry n=ansible INFO| skipping: [server1]
+2026-11-01 10:12:57,082 p=11808 u=berry n=ansible INFO| skipping: [server2]
+2026-11-01 10:12:57,338 p=11808 u=berry n=ansible INFO| ok: [server3]
+2026-11-01 10:12:57,341 p=11808 u=berry n=ansible INFO| TASK [3. [when: webservers] Fetch Live Products Table from DB (172.28.0.13:3306) as HTML] ***
+2026-11-01 10:12:57,362 p=11808 u=berry n=ansible INFO| skipping: [server3]
+2026-11-01 10:12:57,526 p=11808 u=berry n=ansible INFO| ok: [server2]
+2026-11-01 10:12:57,526 p=11808 u=berry n=ansible INFO| ok: [server1]
+2026-11-01 10:12:57,529 p=11808 u=berry n=ansible INFO| TASK [4. [when: webservers] Render Live MySQL Data into Web Dashboard] *********
+2026-11-01 10:12:57,548 p=11808 u=berry n=ansible INFO| skipping: [server3]
+2026-11-01 10:12:57,956 p=11808 u=berry n=ansible INFO| [DEPRECATION WARNING]: INJECT_FACTS_AS_VARS default to `True` is deprecated, top-level facts will not be auto injected after the change. This feature will be removed from ansible-core version 2.24.
+Origin: /Users/berry/Antigravity/IT Manager project /Ansible/06-when-conditions-and-db-web-ui.yml:71:18
+
+69         dest: /var/www/html/index.html
+70         mode: '0644'
+71         content: |
+                    ^ column 18
+
+Use `ansible_facts["fact_name"]` (no `ansible_` prefix) instead.
+
+
+2026-11-01 10:12:57,956 p=11808 u=berry n=ansible INFO| ok: [server2]
+2026-11-01 10:12:57,957 p=11808 u=berry n=ansible INFO| ok: [server1]
+2026-11-01 10:12:57,959 p=11808 u=berry n=ansible INFO| TASK [5. Save Lesson 6 Report into ./test-outputs/<server>/] *******************
+2026-11-01 10:12:58,302 p=11808 u=berry n=ansible INFO| [DEPRECATION WARNING]: INJECT_FACTS_AS_VARS default to `True` is deprecated, top-level facts will not be auto injected after the change. This feature will be removed from ansible-core version 2.24.
+Origin: /Users/berry/Antigravity/IT Manager project /Ansible/06-when-conditions-and-db-web-ui.yml:113:18
+
+111         dest: "/var/northpoint_backups/lesson06-when-and-handlers.txt"
+112         mode: '0644'
+113         content: |
+                     ^ column 18
+
+Use `ansible_facts["fact_name"]` (no `ansible_` prefix) instead.
+
+
+2026-11-01 10:12:58,302 p=11808 u=berry n=ansible INFO| ok: [server3]
+2026-11-01 10:12:58,302 p=11808 u=berry n=ansible INFO| ok: [server2]
+2026-11-01 10:12:58,309 p=11808 u=berry n=ansible INFO| ok: [server1]
+2026-11-01 10:12:58,310 p=11808 u=berry n=ansible INFO| PLAY RECAP *********************************************************************
+2026-11-01 10:12:58,310 p=11808 u=berry n=ansible INFO| server1                    : ok=5    changed=0    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+2026-11-01 10:12:58,310 p=11808 u=berry n=ansible INFO| server2                    : ok=5    changed=0    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+2026-11-01 10:12:58,310 p=11808 u=berry n=ansible INFO| server3                    : ok=4    changed=0    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+2026-11-01 10:18:43,043 p=18843 u=berry n=ansible INFO| PLAY [Lesson 6: Single Play Using 'when:' Conditions + Handlers + Live DB Web UI] ***
+2026-11-01 10:18:43,047 p=18843 u=berry n=ansible INFO| TASK [Gathering Facts] *********************************************************
+2026-11-01 10:18:43,755 p=18843 u=berry n=ansible INFO| ok: [server1]
+2026-11-01 10:18:43,840 p=18843 u=berry n=ansible INFO| ok: [server2]
+2026-11-01 10:18:43,841 p=18843 u=berry n=ansible INFO| ok: [server3]
+2026-11-01 10:18:43,844 p=18843 u=berry n=ansible INFO| TASK [1. [when: OS == Ubuntu] Verify Ubuntu OS across all 3 servers] ***********
+2026-11-01 10:18:43,857 p=18843 u=berry n=ansible INFO| ok: [server1] => {
+    "msg": "Node server1 (172.28.0.11) is running Ubuntu 22.04"
+}
+2026-11-01 10:18:43,860 p=18843 u=berry n=ansible INFO| ok: [server2] => {
+    "msg": "Node server2 (172.28.0.12) is running Ubuntu 22.04"
+}
+2026-11-01 10:18:43,864 p=18843 u=berry n=ansible INFO| ok: [server3] => {
+    "msg": "Node server3 (172.28.0.13) is running Ubuntu 22.04"
+}
+2026-11-01 10:18:43,867 p=18843 u=berry n=ansible INFO| TASK [2. [when: dbservers] Add a 4th VIP Product into MariaDB on 172.28.0.13:3306] ***
+2026-11-01 10:18:43,879 p=18843 u=berry n=ansible INFO| skipping: [server1]
+2026-11-01 10:18:43,879 p=18843 u=berry n=ansible INFO| skipping: [server2]
+2026-11-01 10:18:44,133 p=18843 u=berry n=ansible INFO| ok: [server3]
+2026-11-01 10:18:44,135 p=18843 u=berry n=ansible INFO| TASK [3. [when: webservers] Fetch Live Products Table from DB (172.28.0.13:3306) as HTML] ***
+2026-11-01 10:18:44,154 p=18843 u=berry n=ansible INFO| skipping: [server3]
+2026-11-01 10:18:44,312 p=18843 u=berry n=ansible INFO| ok: [server2]
+2026-11-01 10:18:44,313 p=18843 u=berry n=ansible INFO| ok: [server1]
+2026-11-01 10:18:44,316 p=18843 u=berry n=ansible INFO| TASK [4. [when: webservers] Render Live MySQL Data into Web Dashboard] *********
+2026-11-01 10:18:44,335 p=18843 u=berry n=ansible INFO| skipping: [server3]
+2026-11-01 10:18:44,718 p=18843 u=berry n=ansible INFO| ok: [server1]
+2026-11-01 10:18:44,718 p=18843 u=berry n=ansible INFO| ok: [server2]
+2026-11-01 10:18:44,721 p=18843 u=berry n=ansible INFO| TASK [5. Save Lesson 6 Report into ./test-outputs/<server>/] *******************
+2026-11-01 10:18:45,070 p=18843 u=berry n=ansible INFO| ok: [server1]
+2026-11-01 10:18:45,071 p=18843 u=berry n=ansible INFO| ok: [server3]
+2026-11-01 10:18:45,071 p=18843 u=berry n=ansible INFO| ok: [server2]
+2026-11-01 10:18:45,072 p=18843 u=berry n=ansible INFO| PLAY RECAP *********************************************************************
+2026-11-01 10:18:45,072 p=18843 u=berry n=ansible INFO| server1                    : ok=5    changed=0    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+2026-11-01 10:18:45,072 p=18843 u=berry n=ansible INFO| server2                    : ok=5    changed=0    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+2026-11-01 10:18:45,072 p=18843 u=berry n=ansible INFO| server3                    : ok=4    changed=0    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+2026-11-01 10:28:46,874 p=30802 u=berry n=ansible INFO| PLAY [Lesson 7 (Play 1): Apply 'webserver' Role to Web Nodes] ******************
+2026-11-01 10:28:46,878 p=30802 u=berry n=ansible INFO| TASK [Gathering Facts] *********************************************************
+2026-11-01 10:28:47,750 p=30802 u=berry n=ansible INFO| ok: [server2]
+2026-11-01 10:28:47,753 p=30802 u=berry n=ansible INFO| ok: [server1]
+2026-11-01 10:28:47,756 p=30802 u=berry n=ansible INFO| TASK [webserver : [Role: webserver] 1. Ensure Nginx is installed and running] ***
+2026-11-01 10:28:50,119 p=30802 u=berry n=ansible INFO| ok: [server2]
+2026-11-01 10:28:50,370 p=30802 u=berry n=ansible INFO| ok: [server1]
+2026-11-01 10:28:50,374 p=30802 u=berry n=ansible INFO| TASK [webserver : [Role: webserver] 2. Deploy Role-Managed Status File to Webserver] ***
+2026-11-01 10:28:50,826 p=30802 u=berry n=ansible INFO| changed: [server1]
+2026-11-01 10:28:50,826 p=30802 u=berry n=ansible INFO| changed: [server2]
+2026-11-01 10:28:50,828 p=30802 u=berry n=ansible INFO| TASK [webserver : [Role: webserver] 3. Save Lesson 7 Role & Vault Report to ./test-outputs/] ***
+2026-11-01 10:28:51,197 p=30802 u=berry n=ansible INFO| changed: [server1]
+2026-11-01 10:28:51,199 p=30802 u=berry n=ansible INFO| changed: [server2]
+2026-11-01 10:28:51,209 p=30802 u=berry n=ansible INFO| RUNNING HANDLER [webserver : Restart Nginx Role Handler] ***********************
+2026-11-01 10:28:52,536 p=30802 u=berry n=ansible INFO| changed: [server1]
+2026-11-01 10:28:52,536 p=30802 u=berry n=ansible INFO| changed: [server2]
+2026-11-01 10:28:52,539 p=30802 u=berry n=ansible INFO| PLAY [Lesson 7 (Play 2): Apply 'dbserver' Role to Database Node] ***************
+2026-11-01 10:28:52,542 p=30802 u=berry n=ansible INFO| TASK [Gathering Facts] *********************************************************
+2026-11-01 10:28:53,264 p=30802 u=berry n=ansible INFO| ok: [server3]
+2026-11-01 10:28:53,268 p=30802 u=berry n=ansible INFO| TASK [dbserver : [Role: dbserver] 1. Ensure MariaDB Server is running on 172.28.0.13] ***
+2026-11-01 10:28:53,508 p=30802 u=berry n=ansible INFO| ok: [server3]
+2026-11-01 10:28:53,511 p=30802 u=berry n=ansible INFO| TASK [dbserver : [Role: dbserver] 2. Verify Products Count in northpoint_db] ***
+2026-11-01 10:28:53,762 p=30802 u=berry n=ansible INFO| ok: [server3]
+2026-11-01 10:28:53,765 p=30802 u=berry n=ansible INFO| TASK [dbserver : [Role: dbserver] 3. Save Lesson 7 Role & Vault Report to ./test-outputs/] ***
+2026-11-01 10:28:54,098 p=30802 u=berry n=ansible INFO| changed: [server3]
+2026-11-01 10:28:54,101 p=30802 u=berry n=ansible INFO| PLAY RECAP *********************************************************************
+2026-11-01 10:28:54,101 p=30802 u=berry n=ansible INFO| server1                    : ok=5    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-11-01 10:28:54,101 p=30802 u=berry n=ansible INFO| server2                    : ok=5    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-11-01 10:28:54,101 p=30802 u=berry n=ansible INFO| server3                    : ok=4    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-11-01 10:45:28,561 p=45199 u=berry n=ansible INFO| PLAY [Lesson 7 (Play 1): Apply 'webserver' Role to Web Nodes] ******************
+2026-11-01 10:45:28,567 p=45199 u=berry n=ansible INFO| TASK [Gathering Facts] *********************************************************
+2026-11-01 10:45:29,344 p=45199 u=berry n=ansible INFO| ok: [server2]
+2026-11-01 10:45:29,454 p=45199 u=berry n=ansible INFO| ok: [server1]
+2026-11-01 10:45:29,457 p=45199 u=berry n=ansible INFO| TASK [webserver : [Role: webserver] 1. Ensure Nginx is installed and running] ***
+2026-11-01 10:45:31,320 p=45199 u=berry n=ansible INFO| ok: [server2]
+2026-11-01 10:45:31,342 p=45199 u=berry n=ansible INFO| ok: [server1]
+2026-11-01 10:45:31,346 p=45199 u=berry n=ansible INFO| TASK [webserver : [Role: webserver] 2. Deploy Role-Managed Status File to Webserver] ***
+2026-11-01 10:45:31,750 p=45199 u=berry n=ansible INFO| ok: [server2]
+2026-11-01 10:45:31,750 p=45199 u=berry n=ansible INFO| ok: [server1]
+2026-11-01 10:45:31,752 p=45199 u=berry n=ansible INFO| TASK [webserver : [Role: webserver] 3. Save Lesson 7 Role & Vault Report to ./test-outputs/] ***
+2026-11-01 10:45:32,065 p=45199 u=berry n=ansible INFO| ok: [server1]
+2026-11-01 10:45:32,065 p=45199 u=berry n=ansible INFO| ok: [server2]
+2026-11-01 10:45:32,072 p=45199 u=berry n=ansible INFO| PLAY [Lesson 7 (Play 2): Apply 'dbserver' Role to Database Node] ***************
+2026-11-01 10:45:32,074 p=45199 u=berry n=ansible INFO| TASK [Gathering Facts] *********************************************************
+2026-11-01 10:45:32,706 p=45199 u=berry n=ansible INFO| ok: [server3]
+2026-11-01 10:45:32,711 p=45199 u=berry n=ansible INFO| TASK [dbserver : [Role: dbserver] 1. Ensure MariaDB Server is running on 172.28.0.13] ***
+2026-11-01 10:45:32,979 p=45199 u=berry n=ansible INFO| ok: [server3]
+2026-11-01 10:45:32,983 p=45199 u=berry n=ansible INFO| TASK [dbserver : [Role: dbserver] 2. Verify Products Count in northpoint_db] ***
+2026-11-01 10:45:33,217 p=45199 u=berry n=ansible INFO| ok: [server3]
+2026-11-01 10:45:33,220 p=45199 u=berry n=ansible INFO| TASK [dbserver : [Role: dbserver] 3. Save Lesson 7 Role & Vault Report to ./test-outputs/] ***
+2026-11-01 10:45:33,536 p=45199 u=berry n=ansible INFO| ok: [server3]
+2026-11-01 10:45:33,539 p=45199 u=berry n=ansible INFO| PLAY RECAP *********************************************************************
+2026-11-01 10:45:33,539 p=45199 u=berry n=ansible INFO| server1                    : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-11-01 10:45:33,539 p=45199 u=berry n=ansible INFO| server2                    : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-11-01 10:45:33,539 p=45199 u=berry n=ansible INFO| server3                    : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-11-01 11:01:24,269 p=69769 u=berry n=ansible INFO| PLAY [Play 0: Install MacBook SSH Public Key onto All 3 Servers (Passwordless Login)] ***
+2026-11-01 11:01:24,273 p=69769 u=berry n=ansible INFO| TASK [Gathering Facts] *********************************************************
+2026-11-01 11:01:25,162 p=69769 u=berry n=ansible INFO| ok: [server3]
+2026-11-01 11:01:25,170 p=69769 u=berry n=ansible INFO| ok: [server1]
+2026-11-01 11:01:25,177 p=69769 u=berry n=ansible INFO| ok: [server2]
+2026-11-01 11:01:25,179 p=69769 u=berry n=ansible INFO| TASK [1. Ensure /home/ansible/.ssh directory exists with 0700 permissions] *****
+2026-11-01 11:01:25,425 p=69769 u=berry n=ansible INFO| changed: [server2]
+2026-11-01 11:01:25,425 p=69769 u=berry n=ansible INFO| changed: [server3]
+2026-11-01 11:01:25,428 p=69769 u=berry n=ansible INFO| changed: [server1]
+2026-11-01 11:01:25,431 p=69769 u=berry n=ansible INFO| TASK [2. Install MacBook Public Key into authorized_keys on all 3 servers] *****
+2026-11-01 11:01:25,859 p=69769 u=berry n=ansible INFO| changed: [server2]
+2026-11-01 11:01:25,860 p=69769 u=berry n=ansible INFO| changed: [server3]
+2026-11-01 11:01:25,860 p=69769 u=berry n=ansible INFO| changed: [server1]
+2026-11-01 11:01:25,862 p=69769 u=berry n=ansible INFO| TASK [3. Save SSH Key Setup Report to ./test-outputs/] *************************
+2026-11-01 11:01:26,169 p=69769 u=berry n=ansible WARNING| [WARNING]: Deprecation warnings can be disabled by setting `deprecation_warnings=False` in ansible.cfg.
+
+2026-11-01 11:01:26,169 p=69769 u=berry n=ansible INFO| [DEPRECATION WARNING]: INJECT_FACTS_AS_VARS default to `True` is deprecated, top-level facts will not be auto injected after the change. This feature will be removed from ansible-core version 2.24.
+Origin: /Users/berry/Antigravity/IT Manager project /Ansible/00-setup-ssh-keys.yml:52:18
+
+50         dest: "/var/northpoint_backups/ssh-key-verified.txt"
+51         mode: '0644'
+52         content: |
+                    ^ column 18
+
+Use `ansible_facts["fact_name"]` (no `ansible_` prefix) instead.
+
+
+2026-11-01 11:01:26,169 p=69769 u=berry n=ansible INFO| ok: [server1]
+2026-11-01 11:01:26,169 p=69769 u=berry n=ansible INFO| ok: [server2]
+2026-11-01 11:01:26,169 p=69769 u=berry n=ansible INFO| ok: [server3]
+2026-11-01 11:01:26,170 p=69769 u=berry n=ansible INFO| PLAY RECAP *********************************************************************
+2026-11-01 11:01:26,170 p=69769 u=berry n=ansible INFO| server1                    : ok=4    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-11-01 11:01:26,170 p=69769 u=berry n=ansible INFO| server2                    : ok=4    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-11-01 11:01:26,170 p=69769 u=berry n=ansible INFO| server3                    : ok=4    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-11-01 11:01:26,433 p=69960 u=berry n=ansible INFO| Encryption successful
+2026-11-01 11:01:26,738 p=70000 u=berry n=ansible INFO| PLAY [Lesson 7 (Play 1): Apply 'webserver' Role to Web Nodes] ******************
+2026-11-01 11:01:26,742 p=70000 u=berry n=ansible INFO| TASK [Gathering Facts] *********************************************************
+2026-11-01 11:01:27,399 p=70000 u=berry n=ansible INFO| ok: [server2]
+2026-11-01 11:01:27,401 p=70000 u=berry n=ansible INFO| ok: [server1]
+2026-11-01 11:01:27,404 p=70000 u=berry n=ansible INFO| TASK [webserver : [Role: webserver] 1. Ensure Nginx is installed and running] ***
+2026-11-01 11:01:29,318 p=70000 u=berry n=ansible INFO| ok: [server1]
+2026-11-01 11:01:29,318 p=70000 u=berry n=ansible INFO| ok: [server2]
+2026-11-01 11:01:29,321 p=70000 u=berry n=ansible INFO| TASK [webserver : [Role: webserver] 2. Deploy Role-Managed Status File to Webserver] ***
+2026-11-01 11:01:29,762 p=70000 u=berry n=ansible INFO| ok: [server1]
+2026-11-01 11:01:29,762 p=70000 u=berry n=ansible INFO| ok: [server2]
+2026-11-01 11:01:29,764 p=70000 u=berry n=ansible INFO| TASK [webserver : [Role: webserver] 3. Save Lesson 7 Role & Vault Report to ./test-outputs/] ***
+2026-11-01 11:01:30,088 p=70000 u=berry n=ansible INFO| ok: [server2]
+2026-11-01 11:01:30,088 p=70000 u=berry n=ansible INFO| ok: [server1]
+2026-11-01 11:01:30,094 p=70000 u=berry n=ansible INFO| PLAY [Lesson 7 (Play 2): Apply 'dbserver' Role to Database Node] ***************
+2026-11-01 11:01:30,096 p=70000 u=berry n=ansible INFO| TASK [Gathering Facts] *********************************************************
+2026-11-01 11:01:30,646 p=70000 u=berry n=ansible INFO| ok: [server3]
+2026-11-01 11:01:30,650 p=70000 u=berry n=ansible INFO| TASK [dbserver : [Role: dbserver] 1. Ensure MariaDB Server is running on 172.28.0.13] ***
+2026-11-01 11:01:30,926 p=70000 u=berry n=ansible INFO| ok: [server3]
+2026-11-01 11:01:30,931 p=70000 u=berry n=ansible INFO| TASK [dbserver : [Role: dbserver] 2. Verify Products Count in northpoint_db] ***
+2026-11-01 11:01:31,160 p=70000 u=berry n=ansible INFO| ok: [server3]
+2026-11-01 11:01:31,162 p=70000 u=berry n=ansible INFO| TASK [dbserver : [Role: dbserver] 3. Save Lesson 7 Role & Vault Report to ./test-outputs/] ***
+2026-11-01 11:01:31,468 p=70000 u=berry n=ansible INFO| ok: [server3]
+2026-11-01 11:01:31,471 p=70000 u=berry n=ansible INFO| PLAY RECAP *********************************************************************
+2026-11-01 11:01:31,471 p=70000 u=berry n=ansible INFO| server1                    : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-11-01 11:01:31,471 p=70000 u=berry n=ansible INFO| server2                    : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-11-01 11:01:31,471 p=70000 u=berry n=ansible INFO| server3                    : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   

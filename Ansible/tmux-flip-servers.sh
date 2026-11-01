@@ -2,66 +2,64 @@
 # ==============================================================================
 # 🖥️ TMUX 3-SERVER FLIP & CONTROL SCRIPT (Run on your MacBook Workstation)
 # ==============================================================================
-# What does this script do?
-# It opens a single `tmux` session on your MacBook named `northpoint-cluster`
-# with TWO modes so you can easily flip between all 3 Docker servers:
+# Why did Pane 1 give "Permission denied" earlier?
+# Because your MacBook runs Anaconda `(base)` in `.zshrc` when opening a new pane,
+# which collided with `tmux send-keys`, and macOS SSH tried public keys first!
 #
-#   Window 1 ("split-3-servers"):
-#     Splits your MacBook screen into 3 live SSH panes (Server 1, Server 2, Server 3)
-#     with SYNCHRONIZED typing available!
-#
-#   Window 2, 3, 4 ("server1", "server2", "server3"):
-#     Dedicated full-screen windows for each individual server so you can flip
-#     between them using Ctrl+b then 1, 2, 3, or 4!
+# Fix:
+# 1. We force `-o PreferredAuthentications=password -o PubkeyAuthentication=no`
+# 2. We pass the SSH command directly to `new-session` and `split-window` so it
+#    doesn't collide with `.zshrc` / `(base)` startup!
 # ==============================================================================
 
 SESSION="northpoint-cluster"
-SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+SSH_CMD="sshpass -p northpoint ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o PreferredAuthentications=password -o PubkeyAuthentication=no -o LogLevel=ERROR"
 
-# Check if tmux is installed on the MacBook
-if ! command -v tmux &> /dev/null; then
-  echo "❌ tmux is not installed on your MacBook yet!"
-  echo "👉 Run: brew install tmux"
-  exit 1
-fi
+# Get current MacBook terminal dimensions (fallback to 160x45 if not detected)
+TERM_COLS=$(tput cols 2>/dev/null || echo 160)
+TERM_LINES=$(tput lines 2>/dev/null || echo 45)
 
 # Kill old session if it already exists so we start fresh
 tmux kill-session -t "$SESSION" 2>/dev/null
 
-echo "🚀 Launching tmux workstation session: $SESSION ..."
+echo "🚀 Launching tmux workstation session: $SESSION (${TERM_COLS}x${TERM_LINES}) ..."
 
 # ------------------------------------------------------------------------------
-# WINDOW 0: 3-Pane Split View (All 3 Servers visible at once!)
+# WINDOW 0: 3 Side-by-Side Columns (Server 1 | Server 2 | Server 3)
 # ------------------------------------------------------------------------------
-tmux new-session -d -s "$SESSION" -n "all-3-servers"
+# Pane 0 (Left Column): Server 1 (Port 2221)
+tmux new-session -d -s "$SESSION" -n "all-3-servers" -x "$TERM_COLS" -y "$TERM_LINES" \
+  "bash -c '$SSH_CMD -p 2221 ansible@127.0.0.1; exec bash'"
 
-# Enable mouse clicking in this tmux session on your MacBook
+# Enable mouse clicking & dragging on your MacBook
 tmux set-option -t "$SESSION" mouse on
 
-# Pane 0 (Top): Connect to Server 1 (Port 2221)
-tmux send-keys -t "$SESSION:all-3-servers.0" "ssh $SSH_OPTS -p 2221 ansible@127.0.0.1" C-m
+# Make active pane border bright green so you always see which server you are on
+tmux set-option -t "$SESSION" pane-active-border-style "fg=brightgreen,bold"
+tmux set-option -t "$SESSION" pane-border-status top
+tmux set-option -t "$SESSION" pane-border-format " #[fg=yellow,bold]🖥️ Pane #P "
 
-# Split horizontally for Server 2 (Port 2222)
-tmux split-window -v -t "$SESSION:all-3-servers"
-tmux send-keys -t "$SESSION:all-3-servers.1" "ssh $SSH_OPTS -p 2222 ansible@127.0.0.1" C-m
+# Pane 1 (Middle Column): Split Side-by-Side (-h) for Server 2 (Port 2222)
+tmux split-window -h -t "$SESSION:all-3-servers.0" \
+  "bash -c '$SSH_CMD -p 2222 ansible@127.0.0.1; exec bash'"
 
-# Split again for Server 3 (Port 2223)
-tmux split-window -v -t "$SESSION:all-3-servers"
-tmux send-keys -t "$SESSION:all-3-servers.2" "ssh $SSH_OPTS -p 2223 ansible@127.0.0.1" C-m
+# Pane 2 (Right Column): Split Side-by-Side (-h) for Server 3 (Port 2223)
+tmux split-window -h -t "$SESSION:all-3-servers.1" \
+  "bash -c '$SSH_CMD -p 2223 ansible@127.0.0.1; exec bash'"
 
-# Arrange all 3 panes evenly stacked
-tmux select-layout -t "$SESSION:all-3-servers" even-vertical
+# Arrange all 3 servers into 3 equal side-by-side columns!
+tmux select-layout -t "$SESSION:all-3-servers" even-horizontal
 
 # ------------------------------------------------------------------------------
 # WINDOW 1, 2, 3: Full-Screen Individual Server Tabs to Flip Between
 # ------------------------------------------------------------------------------
-tmux new-window -t "$SESSION" -n "server1-web" "ssh $SSH_OPTS -p 2221 ansible@127.0.0.1"
-tmux new-window -t "$SESSION" -n "server2-app" "ssh $SSH_OPTS -p 2222 ansible@127.0.0.1"
-tmux new-window -t "$SESSION" -n "server3-db"  "ssh $SSH_OPTS -p 2223 ansible@127.0.0.1"
+tmux new-window -t "$SESSION" -n "1-server1" "bash -c '$SSH_CMD -p 2221 ansible@127.0.0.1; exec bash'"
+tmux new-window -t "$SESSION" -n "2-server2" "bash -c '$SSH_CMD -p 2222 ansible@127.0.0.1; exec bash'"
+tmux new-window -t "$SESSION" -n "3-server3" "bash -c '$SSH_CMD -p 2223 ansible@127.0.0.1; exec bash'"
 
-# Start on Window 0 (All 3 servers view)
+# Start on Window 0 (All 3 servers side-by-side) and focus Pane 0 (Server 1)
 tmux select-window -t "$SESSION:all-3-servers"
+tmux select-pane -t "$SESSION:all-3-servers.0"
 
 # Attach your MacBook terminal to the tmux session
-tmux attach-session -t "$SESSION"
-
+exec tmux attach-session -t "$SESSION"

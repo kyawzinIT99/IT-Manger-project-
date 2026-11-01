@@ -1,0 +1,8 @@
+================================================================
+📘 LESSON 6 REPORT — server3 (172.28.0.13)
+================================================================
+Server Groups : dbservers, northpoint_servers
+OS Verified   : Ubuntu 22.04
+Web UI Active : NO (Skipped via when: condition - This is the DB Node!)
+DB Port 3306  : ACTIVE (172.28.0.13:3306)
+================================================================

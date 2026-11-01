@@ -1,0 +1,10 @@
+================================================================
+📘 LESSON 7 REPORT — ROLE: dbserver (server3)
+================================================================
+Applied Role      : roles/dbserver/tasks/main.yml
+Server Hostname   : northpoint-srv-03 (172.28.0.13:3306)
+Total DB Products : 4 items in northpoint_db.products
+Vault Company     : Northpoint Living Hong Kong Ltd
+Vault Manager     : hk_it_manager
+Vault Secret Hash : f54b49f80884e77b65713d3d8d49d45c5ca35617ceb7cfd94f8d0be2ef18a517 (Protected!)
+================================================================

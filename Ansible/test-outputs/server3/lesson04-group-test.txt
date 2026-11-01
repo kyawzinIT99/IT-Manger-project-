@@ -1,0 +1,10 @@
+================================================================
+📘 LESSON 4 REPORT — GROUP: [dbservers]
+================================================================
+Server        : server3
+Role          : Legacy DB & Backup Node
+Disk Space    :
+Filesystem      Size  Used Avail Use% Mounted on
+overlay         453G   13G  417G   3% /
+Targeted By   : hosts: dbservers (server1 & server2 were skipped!)
+================================================================

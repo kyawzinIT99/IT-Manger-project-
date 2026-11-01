@@ -1,6 +1,6 @@
-# 🤖 Northpoint Living — Ansible + Docker + `tmux` Hands-On Lab
+# 🤖 Northpoint Living — Complete Ansible Course & 3-Server Lab Guide
 
-Everything in this lab is self-contained inside `/Users/berry/Antigravity/IT Manager project /Ansible/`. All logs, backups, and test reports are automatically saved in `./test-outputs/` inside this exact same folder.
+Everything in this lab is self-contained inside `/Users/berry/Antigravity/IT Manager project /Ansible/`. All logs, backups, and lesson verification reports are automatically saved in `./test-outputs/` inside this exact same folder.
 
 ---
 
@@ -9,98 +9,46 @@ Everything in this lab is self-contained inside `/Users/berry/Antigravity/IT Man
 ```text
 💻 YOUR MACBOOK (Local Workstation / Ansible Control Node + tmux)
  │
- ├── Reads: ansible.cfg + inventory.ini
+ ├── Reads: ansible.cfg + inventory.ini + vault-secrets.yml
  ├── Saves all logs & test files in: ./test-outputs/
  │
- ├──► SSH Port 2221 ──► 🐳 server1 (northpoint-srv-01 | 172.28.0.11) [Web Storefront 1]
- ├──► SSH Port 2222 ──► 🐳 server2 (northpoint-srv-02 | 172.28.0.12) [Web Storefront 2]
- └──► SSH Port 2223 ──► 🐳 server3 (northpoint-srv-03 | 172.28.0.13) [Legacy DB & Backup]
+ ├──► SSH: 2221 | Web: http://localhost:8881 ──► 🐳 server1 (172.28.0.11) [Web Storefront 1]
+ ├──► SSH: 2222 | Web: http://localhost:8882 ──► 🐳 server2 (172.28.0.12) [Web Storefront 2]
+ └──► SSH: 2223 | DB : localhost:3336->3306  ──► 🐳 server3 (172.28.0.13) [MariaDB Server]
 ```
 
 * **SSH Username (all 3 servers):** `ansible`
-* **SSH Password (all 3 servers):** `northpoint`
+* **SSH Password (all 3 servers):** `northpoint` (defined in [`Dockerfile.node`](file:///Users/berry/Antigravity/IT%20Manager%20project%20/Ansible/Dockerfile.node) & [`inventory.ini`](file:///Users/berry/Antigravity/IT%20Manager%20project%20/Ansible/inventory.ini))
 
 ---
 
-## 📂 2. Files in This Folder
+## 📚 2. Complete Lesson-by-Lesson Curriculum in This Folder
 
-| File | Purpose |
-| :--- | :--- |
-| [`Dockerfile.node`](file:///Users/berry/Antigravity/IT%20Manager%20project%20/Ansible/Dockerfile.node) | Builds an Ubuntu 22.04 server image with OpenSSH Server (`port 22`), Python3, and passwordless `sudo`. |
-| [`docker-compose.yml`](file:///Users/berry/Antigravity/IT%20Manager%20project%20/Ansible/docker-compose.yml) | Starts `server1` (`2221`), `server2` (`2222`), and `server3` (`2223`) on subnet `172.28.0.0/16` and maps `./test-outputs/` to `/var/northpoint_backups`. |
-| [`ansible.cfg`](file:///Users/berry/Antigravity/IT%20Manager%20project%20/Ansible/ansible.cfg) | Configures Ansible to use `./inventory.ini` and write execution logs to `./test-outputs/ansible-execution.log`. |
-| [`inventory.ini`](file:///Users/berry/Antigravity/IT%20Manager%20project%20/Ansible/inventory.ini) | Defines `[webservers]` (`server1`, `server2`) and `[dbservers]` (`server3`). |
-| [`01-setup-tmux-and-tools.yml`](file:///Users/berry/Antigravity/IT%20Manager%20project%20/Ansible/01-setup-tmux-and-tools.yml) | Playbook 1: Installs `tmux`, `htop`, `vim`, `tree` on all 3 servers and configures a custom `tmux` status bar. |
-| [`02-network-and-backup-test.yml`](file:///Users/berry/Antigravity/IT%20Manager%20project%20/Ansible/02-network-and-backup-test.yml) | Playbook 2: Runs a CCNA network/routing audit (`ip route`, `ss -tlnp`, `ping`) and creates `.tar.gz` + `.sha256` backups in `./test-outputs/`. |
-| [`03-git-connect-and-deploy.yml`](file:///Users/berry/Antigravity/IT%20Manager%20project%20/Ansible/03-git-connect-and-deploy.yml) | Playbook 3: Connects all 3 servers to your GitHub repo (`https://github.com/kyawzinIT99/IT-Manger-project-.git`), clones/pulls the code to `/opt/northpoint-git-repo`, and writes `git-connection-report.txt` to `./test-outputs/`. |
-| [`tmux-flip-servers.sh`](file:///Users/berry/Antigravity/IT%20Manager%20project%20/Ansible/tmux-flip-servers.sh) | Launches `tmux` on your MacBook to view all 3 servers at once or flip between them with shortcuts. |
-
----
-
-## 🚀 3. Step-by-Step Commands (Run in Your Terminal)
-
-### Step 1: Go to the `Ansible` folder and check tools on your MacBook
-```bash
-cd "/Users/berry/Antigravity/IT Manager project /Ansible"
-```
-Make sure `ansible`, `sshpass` (needed for password SSH in Ansible), and `tmux` are installed on your MacBook:
-```bash
-brew install ansible tmux hudochenkov/sshpass/sshpass
-```
-
-### Step 2: Build and Start the 3 Ubuntu Servers in Docker
-```bash
-docker compose up -d --build
-```
-Check that all 3 servers are running:
-```bash
-docker compose ps
-```
-
-### Step 3: Test Ansible Connection to All 3 Servers (`ping` module)
-```bash
-ansible all -m ping
-```
-You should see green **`SUCCESS` (`"pong"`)** from `server1`, `server2`, and `server3`!
-
-### Step 4: Run Playbook 1 (Install `tmux` & DevOps Tools on All 3 Servers)
-```bash
-ansible-playbook 01-setup-tmux-and-tools.yml
-```
-
-### Step 5: Run Playbook 2 (Network Audit + Server Backup into `./test-outputs/`)
-```bash
-ansible-playbook 02-network-and-backup-test.yml
-```
-Now check the local `./test-outputs/` directory right inside your `Ansible` folder:
-```bash
-ls -la test-outputs/ test-outputs/server1/ test-outputs/server2/ test-outputs/server3/
-```
+| Lesson / File | Core Ansible Concept Taught | Command to Run |
+| :--- | :--- | :--- |
+| **[`Dockerfile.node`](file:///Users/berry/Antigravity/IT%20Manager%20project%20/Ansible/Dockerfile.node)** & **[`docker-compose.yml`](file:///Users/berry/Antigravity/IT%20Manager%20project%20/Ansible/docker-compose.yml)** | **Lab Infrastructure:** Builds 3 Ubuntu 22.04 servers with OpenSSH (`2221`, `2222`, `2223`), Web ports (`8881`, `8882`), and DB port (`3336->3306`) on subnet `172.28.0.0/16`. | `docker compose up -d --build` |
+| **[`tmux-flip-servers.sh`](file:///Users/berry/Antigravity/IT%20Manager%20project%20/Ansible/tmux-flip-servers.sh)** | **Workstation Multi-Server Control:** Opens `tmux` on your MacBook with 3 side-by-side server columns + individual tabs (`Ctrl+b` then `←`/`→` or `0,1,2,3`). | `./tmux-flip-servers.sh` |
+| **[`00-setup-ssh-keys.yml`](file:///Users/berry/Antigravity/IT%20Manager%20project%20/Ansible/00-setup-ssh-keys.yml)** | **Lesson 0 — Passwordless SSH Keys:** Pushes `./ssh-keys/ansible_key.pub` to `/home/ansible/.ssh/authorized_keys` on all 3 servers so you never type passwords repeatedly. | `ansible-playbook 00-setup-ssh-keys.yml` |
+| **[`01-setup-tmux-and-tools.yml`](file:///Users/berry/Antigravity/IT%20Manager%20project%20/Ansible/01-setup-tmux-and-tools.yml)** | **Lesson 1 — Server Bootstrapping:** Installs `tmux`, `htop`, `vim`, `tree`, login banners, and `.tmux.conf` across all 3 servers. | `ansible-playbook 01-setup-tmux-and-tools.yml` |
+| **[`02-network-and-backup-test.yml`](file:///Users/berry/Antigravity/IT%20Manager%20project%20/Ansible/02-network-and-backup-test.yml)** | **Lesson 2 — Network Audit & Pre-Migration Backup:** Captures routing tables (`ip route`), open sockets (`ss -tlnp`), cross-subnet `ping`, and `.tar.gz` + `.sha256` backups. | `ansible-playbook 02-network-and-backup-test.yml` |
+| **[`03-git-connect-and-deploy.yml`](file:///Users/berry/Antigravity/IT%20Manager%20project%20/Ansible/03-git-connect-and-deploy.yml)** | **Lesson 3 — Git Integration:** Connects all 3 servers to `https://github.com/kyawzinIT99/IT-Manger-project-.git` and pulls code to `/opt/northpoint-git-repo`. | `ansible-playbook 03-git-connect-and-deploy.yml` |
+| **[`04-inventory-groups-and-facts.yml`](file:///Users/berry/Antigravity/IT%20Manager%20project%20/Ansible/04-inventory-groups-and-facts.yml)** | **Lesson 4 — Inventory Groups & Hardware/Network Facts:** Targets `all`, `[webservers]`, and `[dbservers]` separately and collects `ansible_default_ipv4` facts. | `ansible-playbook 04-inventory-groups-and-facts.yml` |
+| **[`05-playbooks-and-idempotency.yml`](file:///Users/berry/Antigravity/IT%20Manager%20project%20/Ansible/05-playbooks-and-idempotency.yml)** | **Lesson 5 — Idempotency & Multi-Tier App:** Installs MariaDB Server (`172.28.0.13:3306`) on `server3` and Nginx Web Server (`172.28.0.11/.12:80`) on `server1` & `server2`. | `ansible-playbook 05-playbooks-and-idempotency.yml` |
+| **[`06-when-conditions-and-db-web-ui.yml`](file:///Users/berry/Antigravity/IT%20Manager%20project%20/Ansible/06-when-conditions-and-db-web-ui.yml)** | **Lesson 6 — `when:` Conditions, `handlers:` & Live DB Web UI:** Uses `when:` to filter tasks in a single Play and renders live MySQL rows onto `http://localhost:8881` & `8882`. | `ansible-playbook 06-when-conditions-and-db-web-ui.yml` |
+| **[`07-roles-and-vault.yml`](file:///Users/berry/Antigravity/IT%20Manager%20project%20/Ansible/07-roles-and-vault.yml)** | **Lesson 7 — Ansible `roles/` & `ansible-vault`:** Organizes tasks into [`roles/webserver/`](file:///Users/berry/Antigravity/IT%20Manager%20project%20/Ansible/roles/webserver/tasks/main.yml) and [`roles/dbserver/`](file:///Users/berry/Antigravity/IT%20Manager%20project%20/Ansible/roles/dbserver/tasks/main.yml) and loads secrets from [`vault-secrets.yml`](file:///Users/berry/Antigravity/IT%20Manager%20project%20/Ansible/vault-secrets.yml). | `ansible-playbook 07-roles-and-vault.yml --ask-vault-pass` |
 
 ---
 
-## 🖥️ 4. How to Flip Between the 3 Servers Using `tmux` on Your MacBook
+## 🌐 3. Quick Verification Commands
 
-### Option A: Use our Ready-Made `tmux` Launcher Script
-```bash
-chmod +x tmux-flip-servers.sh
-./tmux-flip-servers.sh
-```
-*(When asked for password in any pane, type: `northpoint` — or install SSH keys with `ssh-copy-id -p 2221 ansible@127.0.0.1` so it never asks!)*
-
-### Option B: Keyboard Shortcuts Inside `tmux` to Flip Servers
-
-Once inside `tmux`, the **Prefix key** is **`Ctrl + b`** (press `Ctrl` and `b` together, release both, then press the next key):
-
-| Shortcut (`Ctrl + b` then...) | What It Does |
-| :--- | :--- |
-| **`Ctrl + b` then `↑` / `↓`** | **Flip between Server 1, Server 2, and Server 3 panes** in the split view (or just click any pane with your mouse!). |
-| **`Ctrl + b` then `z`** | **Zoom / Full-screen** the current server pane (press `Ctrl + b` then `z` again to unzoom back to all 3 servers). |
-| **`Ctrl + b` then `0`** | Switch to Window 0 (**All 3 Servers Split Screen**). |
-| **`Ctrl + b` then `1`** | Flip to Window 1 (**`server1-web`** full screen). |
-| **`Ctrl + b` then `2`** | Flip to Window 2 (**`server2-app`** full screen). |
-| **`Ctrl + b` then `3`** | Flip to Window 3 (**`server3-db`** full screen). |
-| **`Ctrl + b` then `n` / `p`** | Flip to the **Next (`n`)** or **Previous (`p`)** server window. |
-| **`Ctrl + b` then `:setw synchronize-panes`** | **Magic DevOps Trick:** Everything you type on your MacBook is typed into **all 3 servers at the exact same time**! |
-| **`Ctrl + b` then `d`** | **Detach** from `tmux` (leaves the 3 server sessions running in the background; come back anytime with `tmux attach`). |
-
+* **View Web Server 1 (`172.28.0.11`) Live MySQL Dashboard in Browser:** http://localhost:8881
+* **View Web Server 2 (`172.28.0.12`) Live MySQL Dashboard in Browser:** http://localhost:8882
+* **View Role Status Page in Browser:** http://localhost:8881/role-status.html
+* **Query Database Server (`172.28.0.13:3306`) from Web Servers via Ansible:**
+  ```bash
+  ansible webservers -a "mysql -h 172.28.0.13 -u np_user -pnorthpoint123 -e 'SELECT * FROM northpoint_db.products;'"
+  ```
+* **Check All Generated Test Reports on MacBook:**
+  ```bash
+  ls -la test-outputs/server1/ test-outputs/server2/ test-outputs/server3/
+  ```

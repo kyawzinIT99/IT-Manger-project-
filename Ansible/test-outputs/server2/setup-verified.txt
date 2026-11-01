@@ -1,0 +1,10 @@
+=====================================================
+ANSIBLE PROVISIONING REPORT — server2
+=====================================================
+Hostname      : northpoint-srv-02
+Server Role   : Web Storefront Secondary
+Internal IP   : 172.28.0.12
+OS Version    : Ubuntu 22.04
+Tmux Version  : tmux 3.2a
+Status        : READY FOR TMUX WORKSTATION CONTROL
+=====================================================

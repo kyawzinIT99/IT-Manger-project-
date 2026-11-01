@@ -1,0 +1,9 @@
+================================================================
+📘 LESSON 7 REPORT — ROLE: webserver (server1)
+================================================================
+Applied Role      : roles/webserver/tasks/main.yml
+Server Hostname   : northpoint-srv-01 (172.28.0.11)
+Vault Company     : Northpoint Living Hong Kong Ltd
+Vault Manager     : hk_it_manager
+Vault Secret Hash : f54b49f80884e77b65713d3d8d49d45c5ca35617ceb7cfd94f8d0be2ef18a517 (Protected!)
+================================================================

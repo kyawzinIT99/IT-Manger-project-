@@ -1,0 +1,137 @@
+# ==============================================================================
+# 📘 LESSON 5: PLAYBOOKS, ROLE-BASED PACKAGES & IDEMPOTENCY (WEB + LIVE DB)
+# ==============================================================================
+# Run from your MacBook:
+#   ansible-playbook 05-playbooks-and-idempotency.yml
+#
+# What does this deploy?
+# 1. [dbservers] -> server3 (172.28.0.13:3306):
+#    Installs & starts MariaDB Server, binds it to 0.0.0.0 (so 172.28.0.11 and
+#    172.28.0.12 can connect over the network!), creates `northpoint_db` with a
+#    `products` table, and grants remote SQL access to user `np_user`.
+# 2. [webservers] -> server1 (172.28.0.11:80) & server2 (172.28.0.12:80):
+#    Installs & starts Nginx + MySQL client so the webservers can query
+#    the Database Server at IP `172.28.0.13` directly!
+# ==============================================================================
+
+---
+# ------------------------------------------------------------------------------
+# PLAY 1: Configure Database Server (`server3` -> IP: 172.28.0.13)
+# ------------------------------------------------------------------------------
+- name: "Lesson 5 (Play 1): Install & Configure Live MariaDB Server on [dbservers] (172.28.0.13)"
+  hosts: dbservers
+  become: true
+
+  tasks:
+    - name: "1. Install MariaDB Server & Client on server3 (172.28.0.13)"
+      ansible.builtin.apt:
+        name:
+          - mariadb-server
+          - mariadb-client
+        state: present
+        update_cache: true
+
+    - name: "2. Configure MariaDB to listen on 0.0.0.0 (so 172.28.0.11 & .12 can connect)"
+      ansible.builtin.lineinfile:
+        path: /etc/mysql/mariadb.conf.d/50-server.cnf
+        regexp: '^bind-address'
+        line: 'bind-address = 0.0.0.0'
+
+    - name: "3. Start MariaDB Service inside server3"
+      ansible.builtin.service:
+        name: mariadb
+        state: restarted
+
+    - name: "4. Create northpoint_db, user 'np_user', and sample products table"
+      ansible.builtin.shell: |
+        mysql -u root <<EOF
+        CREATE DATABASE IF NOT EXISTS northpoint_db;
+        CREATE USER IF NOT EXISTS 'np_user'@'%' IDENTIFIED BY 'northpoint123';
+        GRANT ALL PRIVILEGES ON northpoint_db.* TO 'np_user'@'%';
+        FLUSH PRIVILEGES;
+        USE northpoint_db;
+        CREATE TABLE IF NOT EXISTS products (
+          id INT PRIMARY KEY,
+          item_name VARCHAR(100),
+          price_hkd DECIMAL(10,2),
+          db_server_ip VARCHAR(50)
+        );
+        REPLACE INTO products VALUES
+          (1, 'Hong Kong Teak Dining Table', 4800.00, '172.28.0.13'),
+          (2, 'Victoria Peak Ceramic Lamp', 850.00, '172.28.0.13'),
+          (3, 'Kowloon Linen Sofa Set', 9200.00, '172.28.0.13');
+        EOF
+      changed_when: false
+
+    - name: "5. Save Database Node Verification to ./test-outputs/server3/"
+      ansible.builtin.copy:
+        dest: "/var/northpoint_backups/lesson05-idempotency-db.txt"
+        mode: '0644'
+        content: |
+          ================================================================
+          📘 LESSON 5 — DATABASE SERVER VERIFIED ({{ inventory_hostname }})
+          ================================================================
+          Server Name  : {{ ansible_hostname }}
+          Database IP  : {{ internal_ip }} (Port 3306)
+          Database     : northpoint_db (Table: products)
+          Remote User  : np_user (Password: northpoint123)
+          Status       : LISTENING ON 172.28.0.13:3306
+          ================================================================
+
+# ------------------------------------------------------------------------------
+# PLAY 2: Configure Web Servers (`server1`: 172.28.0.11 & `server2`: 172.28.0.12)
+# ------------------------------------------------------------------------------
+- name: "Lesson 5 (Play 2): Install Nginx on [webservers] & Query DB at 172.28.0.13"
+  hosts: webservers
+  become: true
+
+  tasks:
+    - name: "1. Ensure Nginx and MariaDB client are installed on Webservers"
+      ansible.builtin.apt:
+        name:
+          - nginx
+          - mariadb-client
+        state: present
+        update_cache: true
+
+    - name: "2. Deploy Northpoint Living Storefront HTML page"
+      ansible.builtin.copy:
+        dest: /var/www/html/index.html
+        mode: '0644'
+        content: |
+          <!DOCTYPE html>
+          <html>
+          <head><title>Northpoint Living - {{ inventory_hostname }}</title></head>
+          <body style="font-family: sans-serif; background: #0f172a; color: #f8fafc; padding: 40px;">
+            <h1>🏢 Northpoint Living Storefront (Managed by Ansible)</h1>
+            <p><strong>Served by Web Node:</strong> {{ inventory_hostname }} ({{ ansible_hostname }})</p>
+            <p><strong>Web Node IP:</strong> {{ internal_ip }} (Port 80)</p>
+            <p><strong>Connected Database IP:</strong> 172.28.0.13 (Port 3306 - northpoint_db)</p>
+          </body>
+          </html>
+
+    - name: "3. Ensure Nginx service is running"
+      ansible.builtin.service:
+        name: nginx
+        state: started
+
+    - name: "4. Query Live Database at 172.28.0.13 from Webserver ({{ internal_ip }})"
+      ansible.builtin.shell: |
+        mysql -h 172.28.0.13 -u np_user -pnorthpoint123 -e "SELECT * FROM northpoint_db.products;"
+      register: db_query_from_web
+      changed_when: false
+
+    - name: "5. Save Web + DB Cross-IP Test Report to ./test-outputs/"
+      ansible.builtin.copy:
+        dest: "/var/northpoint_backups/lesson05-idempotency-web.txt"
+        mode: '0644'
+        content: |
+          ================================================================
+          📘 LESSON 5 — WEB ({{ internal_ip }}) -> DB (172.28.0.13) TEST
+          ================================================================
+          Web Server    : {{ inventory_hostname }} ({{ internal_ip }}:80)
+          DB Queried    : 172.28.0.13:3306 (northpoint_db.products)
+
+          === LIVE SQL QUERY OUTPUT FROM 172.28.0.13 ===
+          {{ db_query_from_web.stdout }}
+          ================================================================

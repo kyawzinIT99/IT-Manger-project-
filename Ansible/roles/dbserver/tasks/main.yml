@@ -1,0 +1,35 @@
+# ==============================================================================
+# 🧩 ROLE: dbserver -> tasks/main.yml
+# ==============================================================================
+# When `07-roles-and-vault.yml` calls `roles: - dbserver`, Ansible automatically
+# looks inside `roles/dbserver/tasks/main.yml` and runs these tasks on server3!
+# ==============================================================================
+
+---
+- name: "[Role: dbserver] 1. Ensure MariaDB Server is running on 172.28.0.13"
+  ansible.builtin.service:
+    name: mariadb
+    state: started
+
+- name: "[Role: dbserver] 2. Verify Products Count in northpoint_db"
+  ansible.builtin.shell: |
+    mysql -u root -N -e "SELECT COUNT(*) FROM northpoint_db.products;"
+  register: product_count
+  changed_when: false
+
+- name: "[Role: dbserver] 3. Save Lesson 7 Role & Vault Report to ./test-outputs/"
+  ansible.builtin.copy:
+    dest: "/var/northpoint_backups/lesson07-roles-and-vault.txt"
+    mode: '0644'
+    content: |
+      ================================================================
+      📘 LESSON 7 REPORT — ROLE: dbserver ({{ inventory_hostname }})
+      ================================================================
+      Applied Role      : roles/dbserver/tasks/main.yml
+      Server Hostname   : {{ ansible_facts['hostname'] }} ({{ internal_ip }}:3306)
+      Total DB Products : {{ product_count.stdout }} items in northpoint_db.products
+      Vault Company     : {{ vault_company_name }}
+      Vault Manager     : {{ vault_db_vip_user }}
+      Vault Secret Hash : {{ vault_api_secret_key | hash('sha256') }} (Protected!)
+      ================================================================
+

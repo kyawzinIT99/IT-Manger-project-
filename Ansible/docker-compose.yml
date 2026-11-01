@@ -2,17 +2,14 @@
 # 🐳 DOCKER COMPOSE — 3 UBUNTU SERVERS FOR ANSIBLE LAB
 # ==============================================================================
 # This file launches 3 isolated Ubuntu Linux servers inside Docker on your MacBook:
-#   - server1 (172.28.0.11) -> Mapped to your MacBook port 2221 -> 22
-#   - server2 (172.28.0.12) -> Mapped to your MacBook port 2222 -> 22
-#   - server3 (172.28.0.13) -> Mapped to your MacBook port 2223 -> 22
-#
-# Your MacBook is the "Control Node" (Workstation) that connects to all 3 servers
-# at once using Ansible over SSH!
+#   - server1 (172.28.0.11) -> SSH: 2221->22 | Web HTTP: 8881->80
+#   - server2 (172.28.0.12) -> SSH: 2222->22 | Web HTTP: 8882->80
+#   - server3 (172.28.0.13) -> SSH: 2223->22 | MySQL DB: 3336->3306
 # ==============================================================================
 
 services:
   # ----------------------------------------------------------------------------
-  # 🖥️ SERVER 1: Web Storefront Node (Port 2221 on MacBook)
+  # 🖥️ SERVER 1: Web Storefront Node 1 (IP: 172.28.0.11 | Web: localhost:8881)
   # ----------------------------------------------------------------------------
   server1:
     build:
@@ -21,7 +18,8 @@ services:
     container_name: ansible-server-1
     hostname: northpoint-srv-01
     ports:
-      - "2221:22"   # MacBook localhost:2221 -> Container SSH Port 22
+      - "2221:22"   # MacBook SSH Port 2221 -> Container Port 22
+      - "8881:80"   # MacBook Browser http://localhost:8881 -> Nginx Port 80
     volumes:
       - ./test-outputs/server1:/var/northpoint_backups
     networks:
@@ -30,7 +28,7 @@ services:
     restart: unless-stopped
 
   # ----------------------------------------------------------------------------
-  # 🖥️ SERVER 2: Application / API Node (Port 2222 on MacBook)
+  # 🖥️ SERVER 2: Web Storefront Node 2 (IP: 172.28.0.12 | Web: localhost:8882)
   # ----------------------------------------------------------------------------
   server2:
     build:
@@ -39,7 +37,8 @@ services:
     container_name: ansible-server-2
     hostname: northpoint-srv-02
     ports:
-      - "2222:22"   # MacBook localhost:2222 -> Container SSH Port 22
+      - "2222:22"   # MacBook SSH Port 2222 -> Container Port 22
+      - "8882:80"   # MacBook Browser http://localhost:8882 -> Nginx Port 80
     volumes:
       - ./test-outputs/server2:/var/northpoint_backups
     networks:
@@ -48,7 +47,7 @@ services:
     restart: unless-stopped
 
   # ----------------------------------------------------------------------------
-  # 🖥️ SERVER 3: Legacy Database & Network Node (Port 2223 on MacBook)
+  # 🖥️ SERVER 3: Database Node (IP: 172.28.0.13 | MySQL DB: localhost:3336)
   # ----------------------------------------------------------------------------
   server3:
     build:
@@ -57,7 +56,8 @@ services:
     container_name: ansible-server-3
     hostname: northpoint-srv-03
     ports:
-      - "2223:22"   # MacBook localhost:2223 -> Container SSH Port 22
+      - "2223:22"     # MacBook SSH Port 2223 -> Container Port 22
+      - "3336:3306"   # MacBook Port 3336 -> MariaDB/MySQL Port 3306
     volumes:
       - ./test-outputs/server3:/var/northpoint_backups
     networks:
@@ -74,4 +74,3 @@ networks:
     ipam:
       config:
         - subnet: 172.28.0.0/16
-

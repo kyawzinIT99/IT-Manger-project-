@@ -1,0 +1,98 @@
+# ==============================================================================
+# 📘 LESSON 4: INVENTORY GROUPS (`all`, `webservers`, `dbservers`) & FACTS
+# ==============================================================================
+# Equivalent Ad-Hoc Commands (Run from MacBook Terminal):
+#   1. All servers uptime : ansible all -a "uptime"
+#   2. All servers memory : ansible all -a "free -h"
+#   3. Webservers IP only : ansible webservers -a "hostname -I"
+#   4. DB server disk     : ansible dbservers -a "df -h"
+#   5. Network IPv4 Facts : ansible server1 -m setup -a "filter=ansible_default_ipv4"
+#
+# Or run this entire Lesson 4 as a Playbook:
+#   ansible-playbook 04-inventory-groups-and-facts.yml
+# ==============================================================================
+
+---
+# ------------------------------------------------------------------------------
+# PLAY 1: Target ALL 3 Servers (`northpoint_servers`) — Uptime, RAM & Network Facts
+# ------------------------------------------------------------------------------
+- name: "Lesson 4 (Play 1): Check Uptime, Memory & Network Facts on ALL Servers"
+  hosts: northpoint_servers
+  gather_facts: true   # Automatically runs `-m setup` to collect CPU, RAM, IP, MAC!
+
+  tasks:
+    - name: "1. Check Uptime and Free Memory on all 3 servers"
+      ansible.builtin.shell: |
+        echo "=== UPTIME ==="
+        uptime
+        echo "=== MEMORY (free -h) ==="
+        free -h
+      register: all_health
+      changed_when: false
+
+    - name: "2. Display Discovered Network Facts (IP, Interface, MAC, Gateway)"
+      ansible.builtin.debug:
+        msg:
+          - "Server Name : {{ inventory_hostname }} ({{ ansible_hostname }})"
+          - "Role        : {{ server_role }}"
+          - "OS Version  : {{ ansible_distribution }} {{ ansible_distribution_version }}"
+          - "Interface   : {{ ansible_default_ipv4.interface | default('eth0') }}"
+          - "IPv4 Address: {{ ansible_default_ipv4.address | default(internal_ip) }}"
+          - "MAC Address : {{ ansible_default_ipv4.macaddress | default('N/A') }}"
+          - "Gateway IP  : {{ ansible_default_ipv4.gateway | default('172.28.0.1') }}"
+
+# ------------------------------------------------------------------------------
+# PLAY 2: Target ONLY `[webservers]` (server1 & server2 — skips server3!)
+# ------------------------------------------------------------------------------
+- name: "Lesson 4 (Play 2): Target ONLY [webservers] (server1 & server2)"
+  hosts: webservers
+  gather_facts: false
+
+  tasks:
+    - name: "1. Get Webserver Hostname & IP (hostname -I)"
+      ansible.builtin.command: hostname -I
+      register: web_ip
+      changed_when: false
+
+    - name: "2. Save Lesson 4 Webserver Report to ./test-outputs/"
+      ansible.builtin.copy:
+        dest: "/var/northpoint_backups/lesson04-group-test.txt"
+        mode: '0644'
+        content: |
+          ================================================================
+          📘 LESSON 4 REPORT — GROUP: [webservers]
+          ================================================================
+          Server        : {{ inventory_hostname }}
+          Role          : {{ server_role }}
+          Detected IP   : {{ web_ip.stdout }}
+          Targeted By   : hosts: webservers (server3 was automatically skipped!)
+          ================================================================
+
+# ------------------------------------------------------------------------------
+# PLAY 3: Target ONLY `[dbservers]` (server3 — skips server1 & server2!)
+# ------------------------------------------------------------------------------
+- name: "Lesson 4 (Play 3): Target ONLY [dbservers] (server3)"
+  hosts: dbservers
+  gather_facts: false
+
+  tasks:
+    - name: "1. Get Database Server Disk Usage (df -h)"
+      ansible.builtin.command: df -h /
+      register: db_disk
+      changed_when: false
+
+    - name: "2. Save Lesson 4 Database Report to ./test-outputs/"
+      ansible.builtin.copy:
+        dest: "/var/northpoint_backups/lesson04-group-test.txt"
+        mode: '0644'
+        content: |
+          ================================================================
+          📘 LESSON 4 REPORT — GROUP: [dbservers]
+          ================================================================
+          Server        : {{ inventory_hostname }}
+          Role          : {{ server_role }}
+          Disk Space    :
+          {{ db_disk.stdout }}
+          Targeted By   : hosts: dbservers (server1 & server2 were skipped!)
+          ================================================================
+

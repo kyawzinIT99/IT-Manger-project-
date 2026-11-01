@@ -1,0 +1,131 @@
+# ==============================================================================
+# 📘 LESSON 6: `when:` CONDITIONS, HANDLERS & LIVE DB TABLE IN BROWSER
+# ==============================================================================
+# Run from your MacBook:
+#   ansible-playbook 06-when-conditions-and-db-web-ui.yml
+#
+# 🎯 What does Lesson 6 teach?
+# 1. `when:` Conditions:
+#    Instead of writing separate plays for `[dbservers]` and `[webservers]`, we
+#    target `hosts: northpoint_servers` (ALL 3 servers in 1 single Play!) and
+#    use `when:` statements so tasks only run on matching servers!
+# 2. `handlers:` & `notify:`:
+#    Only restarts Nginx or MariaDB *if* a config file actually changed!
+# 3. Live MySQL HTML Table (`--html`) on Port 8881 & 8882:
+#    Since browsers speak HTTP (not binary MySQL port 3306), we query MariaDB on
+#    `172.28.0.13:3306` using `mysql --html` and render the live database table
+#    directly onto `http://localhost:8881` and `http://localhost:8882`!
+# ==============================================================================
+
+---
+- name: "Lesson 6: Single Play Using 'when:' Conditions + Handlers + Live DB Web UI"
+  hosts: northpoint_servers
+  become: true
+
+  tasks:
+    # --------------------------------------------------------------------------
+    # TASK 1: Runs on ALL Ubuntu servers (`when: ansible_facts['distribution'] == "Ubuntu"`)
+    # --------------------------------------------------------------------------
+    - name: "1. [when: OS == Ubuntu] Verify Ubuntu OS across all 3 servers"
+      ansible.builtin.debug:
+        msg: "Node {{ inventory_hostname }} ({{ internal_ip }}) is running {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}"
+      when: ansible_facts['distribution'] == "Ubuntu"
+
+    # --------------------------------------------------------------------------
+    # TASK 2: Runs ONLY on server3 (`when: "'dbservers' in group_names"`)
+    # --------------------------------------------------------------------------
+    - name: "2. [when: dbservers] Add a 4th VIP Product into MariaDB on 172.28.0.13:3306"
+      ansible.builtin.shell: |
+        service mariadb start
+        mysql -u root northpoint_db <<EOF
+        REPLACE INTO products VALUES
+          (1, 'Hong Kong Teak Dining Table', 4800.00, '172.28.0.13:3306'),
+          (2, 'Victoria Peak Ceramic Lamp', 850.00, '172.28.0.13:3306'),
+          (3, 'Kowloon Linen Sofa Set', 9200.00, '172.28.0.13:3306'),
+          (4, 'Central Harbour Executive Desk (Added in Lesson 6)', 6500.00, '172.28.0.13:3306');
+        EOF
+      when: "'dbservers' in group_names"
+      changed_when: false
+
+    # --------------------------------------------------------------------------
+    # TASK 3: Runs ONLY on Webservers (`when: "'webservers' in group_names"`)
+    #         Queries 172.28.0.13:3306 and returns an HTML <table>!
+    # --------------------------------------------------------------------------
+    - name: "3. [when: webservers] Fetch Live Products Table from DB (172.28.0.13:3306) as HTML"
+      ansible.builtin.shell: |
+        mysql --html -h 172.28.0.13 -P 3306 -u np_user -pnorthpoint123 \
+          -e "SELECT id AS 'ID', item_name AS 'Product Name', price_hkd AS 'Price (HKD)', db_server_ip AS 'Source DB IP:Port' FROM northpoint_db.products;"
+      register: mysql_html_table
+      when: "'webservers' in group_names"
+      changed_when: false
+
+    # --------------------------------------------------------------------------
+    # TASK 4: Runs ONLY on Webservers (`when: "'webservers' in group_names"`)
+    #         Builds a Dashboard at http://localhost:8881 & http://localhost:8882
+    #         and triggers Handler (`notify: Reload Nginx`) if updated!
+    # --------------------------------------------------------------------------
+    - name: "4. [when: webservers] Render Live MySQL Data into Web Dashboard"
+      ansible.builtin.copy:
+        dest: /var/www/html/index.html
+        mode: '0644'
+        content: |
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8">
+            <title>Northpoint Living — {{ inventory_hostname }}</title>
+            <style>
+              body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #0f172a; color: #f8fafc; padding: 40px; }
+              .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 24px; max-width: 850px; margin-bottom: 24px; }
+              .badge { display: inline-block; background: #0284c7; color: white; padding: 4px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; }
+              table { width: 100%; border-collapse: collapse; margin-top: 16px; background: #0f172a; border-radius: 8px; overflow: hidden; }
+              th { background: #1e40af; color: #ffffff; text-align: left; padding: 12px; }
+              td { padding: 12px; border-bottom: 1px solid #334155; color: #e2e8f0; }
+              tr:hover td { background: #1e293b; }
+              code { background: #334155; padding: 2px 6px; border-radius: 4px; color: #38bdf8; }
+            </style>
+          </head>
+          <body>
+            <div class="card">
+              <span class="badge">Ansible Lesson 6: when: Conditions & Live DB UI</span>
+              <h1>🏢 Northpoint Living — Storefront & Database Inspector</h1>
+              <p>🖥️ <strong>Web Server Node:</strong> <code>{{ inventory_hostname }}</code> (<code>{{ ansible_facts['hostname'] }}</code>)</p>
+              <p>🌐 <strong>Web Server Internal IP:</strong> <code>{{ internal_ip }}:80</code></p>
+              <p>🗄️ <strong>Connected MySQL Database Server:</strong> <code>server3 (172.28.0.13:3306)</code> — Database: <code>northpoint_db</code></p>
+            </div>
+
+            <div class="card">
+              <h2>📦 Live SQL Table Queried from <code>172.28.0.13:3306</code></h2>
+              {{ mysql_html_table.stdout }}
+            </div>
+          </body>
+          </html>
+      when: "'webservers' in group_names"
+      notify: Reload Nginx
+
+    # --------------------------------------------------------------------------
+    # TASK 5: Save Lesson 6 Verification Report on ALL 3 servers
+    # --------------------------------------------------------------------------
+    - name: "5. Save Lesson 6 Report into ./test-outputs/<server>/"
+      ansible.builtin.copy:
+        dest: "/var/northpoint_backups/lesson06-when-and-handlers.txt"
+        mode: '0644'
+        content: |
+          ================================================================
+          📘 LESSON 6 REPORT — {{ inventory_hostname }} ({{ internal_ip }})
+          ================================================================
+          Server Groups : {{ group_names | join(', ') }}
+          OS Verified   : {{ ansible_facts['distribution'] }} {{ ansible_facts['distribution_version'] }}
+          Web UI Active : {{ 'YES (http://localhost:8881 or 8882)' if ('webservers' in group_names) else 'NO (Skipped via when: condition - This is the DB Node!)' }}
+          DB Port 3306  : {{ 'ACTIVE (172.28.0.13:3306)' if ('dbservers' in group_names) else 'Connected remotely to 172.28.0.13:3306' }}
+          ================================================================
+
+  # ----------------------------------------------------------------------------
+  # 🔔 HANDLERS: Only triggered when a task with `notify:` reports `changed`!
+  # ----------------------------------------------------------------------------
+  handlers:
+    - name: Reload Nginx
+      ansible.builtin.service:
+        name: nginx
+        state: restarted
+

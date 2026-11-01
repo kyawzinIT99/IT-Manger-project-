@@ -1,0 +1,39 @@
+# ==============================================================================
+# 🧩 ROLE: webserver -> tasks/main.yml
+# ==============================================================================
+# When `07-roles-and-vault.yml` calls `roles: - webserver`, Ansible automatically
+# looks inside `roles/webserver/tasks/main.yml` and runs these tasks!
+# ==============================================================================
+
+---
+- name: "[Role: webserver] 1. Ensure Nginx is installed and running"
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+
+- name: "[Role: webserver] 2. Deploy Role-Managed Status File to Webserver"
+  ansible.builtin.copy:
+    dest: /var/www/html/role-status.html
+    mode: '0644'
+    content: |
+      <h2>✅ Managed by Ansible Role: <code>roles/webserver</code></h2>
+      <p>Server: {{ inventory_hostname }} ({{ internal_ip }})</p>
+      <p>Company: {{ vault_company_name }}</p>
+      <p>Authorized Manager: {{ vault_db_vip_user }}</p>
+  notify: Restart Nginx Role Handler
+
+- name: "[Role: webserver] 3. Save Lesson 7 Role & Vault Report to ./test-outputs/"
+  ansible.builtin.copy:
+    dest: "/var/northpoint_backups/lesson07-roles-and-vault.txt"
+    mode: '0644'
+    content: |
+      ================================================================
+      📘 LESSON 7 REPORT — ROLE: webserver ({{ inventory_hostname }})
+      ================================================================
+      Applied Role      : roles/webserver/tasks/main.yml
+      Server Hostname   : {{ ansible_facts['hostname'] }} ({{ internal_ip }})
+      Vault Company     : {{ vault_company_name }}
+      Vault Manager     : {{ vault_db_vip_user }}
+      Vault Secret Hash : {{ vault_api_secret_key | hash('sha256') }} (Protected!)
+      ================================================================
+

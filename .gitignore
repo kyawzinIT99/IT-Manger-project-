@@ -19,7 +19,9 @@ Terraform/.terraform.tfstate.lock.info
 # 3. Node.js dependencies (rebuilt automatically via Dockerfile / npm install)
 **/node_modules/
 
-# 4. Temporary local files
+# 4. Temporary local files & Private SSH/Vault Keys
 *.swp
 *.tmp
+Ansible/ssh-keys/ansible_key
+Ansible/ssh-keys/.vault_pass
 

@@ -1,0 +1,39 @@
+# ==============================================================================
+# 📘 LESSON 7: ANSIBLE ROLES & ANSIBLE VAULT (PRODUCTION ORGANIZATION)
+# ==============================================================================
+# Look how clean and short this Playbook is!
+# Instead of 150 lines of tasks in one file, it delegates the work to:
+#   - roles/webserver/tasks/main.yml  (for server1 & server2)
+#   - roles/dbserver/tasks/main.yml   (for server3)
+# And loads secret variables from `vault-secrets.yml`!
+#
+# Run (before encrypting vault-secrets.yml):
+#   ansible-playbook 07-roles-and-vault.yml
+#
+# Run (after encrypting vault-secrets.yml with `ansible-vault encrypt vault-secrets.yml`):
+#   ansible-playbook 07-roles-and-vault.yml --ask-vault-pass
+# ==============================================================================
+
+---
+# ------------------------------------------------------------------------------
+# PLAY 1: Apply the `webserver` Role to [webservers] (server1 & server2)
+# ------------------------------------------------------------------------------
+- name: "Lesson 7 (Play 1): Apply 'webserver' Role to Web Nodes"
+  hosts: webservers
+  become: true
+  vars_files:
+    - ./vault-secrets.yml
+  roles:
+    - webserver
+
+# ------------------------------------------------------------------------------
+# PLAY 2: Apply the `dbserver` Role to [dbservers] (server3)
+# ------------------------------------------------------------------------------
+- name: "Lesson 7 (Play 2): Apply 'dbserver' Role to Database Node"
+  hosts: dbservers
+  become: true
+  vars_files:
+    - ./vault-secrets.yml
+  roles:
+    - dbserver
+

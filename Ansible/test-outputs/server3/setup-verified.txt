@@ -1,0 +1,10 @@
+=====================================================
+ANSIBLE PROVISIONING REPORT — server3
+=====================================================
+Hostname      : northpoint-srv-03
+Server Role   : Legacy DB & Backup Node
+Internal IP   : 172.28.0.13
+OS Version    : Ubuntu 22.04
+Tmux Version  : tmux 3.2a
+Status        : READY FOR TMUX WORKSTATION CONTROL
+=====================================================

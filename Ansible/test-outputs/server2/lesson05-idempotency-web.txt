@@ -1,0 +1,12 @@
+================================================================
+📘 LESSON 5 — WEB (172.28.0.12) -> DB (172.28.0.13) TEST
+================================================================
+Web Server    : server2 (172.28.0.12:80)
+DB Queried    : 172.28.0.13:3306 (northpoint_db.products)
+
+=== LIVE SQL QUERY OUTPUT FROM 172.28.0.13 ===
+id	item_name	price_hkd	db_server_ip
+1	Hong Kong Teak Dining Table	4800.00	172.28.0.13
+2	Victoria Peak Ceramic Lamp	850.00	172.28.0.13
+3	Kowloon Linen Sofa Set	9200.00	172.28.0.13
+================================================================

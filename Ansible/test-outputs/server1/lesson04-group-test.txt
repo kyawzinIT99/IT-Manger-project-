@@ -1,0 +1,8 @@
+================================================================
+📘 LESSON 4 REPORT — GROUP: [webservers]
+================================================================
+Server        : server1
+Role          : Web Storefront Primary
+Detected IP   : 172.28.0.11 
+Targeted By   : hosts: webservers (server3 was automatically skipped!)
+================================================================

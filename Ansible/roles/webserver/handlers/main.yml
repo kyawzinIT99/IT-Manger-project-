@@ -1,0 +1,12 @@
+# ==============================================================================
+# 🔔 ROLE: webserver -> handlers/main.yml
+# ==============================================================================
+# Automatically loaded by Ansible when the `webserver` role runs!
+# ==============================================================================
+
+---
+- name: Restart Nginx Role Handler
+  ansible.builtin.service:
+    name: nginx
+    state: restarted
+
