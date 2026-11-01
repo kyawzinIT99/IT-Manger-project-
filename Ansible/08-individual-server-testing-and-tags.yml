@@ -1,0 +1,146 @@
+# ==============================================================================
+# 📘 LESSON 8: INDIVIDUAL SERVER TARGETING (`server1`, `server2`, `server3`)
+# ==============================================================================
+# Look inside this YAML file — it has 3 separate Plays, each targeting ONE
+# specific individual server (`hosts: server1`, `hosts: server2`, `hosts: server3`)
+# AND tagged with `tags: [server1]`, `tags: [server2]`, and `tags: [server3]`!
+#
+# 🛠️ How to Run & Test Each Individual Server from Your MacBook:
+#
+#   1. Run ONLY Server 1 (using --tags server1 OR --limit server1):
+#      ansible-playbook 08-individual-server-testing-and-tags.yml --tags server1
+#
+#   2. Run ONLY Server 2 (using --tags server2 OR --limit server2):
+#      ansible-playbook 08-individual-server-testing-and-tags.yml --tags server2
+#
+#   3. Run ONLY Server 3 (using --tags server3 OR --limit server3):
+#      ansible-playbook 08-individual-server-testing-and-tags.yml --tags server3
+#
+#   4. Run ALL 3 Individual Server Plays in order:
+#      ansible-playbook 08-individual-server-testing-and-tags.yml
+# ==============================================================================
+
+---
+# ==============================================================================
+# 🖥️ PLAY 1: TARGET ONLY INDIVIDUAL `server1` (172.28.0.11 - Primary Web Node)
+# ==============================================================================
+- name: "Lesson 8 (Play 1): Individual Test for SERVER 1 ONLY (172.28.0.11)"
+  hosts: server1
+  become: true
+  tags:
+    - server1
+
+  tasks:
+    - name: "[server1] 1. Print Server 1 Individual Configuration (from host_vars/server1.yml)"
+      ansible.builtin.debug:
+        msg:
+          - "🖥️ Target Host     : {{ inventory_hostname }} ({{ internal_ip }})"
+          - "🏷️ Node Title      : {{ individual_node_title }}"
+          - "🌐 Assigned VLAN   : {{ assigned_vlan }}"
+          - "⚡ Max Connections : {{ max_worker_connections }}"
+
+    - name: "[server1] 2. Test Nginx HTTP Port 80 on Server 1 (172.28.0.11)"
+      ansible.builtin.uri:
+        url: http://172.28.0.11
+        status_code: 200
+      register: srv1_http_check
+
+    - name: "[server1] 3. Save Server 1 Individual Test Report to ./test-outputs/server1/"
+      ansible.builtin.copy:
+        dest: "/var/northpoint_backups/lesson08-individual-test.txt"
+        mode: '0644'
+        content: |
+          ================================================================
+          📘 LESSON 8 — INDIVIDUAL SERVER 1 TEST (hosts: server1)
+          ================================================================
+          Targeted Host     : {{ inventory_hostname }} ({{ internal_ip }})
+          Tag Used          : tags: [server1]
+          Node Title        : {{ individual_node_title }}
+          Assigned VLAN     : {{ assigned_vlan }}
+          Max Connections   : {{ max_worker_connections }}
+          HTTP Health Check : Status {{ srv1_http_check.status }} OK on 172.28.0.11:80
+          ================================================================
+
+# ==============================================================================
+# 🖥️ PLAY 2: TARGET ONLY INDIVIDUAL `server2` (172.28.0.12 - Secondary Failover)
+# ==============================================================================
+- name: "Lesson 8 (Play 2): Individual Test for SERVER 2 ONLY (172.28.0.12)"
+  hosts: server2
+  become: true
+  tags:
+    - server2
+
+  tasks:
+    - name: "[server2] 1. Print Server 2 Individual Configuration (from host_vars/server2.yml)"
+      ansible.builtin.debug:
+        msg:
+          - "🖥️ Target Host     : {{ inventory_hostname }} ({{ internal_ip }})"
+          - "🏷️ Node Title      : {{ individual_node_title }}"
+          - "🌐 Assigned VLAN   : {{ assigned_vlan }}"
+          - "⚡ Max Connections : {{ max_worker_connections }}"
+
+    - name: "[server2] 2. Test Failover Ping from Server 2 (172.28.0.12) to Primary Server 1 (172.28.0.11)"
+      ansible.builtin.command: ping -c 2 172.28.0.11
+      register: srv2_failover_ping
+      changed_when: false
+
+    - name: "[server2] 3. Save Server 2 Individual Test Report to ./test-outputs/server2/"
+      ansible.builtin.copy:
+        dest: "/var/northpoint_backups/lesson08-individual-test.txt"
+        mode: '0644'
+        content: |
+          ================================================================
+          📘 LESSON 8 — INDIVIDUAL SERVER 2 TEST (hosts: server2)
+          ================================================================
+          Targeted Host     : {{ inventory_hostname }} ({{ internal_ip }})
+          Tag Used          : tags: [server2]
+          Node Title        : {{ individual_node_title }}
+          Assigned VLAN     : {{ assigned_vlan }}
+          Max Connections   : {{ max_worker_connections }}
+
+          === FAILOVER HEARTBEAT PING TO SERVER 1 (172.28.0.11) ===
+          {{ srv2_failover_ping.stdout }}
+          ================================================================
+
+# ==============================================================================
+# 🖥️ PLAY 3: TARGET ONLY INDIVIDUAL `server3` (172.28.0.13 - Database Vault)
+# ==============================================================================
+- name: "Lesson 8 (Play 3): Individual Test for SERVER 3 ONLY (172.28.0.13)"
+  hosts: server3
+  become: true
+  tags:
+    - server3
+
+  tasks:
+    - name: "[server3] 1. Print Server 3 Individual Configuration (from host_vars/server3.yml)"
+      ansible.builtin.debug:
+        msg:
+          - "🖥️ Target Host     : {{ inventory_hostname }} ({{ internal_ip }})"
+          - "🏷️ Node Title      : {{ individual_node_title }}"
+          - "🌐 Assigned VLAN   : {{ assigned_vlan }}"
+          - "⚡ Max Connections : {{ max_worker_connections }}"
+
+    - name: "[server3] 2. Run Individual MariaDB Health & Uptime Check on Server 3 (172.28.0.13:3306)"
+      ansible.builtin.shell: |
+        mysqladmin -u root status
+        mysql -u root -e "SHOW DATABASES;"
+      register: srv3_db_status
+      changed_when: false
+
+    - name: "[server3] 3. Save Server 3 Individual Test Report to ./test-outputs/server3/"
+      ansible.builtin.copy:
+        dest: "/var/northpoint_backups/lesson08-individual-test.txt"
+        mode: '0644'
+        content: |
+          ================================================================
+          📘 LESSON 8 — INDIVIDUAL SERVER 3 TEST (hosts: server3)
+          ================================================================
+          Targeted Host     : {{ inventory_hostname }} ({{ internal_ip }})
+          Tag Used          : tags: [server3]
+          Node Title        : {{ individual_node_title }}
+          Assigned VLAN     : {{ assigned_vlan }}
+          Max Connections   : {{ max_worker_connections }}
+
+          === MARIADB ENGINE STATUS ON 172.28.0.13:3306 ===
+          {{ srv3_db_status.stdout }}
+          ================================================================

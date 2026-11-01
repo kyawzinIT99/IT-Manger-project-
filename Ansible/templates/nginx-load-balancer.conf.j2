@@ -1,0 +1,47 @@
+# ==============================================================================
+# ⚖️ NGINX REVERSE PROXY LOAD BALANCER TEMPLATE (templates/nginx-load-balancer.conf.j2)
+# ==============================================================================
+# What does this file do?
+# 1. Defines an `upstream` pool named `northpoint_backend_pool` containing:
+#      - server1 (172.28.0.11:80)
+#      - server2 (172.28.0.12:80)
+# 2. Uses Round-Robin (50% / 50%) load balancing by default!
+# 3. Automatic Health Check / Failover (`max_fails=2 fail_timeout=5s`):
+#    If `server1` goes down, Nginx automatically routes 100% of traffic to `server2`!
+# ==============================================================================
+
+upstream northpoint_backend_pool {
+    # Round-Robin Pool across all hosts in [webservers] group
+{% for host in groups['webservers'] %}
+    server {{ hostvars[host]['internal_ip'] }}:80 max_fails=2 fail_timeout=5s;
+{% endfor %}
+}
+
+server {
+    listen 80 default_server;
+    server_name _;
+
+    # 1. Forward all customer HTTP traffic to the backend pool (172.28.0.11 & 172.28.0.12)
+    location / {
+        proxy_pass http://northpoint_backend_pool;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+        # Fast failover timeouts (if Server 1 stops, jump to Server 2 in 1 second!)
+        proxy_connect_timeout 1s;
+        proxy_read_timeout 2s;
+        proxy_next_upstream error timeout http_502 http_503 http_504;
+
+        # Add response headers so you can inspect which backend answered!
+        add_header X-Load-Balancer-VIP "{{ internal_ip }}" always;
+        add_header X-Answered-By-Backend $upstream_addr always;
+    }
+
+    # 2. Dedicated Load Balancer Status Endpoint (/lb-status)
+    location /lb-status {
+        default_type text/plain;
+        return 200 "Northpoint Load Balancer VIP ({{ internal_ip }}) is ACTIVE -> Balancing 172.28.0.11 & 172.28.0.12\n";
+    }
+}
+

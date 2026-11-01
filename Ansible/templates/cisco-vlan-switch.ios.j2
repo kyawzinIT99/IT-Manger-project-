@@ -1,0 +1,35 @@
+! ==============================================================================
+! 🌐 CISCO IOS SWITCH PORT & VLAN TEMPLATE (templates/cisco-vlan-switch.ios.j2)
+! ==============================================================================
+! Generated dynamically by Ansible Jinja2 Template Engine (`ansible.builtin.template`)
+! Target Server Connected : {{ inventory_hostname }} ({{ ansible_facts['hostname'] }})
+! Assigned Engineer       : {{ assigned_engineer }}
+! ==============================================================================
+hostname HK-NORTHPOINT-SW01
+!
+vlan {{ '10' if inventory_hostname == 'server1' else ('20' if inventory_hostname == 'server2' else '30') }}
+ name {{ assigned_vlan | replace(' ', '_') }}
+!
+interface GigabitEthernet0/{{ '1' if inventory_hostname == 'server1' else ('2' if inventory_hostname == 'server2' else '3') }}
+ description Connected_to_{{ inventory_hostname }}_{{ internal_ip }} ({{ individual_node_title }})
+ switchport mode access
+ switchport access vlan {{ '10' if inventory_hostname == 'server1' else ('20' if inventory_hostname == 'server2' else '30') }}
+ spanning-tree portfast
+ no shutdown
+!
+{% if 'dbservers' in group_names %}
+! --- STRICT DATABASE TIER ACL (APPLIED ONLY TO SERVER 3 PORT) ---
+ip access-list extended ACL_PROTECT_DB_3306
+ permit tcp 172.28.0.0 0.0.255.255 host {{ internal_ip }} eq 3306
+ deny   tcp any host {{ internal_ip }} eq 3306 log
+ permit ip any any
+{% else %}
+! --- WEB TIER ACL (APPLIED TO SERVER 1 & SERVER 2 PORTS) ---
+ip access-list extended ACL_WEB_TIER_80
+ permit tcp any host {{ internal_ip }} eq 80
+ permit ip any any
+{% endif %}
+!
+end
+write memory
+

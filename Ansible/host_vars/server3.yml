@@ -1,0 +1,13 @@
+# ==============================================================================
+# 🖥️ INDIVIDUAL SERVER VARIABLES: host_vars/server3.yml
+# ==============================================================================
+# Ansible automatically loads this file ONLY for `server3` (172.28.0.13)!
+# ==============================================================================
+
+individual_node_title: "Central Database & Backup Vault (Server 3)"
+assigned_engineer: "Kyaw Zin (CCNA / IT Manager)"
+assigned_vlan: "VLAN 30 (Restricted Database Tier)"
+max_worker_connections: 2048
+theme_color: "#059669"
+backup_schedule: "Every 6 Hours (mysqldump + SHA256)"
+

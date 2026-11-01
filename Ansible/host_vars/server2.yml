@@ -1,0 +1,13 @@
+# ==============================================================================
+# 🖥️ INDIVIDUAL SERVER VARIABLES: host_vars/server2.yml
+# ==============================================================================
+# Ansible automatically loads this file ONLY for `server2` (172.28.0.12)!
+# ==============================================================================
+
+individual_node_title: "Kowloon Secondary Failover Node (Server 2)"
+assigned_engineer: "Kyaw Zin (CCNA / IT Manager)"
+assigned_vlan: "VLAN 20 (Failover Web Tier)"
+max_worker_connections: 512
+theme_color: "#7c3aed"
+backup_schedule: "Daily at 02:00 HKT"
+

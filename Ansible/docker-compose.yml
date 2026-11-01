@@ -47,7 +47,7 @@ services:
     restart: unless-stopped
 
   # ----------------------------------------------------------------------------
-  # 🖥️ SERVER 3: Database Node (IP: 172.28.0.13 | MySQL DB: localhost:3336)
+  # 🖥️ SERVER 3: Database + Nginx Load Balancer VIP (IP: 172.28.0.13 | LB: localhost:8880)
   # ----------------------------------------------------------------------------
   server3:
     build:
@@ -58,6 +58,7 @@ services:
     ports:
       - "2223:22"     # MacBook SSH Port 2223 -> Container Port 22
       - "3336:3306"   # MacBook Port 3336 -> MariaDB/MySQL Port 3306
+      - "8880:80"     # MacBook Browser http://localhost:8880 -> Nginx Load Balancer VIP!
     volumes:
       - ./test-outputs/server3:/var/northpoint_backups
     networks:

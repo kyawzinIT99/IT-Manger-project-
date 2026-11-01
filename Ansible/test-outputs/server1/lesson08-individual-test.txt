@@ -1,0 +1,10 @@
+================================================================
+📘 LESSON 8 — INDIVIDUAL SERVER 1 TEST (hosts: server1)
+================================================================
+Targeted Host     : server1 (172.28.0.11)
+Tag Used          : tags: [server1]
+Node Title        : Hong Kong Primary Storefront (Server 1)
+Assigned VLAN     : VLAN 10 (DMZ Web Tier)
+Max Connections   : 1024
+HTTP Health Check : Status 200 OK on 172.28.0.11:80
+================================================================

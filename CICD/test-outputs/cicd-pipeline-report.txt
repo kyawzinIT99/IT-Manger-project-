@@ -1,0 +1,65 @@
+==================================================================
+🔄 NORTHPOINT LIVING — LOCAL CI/CD PIPELINE EXECUTION REPORT
+==================================================================
+Executed At : Sun Nov  1 13:25:39 +07 2026
+Workstation : Berrys-MacBook-Pro.local
+
+🏗️ [STAGE 1/4] Running Terraform IaC Validation...
+[32m[1mSuccess![0m The configuration is valid.
+[0m
+✅ Stage 1 Passed: All 15 Terraform .tf files are valid!
+
+🤖 [STAGE 2/4] Running Ansible Playbook Syntax Validation...
+
+playbook: 01-setup-tmux-and-tools.yml
+  ✔ Syntax OK: 01-setup-tmux-and-tools.yml
+
+playbook: 02-network-and-backup-test.yml
+  ✔ Syntax OK: 02-network-and-backup-test.yml
+
+playbook: 03-git-connect-and-deploy.yml
+  ✔ Syntax OK: 03-git-connect-and-deploy.yml
+
+playbook: 04-inventory-groups-and-facts.yml
+  ✔ Syntax OK: 04-inventory-groups-and-facts.yml
+
+playbook: 05-playbooks-and-idempotency.yml
+  ✔ Syntax OK: 05-playbooks-and-idempotency.yml
+
+playbook: 06-when-conditions-and-db-web-ui.yml
+  ✔ Syntax OK: 06-when-conditions-and-db-web-ui.yml
+
+playbook: 08-individual-server-testing-and-tags.yml
+  ✔ Syntax OK: 08-individual-server-testing-and-tags.yml
+
+playbook: 09-templates-and-network-config.yml
+  ✔ Syntax OK: 09-templates-and-network-config.yml
+
+playbook: 10-nginx-load-balancer-and-failover.yml
+  ✔ Syntax OK: 10-nginx-load-balancer-and-failover.yml
+✅ Stage 2 Passed: All Ansible Playbooks passed syntax verification!
+
+☸️ [STAGE 3/4] Validating Kubernetes YAML Manifests...
+  ✔ Valid YAML: 01-namespace.yaml (1 resources)
+  ✔ Valid YAML: 02-configmap.yaml (1 resources)
+  ✔ Valid YAML: 03-secret.yaml (1 resources)
+  ✔ Valid YAML: 04-deployment.yaml (1 resources)
+  ✔ Valid YAML: 05-service.yaml (1 resources)
+  ✔ Valid YAML: 06-hpa.yaml (1 resources)
+  ✔ Valid YAML: 07-ingress.yaml (1 resources)
+  ✔ Valid YAML: 08-pvc.yaml (1 resources)
+  ✔ Valid YAML: 09-mysql-statefulset.yaml (2 resources)
+  ✔ Valid YAML: 10-monitoring.yaml (3 resources)
+  ✔ Valid YAML: 11-grafana.yaml (3 resources)
+  ✔ Valid YAML: kustomization.yaml (1 resources)
+  ✔ Valid YAML: main.yaml (8 resources)
+✅ Stage 3 Passed: All Kubernetes manifests are valid!
+
+🐳 [STAGE 4/4] Verifying Docker Image & Container Environment...
+  ✔ Docker Image Verified: northpoint-storefront:v1 exists locally
+✅ Stage 4 Passed: Docker CI check complete!
+
+==================================================================
+🎉 ALL 4 CI/CD STAGES PASSED! READY FOR 'git push origin main'
+📄 Full Report Saved To: CICD/test-outputs/cicd-pipeline-report.txt
+==================================================================

@@ -1,0 +1,18 @@
+================================================================
+📘 LESSON 8 — INDIVIDUAL SERVER 3 TEST (hosts: server3)
+================================================================
+Targeted Host     : server3 (172.28.0.13)
+Tag Used          : tags: [server3]
+Node Title        : Central Database & Backup Vault (Server 3)
+Assigned VLAN     : VLAN 30 (Restricted Database Tier)
+Max Connections   : 2048
+
+=== MARIADB ENGINE STATUS ON 172.28.0.13:3306 ===
+Uptime: 45991  Threads: 1  Questions: 110  Slow queries: 0  Opens: 35  Open tables: 28  Queries per second avg: 0.002
+Database
+information_schema
+mysql
+northpoint_db
+performance_schema
+sys
+================================================================

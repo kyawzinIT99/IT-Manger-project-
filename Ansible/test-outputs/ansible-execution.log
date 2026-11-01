@@ -750,3 +750,115 @@ Use `ansible_facts["fact_name"]` (no `ansible_` prefix) instead.
 2026-11-01 11:01:31,471 p=70000 u=berry n=ansible INFO| server1                    : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 2026-11-01 11:01:31,471 p=70000 u=berry n=ansible INFO| server2                    : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 2026-11-01 11:01:31,471 p=70000 u=berry n=ansible INFO| server3                    : ok=4    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-11-01 11:50:02,061 p=34811 u=berry n=ansible ERROR| [ERROR]: User interrupted execution
+
+2026-11-01 11:50:05,475 p=27382 u=berry n=ansible INFO| PLAY [Lesson 8 (Play 1): Individual Test for SERVER 1 ONLY (172.28.0.11)] ******
+2026-11-01 11:50:05,480 p=27382 u=berry n=ansible INFO| TASK [Gathering Facts] *********************************************************
+2026-11-01 11:50:06,377 p=27382 u=berry n=ansible INFO| ok: [server1]
+2026-11-01 11:50:06,380 p=27382 u=berry n=ansible INFO| TASK [[server1] 1. Print Server 1 Individual Configuration (from host_vars/server1.yml)] ***
+2026-11-01 11:50:06,395 p=27382 u=berry n=ansible INFO| ok: [server1] => {
+    "msg": [
+        "🖥️ Target Host     : server1 (172.28.0.11)",
+        "🏷️ Node Title      : Hong Kong Primary Storefront (Server 1)",
+        "🌐 Assigned VLAN   : VLAN 10 (DMZ Web Tier)",
+        "⚡ Max Connections : 1024"
+    ]
+}
+2026-11-01 11:50:06,398 p=27382 u=berry n=ansible INFO| TASK [[server1] 2. Test Nginx HTTP Port 80 on Server 1 (172.28.0.11)] **********
+2026-11-01 11:50:06,661 p=27382 u=berry n=ansible INFO| ok: [server1]
+2026-11-01 11:50:06,664 p=27382 u=berry n=ansible INFO| TASK [[server1] 3. Save Server 1 Individual Test Report to ./test-outputs/server1/] ***
+2026-11-01 11:50:07,125 p=27382 u=berry n=ansible INFO| changed: [server1]
+2026-11-01 11:50:07,126 p=27382 u=berry n=ansible INFO| PLAY [Lesson 8 (Play 2): Individual Test for SERVER 2 ONLY (172.28.0.12)] ******
+2026-11-01 11:50:07,128 p=27382 u=berry n=ansible INFO| PLAY [Lesson 8 (Play 3): Individual Test for SERVER 3 ONLY (172.28.0.13)] ******
+2026-11-01 11:50:07,129 p=27382 u=berry n=ansible INFO| PLAY RECAP *********************************************************************
+2026-11-01 11:50:07,129 p=27382 u=berry n=ansible INFO| server1                    : ok=4    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-11-01 11:50:07,466 p=27466 u=berry n=ansible INFO| PLAY [Lesson 8 (Play 1): Individual Test for SERVER 1 ONLY (172.28.0.11)] ******
+2026-11-01 11:50:07,469 p=27466 u=berry n=ansible INFO| PLAY [Lesson 8 (Play 2): Individual Test for SERVER 2 ONLY (172.28.0.12)] ******
+2026-11-01 11:50:07,471 p=27466 u=berry n=ansible INFO| TASK [Gathering Facts] *********************************************************
+2026-11-01 11:50:08,380 p=27466 u=berry n=ansible INFO| ok: [server2]
+2026-11-01 11:50:08,384 p=27466 u=berry n=ansible INFO| TASK [[server2] 1. Print Server 2 Individual Configuration (from host_vars/server2.yml)] ***
+2026-11-01 11:50:08,402 p=27466 u=berry n=ansible INFO| ok: [server2] => {
+    "msg": [
+        "🖥️ Target Host     : server2 (172.28.0.12)",
+        "🏷️ Node Title      : Kowloon Secondary Failover Node (Server 2)",
+        "🌐 Assigned VLAN   : VLAN 20 (Failover Web Tier)",
+        "⚡ Max Connections : 512"
+    ]
+}
+2026-11-01 11:50:08,405 p=27466 u=berry n=ansible INFO| TASK [[server2] 2. Test Failover Ping from Server 2 (172.28.0.12) to Primary Server 1 (172.28.0.11)] ***
+2026-11-01 11:50:09,691 p=27466 u=berry n=ansible INFO| ok: [server2]
+2026-11-01 11:50:09,695 p=27466 u=berry n=ansible INFO| TASK [[server2] 3. Save Server 2 Individual Test Report to ./test-outputs/server2/] ***
+2026-11-01 11:50:10,178 p=27466 u=berry n=ansible INFO| changed: [server2]
+2026-11-01 11:50:10,179 p=27466 u=berry n=ansible INFO| PLAY [Lesson 8 (Play 3): Individual Test for SERVER 3 ONLY (172.28.0.13)] ******
+2026-11-01 11:50:10,181 p=27466 u=berry n=ansible INFO| PLAY RECAP *********************************************************************
+2026-11-01 11:50:10,181 p=27466 u=berry n=ansible INFO| server2                    : ok=4    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-11-01 11:50:10,511 p=27594 u=berry n=ansible INFO| PLAY [Lesson 8 (Play 1): Individual Test for SERVER 1 ONLY (172.28.0.11)] ******
+2026-11-01 11:50:10,514 p=27594 u=berry n=ansible INFO| PLAY [Lesson 8 (Play 2): Individual Test for SERVER 2 ONLY (172.28.0.12)] ******
+2026-11-01 11:50:10,516 p=27594 u=berry n=ansible INFO| PLAY [Lesson 8 (Play 3): Individual Test for SERVER 3 ONLY (172.28.0.13)] ******
+2026-11-01 11:50:10,517 p=27594 u=berry n=ansible INFO| TASK [Gathering Facts] *********************************************************
+2026-11-01 11:50:11,323 p=27594 u=berry n=ansible INFO| ok: [server3]
+2026-11-01 11:50:11,328 p=27594 u=berry n=ansible INFO| TASK [[server3] 1. Print Server 3 Individual Configuration (from host_vars/server3.yml)] ***
+2026-11-01 11:50:11,345 p=27594 u=berry n=ansible INFO| ok: [server3] => {
+    "msg": [
+        "🖥️ Target Host     : server3 (172.28.0.13)",
+        "🏷️ Node Title      : Central Database & Backup Vault (Server 3)",
+        "🌐 Assigned VLAN   : VLAN 30 (Restricted Database Tier)",
+        "⚡ Max Connections : 2048"
+    ]
+}
+2026-11-01 11:50:11,348 p=27594 u=berry n=ansible INFO| TASK [[server3] 2. Run Individual MariaDB Health & Uptime Check on Server 3 (172.28.0.13:3306)] ***
+2026-11-01 11:50:11,815 p=27594 u=berry n=ansible INFO| ok: [server3]
+2026-11-01 11:50:11,818 p=27594 u=berry n=ansible INFO| TASK [[server3] 3. Save Server 3 Individual Test Report to ./test-outputs/server3/] ***
+2026-11-01 11:50:12,283 p=27594 u=berry n=ansible INFO| changed: [server3]
+2026-11-01 11:50:12,283 p=27594 u=berry n=ansible INFO| PLAY RECAP *********************************************************************
+2026-11-01 11:50:12,284 p=27594 u=berry n=ansible INFO| server3                    : ok=4    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-11-01 12:57:47,516 p=89646 u=berry n=ansible INFO| PLAY [Lesson 10 (Play 1): Configure Distinct Visual Themes on Backend Webservers] ***
+2026-11-01 12:57:47,521 p=89646 u=berry n=ansible INFO| TASK [Gathering Facts] *********************************************************
+2026-11-01 12:57:48,687 p=89646 u=berry n=ansible INFO| ok: [server2]
+2026-11-01 12:57:48,689 p=89646 u=berry n=ansible INFO| ok: [server1]
+2026-11-01 12:57:48,693 p=89646 u=berry n=ansible INFO| TASK [1. Deploy Load-Balanced Storefront Page (Blue for Server 1, Purple for Server 2)] ***
+2026-11-01 12:57:49,225 p=89646 u=berry n=ansible INFO| changed: [server2]
+2026-11-01 12:57:49,336 p=89646 u=berry n=ansible INFO| changed: [server1]
+2026-11-01 12:57:49,340 p=89646 u=berry n=ansible INFO| TASK [2. Deploy Compact Text Identity Endpoint (/node-id) for CLI Round-Robin Testing] ***
+2026-11-01 12:57:49,830 p=89646 u=berry n=ansible INFO| changed: [server2]
+2026-11-01 12:57:49,882 p=89646 u=berry n=ansible INFO| changed: [server1]
+2026-11-01 12:57:49,885 p=89646 u=berry n=ansible INFO| TASK [3. Ensure Nginx is running on both Backend Webservers] *******************
+2026-11-01 12:57:50,162 p=89646 u=berry n=ansible INFO| ok: [server2]
+2026-11-01 12:57:50,220 p=89646 u=berry n=ansible INFO| ok: [server1]
+2026-11-01 12:57:50,223 p=89646 u=berry n=ansible INFO| PLAY [Lesson 10 (Play 2): Configure Nginx Load Balancer on server3 (172.28.0.13:80)] ***
+2026-11-01 12:57:50,225 p=89646 u=berry n=ansible INFO| TASK [Gathering Facts] *********************************************************
+2026-11-01 12:57:50,950 p=89646 u=berry n=ansible INFO| ok: [server3]
+2026-11-01 12:57:50,953 p=89646 u=berry n=ansible INFO| TASK [1. Install Nginx on server3 (172.28.0.13) to act as Reverse Proxy Load Balancer] ***
+2026-11-01 12:58:03,955 p=89646 u=berry n=ansible INFO| changed: [server3]
+2026-11-01 12:58:03,961 p=89646 u=berry n=ansible INFO| TASK [2. Deploy Load Balancer Config from Jinja2 Template (templates/nginx-load-balancer.conf.j2)] ***
+2026-11-01 12:58:04,343 p=89646 u=berry n=ansible INFO| changed: [server3]
+2026-11-01 12:58:04,346 p=89646 u=berry n=ansible INFO| TASK [3. Restart Nginx Load Balancer on server3] *******************************
+2026-11-01 12:58:05,635 p=89646 u=berry n=ansible INFO| changed: [server3]
+2026-11-01 12:58:05,638 p=89646 u=berry n=ansible INFO| TASK [4. Test 6 Consecutive Requests to Load Balancer VIP (172.28.0.13) to Prove 50/50 Round-Robin!] ***
+2026-11-01 12:58:05,906 p=89646 u=berry n=ansible INFO| ok: [server3]
+2026-11-01 12:58:05,909 p=89646 u=berry n=ansible INFO| TASK [5. Print Live Round-Robin Sequence in Terminal] **************************
+2026-11-01 12:58:05,922 p=89646 u=berry n=ansible INFO| ok: [server3] => {
+    "msg": [
+        "Request #1 -> Answered by server1 (172.28.0.11) - Hong Kong Primary Storefront (Server 1)",
+        "Request #2 -> Answered by server2 (172.28.0.12) - Kowloon Secondary Failover Node (Server 2)",
+        "Request #3 -> Answered by server1 (172.28.0.11) - Hong Kong Primary Storefront (Server 1)",
+        "Request #4 -> Answered by server2 (172.28.0.12) - Kowloon Secondary Failover Node (Server 2)",
+        "Request #5 -> Answered by server1 (172.28.0.11) - Hong Kong Primary Storefront (Server 1)",
+        "Request #6 -> Answered by server2 (172.28.0.12) - Kowloon Secondary Failover Node (Server 2)"
+    ]
+}
+2026-11-01 12:58:05,924 p=89646 u=berry n=ansible INFO| TASK [6. Save Load Balancer Test Report to ./test-outputs/server3/] ************
+2026-11-01 12:58:06,273 p=89646 u=berry n=ansible INFO| changed: [server3]
+2026-11-01 12:58:06,274 p=89646 u=berry n=ansible INFO| PLAY RECAP *********************************************************************
+2026-11-01 12:58:06,274 p=89646 u=berry n=ansible INFO| server1                    : ok=4    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-11-01 12:58:06,274 p=89646 u=berry n=ansible INFO| server2                    : ok=4    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-11-01 12:58:06,274 p=89646 u=berry n=ansible INFO| server3                    : ok=7    changed=4    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2026-11-01 13:25:40,484 p=22759 u=berry n=ansible INFO| playbook: 01-setup-tmux-and-tools.yml
+2026-11-01 13:25:40,806 p=22764 u=berry n=ansible INFO| playbook: 02-network-and-backup-test.yml
+2026-11-01 13:25:41,115 p=22768 u=berry n=ansible INFO| playbook: 03-git-connect-and-deploy.yml
+2026-11-01 13:25:41,438 p=22773 u=berry n=ansible INFO| playbook: 04-inventory-groups-and-facts.yml
+2026-11-01 13:25:41,743 p=22813 u=berry n=ansible INFO| playbook: 05-playbooks-and-idempotency.yml
+2026-11-01 13:25:42,060 p=22817 u=berry n=ansible INFO| playbook: 06-when-conditions-and-db-web-ui.yml
+2026-11-01 13:25:42,378 p=22822 u=berry n=ansible INFO| playbook: 08-individual-server-testing-and-tags.yml
+2026-11-01 13:25:42,685 p=22826 u=berry n=ansible INFO| playbook: 09-templates-and-network-config.yml
+2026-11-01 13:25:42,996 p=22830 u=berry n=ansible INFO| playbook: 10-nginx-load-balancer-and-failover.yml

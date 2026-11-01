@@ -1,0 +1,15 @@
+================================================================
+⚖️ LESSON 10 — NGINX LOAD BALANCER REPORT (VIP: 172.28.0.13:80)
+================================================================
+Load Balancer VIP : 172.28.0.13:80 (MacBook: http://localhost:8880)
+Backend Pool      : 172.28.0.11:80 (server1) + 172.28.0.12:80 (server2)
+Algorithm         : Round-Robin (50% / 50%) with Automatic Failover
+
+=== 6 CONSECUTIVE REQUESTS TO VIP (http://172.28.0.13/node-id) ===
+Request #1 -> Answered by server1 (172.28.0.11) - Hong Kong Primary Storefront (Server 1)
+Request #2 -> Answered by server2 (172.28.0.12) - Kowloon Secondary Failover Node (Server 2)
+Request #3 -> Answered by server1 (172.28.0.11) - Hong Kong Primary Storefront (Server 1)
+Request #4 -> Answered by server2 (172.28.0.12) - Kowloon Secondary Failover Node (Server 2)
+Request #5 -> Answered by server1 (172.28.0.11) - Hong Kong Primary Storefront (Server 1)
+Request #6 -> Answered by server2 (172.28.0.12) - Kowloon Secondary Failover Node (Server 2)
+================================================================

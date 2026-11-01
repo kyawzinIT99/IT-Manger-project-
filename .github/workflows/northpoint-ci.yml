@@ -1,0 +1,145 @@
+# ==============================================================================
+# 🔄 GITHUB ACTIONS CI/CD PIPELINE (.github/workflows/northpoint-ci.yml)
+# ==============================================================================
+# Repository : https://github.com/kyawzinIT99/IT-Manger-project-.git
+# Live Status: https://github.com/kyawzinIT99/IT-Manger-project-/actions
+#
+# 🎯 What is this file and why is it inside `.github/workflows/`?
+# Whenever you run `git push origin main` on your MacBook, GitHub automatically
+# detects any `.yml` file inside `.github/workflows/` and spins up FREE Ubuntu
+# cloud servers (`runs-on: ubuntu-latest`) to test your entire DevOps stack:
+#
+#   Stage 1: 🏗️ Terraform IaC Validation (`terraform init` & `terraform validate`)
+#   Stage 2: 🤖 Ansible Playbook Syntax Validation (`ansible-playbook --syntax-check`)
+#   Stage 3: ☸️ Kubernetes Manifest Validation (`kubernates/*.yaml`)
+#   Stage 4: 🐳 Docker Build & Live Container Smoke Test (`/api/health` & `/metrics`)
+# ==============================================================================
+
+name: "Northpoint Living — DevOps CI/CD Pipeline"
+
+# ------------------------------------------------------------------------------
+# 1. TRIGGER (`on:`): When should this pipeline run automatically?
+# ------------------------------------------------------------------------------
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:   # Allows clicking "Run workflow" manually on GitHub UI!
+
+# ------------------------------------------------------------------------------
+# 2. PIPELINE JOBS (`jobs:`): The 4 Automated DevOps Stages
+# ------------------------------------------------------------------------------
+jobs:
+  # ============================================================================
+  # 🏗️ STAGE 1: TERRAFORM INFRASTRUCTURE-AS-CODE VALIDATION
+  # ============================================================================
+  terraform-ci:
+    name: "1. Terraform GCP Validation"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./Terraform
+
+    steps:
+      - name: "1. Checkout GitHub Repository Code"
+        uses: actions/checkout@v4
+
+      - name: "2. Setup HashiCorp Terraform CLI"
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.0"
+
+      - name: "3. Initialize Terraform (Local Validation Mode - No Cloud Cost)"
+        run: terraform init -backend=false
+
+      - name: "4. Validate All 15 Terraform .tf Files"
+        run: terraform validate
+
+  # ============================================================================
+  # 🤖 STAGE 2: ANSIBLE PLAYBOOK & INVENTORY LINTING
+  # ============================================================================
+  ansible-ci:
+    name: "2. Ansible Playbooks Syntax Check"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./Ansible
+
+    steps:
+      - name: "1. Checkout GitHub Repository Code"
+        uses: actions/checkout@v4
+
+      - name: "2. Install Ansible on GitHub Ubuntu Runner"
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ansible
+
+      - name: "3. Create Dummy Vault Password File for CI Syntax Check"
+        run: |
+          mkdir -p ssh-keys
+          echo "northpoint" > ./ssh-keys/.vault_pass
+          chmod 600 ./ssh-keys/.vault_pass
+          ssh-keygen -t ed25519 -f ./ssh-keys/ansible_key -N "" -q
+
+      - name: "4. Syntax-Check All Ansible Playbooks (Lessons 00 to 10)"
+        run: |
+          for playbook in 00-*.yml 01-*.yml 02-*.yml 03-*.yml 04-*.yml 05-*.yml 06-*.yml 08-*.yml 09-*.yml 10-*.yml; do
+            echo "✅ Checking syntax of $playbook ..."
+            ansible-playbook -i inventory.ini --syntax-check "$playbook"
+          done
+
+  # ============================================================================
+  # ☸️ STAGE 3: KUBERNETES YAML MANIFEST VALIDATION
+  # ============================================================================
+  kubernetes-ci:
+    name: "3. Kubernetes Manifests Check"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./kubernates
+
+    steps:
+      - name: "1. Checkout GitHub Repository Code"
+        uses: actions/checkout@v4
+
+      - name: "2. Validate Kubernetes YAML Structure (01 through 11 + main.yaml)"
+        run: |
+          python3 -c '
+          import yaml, glob, sys
+          files = sorted(glob.glob("*.yaml"))
+          for f in files:
+              with open(f) as stream:
+                  docs = list(yaml.safe_load_all(stream))
+                  print(f"✅ Validated {f} ({len(docs)} Kubernetes resource documents)")
+          '
+
+  # ============================================================================
+  # 🐳 STAGE 4: DOCKER BUILD & LIVE CONTAINER SMOKE TEST
+  # ============================================================================
+  docker-build-test:
+    name: "4. Docker Image Build & Live API Test"
+    runs-on: ubuntu-latest
+    needs: [terraform-ci, ansible-ci, kubernetes-ci]
+    defaults:
+      run:
+        working-directory: ./kubernates
+
+    steps:
+      - name: "1. Checkout GitHub Repository Code"
+        uses: actions/checkout@v4
+
+      - name: "2. Build Northpoint Storefront Docker Image (northpoint-storefront:ci)"
+        run: docker build -t northpoint-storefront:ci .
+
+      - name: "3. Run Container and Test Live /api/health & Prometheus /metrics"
+        run: |
+          docker run -d --name np-ci-test -p 8080:8080 northpoint-storefront:ci
+          sleep 3
+          echo "=== Testing /api/health ==="
+          curl -f -s http://localhost:8080/api/health
+          echo ""
+          echo "=== Testing Prometheus /metrics ==="
+          curl -f -s http://localhost:8080/metrics | head -n 15
+          docker rm -f np-ci-test
+

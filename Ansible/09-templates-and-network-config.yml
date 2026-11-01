@@ -1,0 +1,45 @@
+# ==============================================================================
+# 📘 LESSON 9 (FINAL CAPSTONE): JINJA2 TEMPLATES (`.j2`) FOR NETWORK & DEVOPS
+# ==============================================================================
+# Run from your MacBook:
+#   ansible-playbook 09-templates-and-network-config.yml
+#
+# 🎯 What is a Jinja2 Template (`.j2`) and Why Is It the Final Lesson?
+# - In Lessons 1–8, we wrote configuration text directly inside the `.yml` file
+#   using `ansible.builtin.copy` (`content: |`).
+# - In real Network & DevOps jobs, config files (like Nginx configs, Linux
+#   sysctl.conf, or Cisco Switch `running-config` files) are stored in a separate
+#   `templates/` folder ending in `.j2` (Jinja2)!
+# - `.j2` files support `{{ variables }}` AND `{% if ... %}` logic!
+# - Look at `templates/cisco-vlan-switch.ios.j2` — Ansible uses the exact same
+#   template to generate VLAN 10 Web ACLs for `server1`, VLAN 20 for `server2`,
+#   and a strict Port 3306 Database ACL for `server3`!
+# ==============================================================================
+
+---
+- name: "Lesson 9: Generate Dynamic Cisco Switch & Linux Configs Using .j2 Templates"
+  hosts: northpoint_servers
+  become: true
+
+  tasks:
+    # --------------------------------------------------------------------------
+    # TASK 1: Render the `.j2` Template into `./test-outputs/<server>/`
+    # --------------------------------------------------------------------------
+    - name: "1. Render Cisco IOS Switch VLAN & ACL Config from .j2 Template"
+      ansible.builtin.template:
+        src: ./templates/cisco-vlan-switch.ios.j2
+        dest: "/var/northpoint_backups/lesson09-cisco-switch-port.ios"
+        mode: '0644'
+
+    # --------------------------------------------------------------------------
+    # TASK 2: Read the generated config so we can see how `.j2` customized it!
+    # --------------------------------------------------------------------------
+    - name: "2. Verify Generated Cisco IOS Config on each server"
+      ansible.builtin.command: cat /var/northpoint_backups/lesson09-cisco-switch-port.ios
+      register: generated_ios
+      changed_when: false
+
+    - name: "3. Display Generated Config Summary"
+      ansible.builtin.debug:
+        msg: "{{ generated_ios.stdout_lines }}"
+
