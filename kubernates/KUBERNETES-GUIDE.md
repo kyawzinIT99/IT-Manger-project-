@@ -197,6 +197,22 @@ When you ran `kubectl delete pod ...` (or `kubectl delete pods --all`), Kubernet
 * Deleting a **Pod** only deletes the worker at the bottom — **The Boss (`Deployment`)** is still alive and immediately spawns a replacement!
 * **How to actually stop Pods permanently:** Delete the Boss (`kubectl delete deployment northpoint-storefront -n northpoint-living` or `kubectl delete -k .`).
 
+### 7.1 ⚖️ Stateless Workloads vs. Stateful Workloads: The Architecture of Self-Healing
+
+An essential concept for an IT Manager and Lead DevOps Architect is understanding that **not all self-healing behaves the same**:
+
+| Architectural Dimension | 🌐 Stateless Workloads (e.g. Nginx, Vite/React Frontend, API Gateways) | 💾 Stateful Workloads (e.g. MySQL, Redis, Storefront Auth Database) |
+| :--- | :--- | :--- |
+| **Storage Dependency** | **Zero Storage Needed** (No PVC or external volume) | **Strictly Dependent on PVC (`08-pvc.yaml`)** |
+| **Data Nature** | Ephemeral, read-only container image, processes requests in-memory | Persistent, stores transaction logs, user accounts, shopping carts |
+| **Self-Healing Mechanism** | Pod crashes $\rightarrow$ ReplicaSet launches new Pod $\rightarrow$ **Instantly operational in <2s** | Pod crashes $\rightarrow$ ReplicaSet launches new Pod $\rightarrow$ **Requires Volume Re-attachment** |
+| **What Happens Without PVC?** | **Zero impact.** The new Pod starts clean and serves requests seamlessly. | **Catastrophic Data Loss.** Pod starts empty; all user accounts are permanently wiped! |
+| **Scheduler Dependency** | Pod can be scheduled on **any healthy node** immediately. | Pod **CANNOT START** if PVC is unbound or missing (Stuck in `Pending: FailedScheduling`). |
+| **K8s Controller Best Practice** | `Deployment` (`04-deployment.yaml`) | `StatefulSet` (`09-mysql-statefulset.yaml`) or Deployment with dedicated PVC mount |
+
+#### The IT Manager Executive Principle:
+> **"For Stateless Workloads, self-healing is purely compute replacement. For Stateful Workloads, self-healing is a two-part contract: Compute Replacement + Volume Re-attachment. Without storage decoupling via Persistent Volumes, self-healing is an illusion because data loss is guaranteed."**
+
 ---
 
 ## 8. 📈 How `06-hpa.yaml` Auto-Scales at 2:00 AM

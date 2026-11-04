@@ -1,0 +1,176 @@
+# ==============================================================================
+# 12-stateless-nginx-proxy.yaml — Pure Stateless Workload (Reverse Proxy / Gateway)
+# ==============================================================================
+# ARCHITECTURAL LESSON: STATELESS vs. STATEFUL IN KUBERNETES
+#
+# 1. WHAT MAKES THIS WORKLOAD "STATELESS"?
+#    - It holds NO internal database, NO user sessions on disk, and NO uploads.
+#    - Notice: There is ZERO PersistentVolumeClaim (PVC) anywhere in this manifest!
+#    - It only mounts a read-only ConfigMap for routing instructions.
+#
+# 2. HOW DOES SELF-HEALING BEHAVE ON STATELESS WORKLOADS?
+#    - When you kill a stateless Pod (`kubectl delete pod ...`), the ReplicaSet
+#      launches a replacement in < 1 second.
+#    - Because NO hard drive needs to be unmounted from the dead node and reattached
+#      to the new node, recovery is INSTANTANEOUS and 100% frictionless.
+#    - Zero business data is ever lost because the Pod is purely disposable compute!
+#
+# 3. CONTRAST WITH STATEFUL WORKLOADS (04-deployment + 08-pvc, or 09-mysql):
+#    - Stateful Pods MUST wait for volume locks, filesystem checks, and mount bindings.
+#    - Without a PVC, a stateful pod self-healing causes CATASTROPHIC DATA LOSS.
+#    - For Stateless Pods, self-healing is purely fresh compute replacement!
+#
+# DRILL COMMANDS:
+#   1. Apply:        kubectl apply -f 12-stateless-nginx-proxy.yaml
+#   2. Check Pods:   kubectl get pods -l app=stateless-nginx-proxy -n northpoint-living
+#   3. Test Kill:    kubectl delete pod -l app=stateless-nginx-proxy -n northpoint-living
+#   4. Port-Forward: kubectl port-forward svc/stateless-nginx-proxy-svc 8090:80 -n northpoint-living
+# ==============================================================================
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: stateless-proxy-config
+  namespace: northpoint-living
+  labels:
+    app: stateless-nginx-proxy
+    tier: gateway
+data:
+  default.conf: |
+    server {
+        listen 80;
+        server_name localhost;
+
+        # Health check endpoint for Kubernetes Liveness & Readiness Probes
+        location /healthz {
+            access_log off;
+            default_type application/json;
+            return 200 '{"status":"healthy","workload":"stateless","storage":"none","pvc_required":false}\n';
+        }
+
+        # Stateless Architecture Info Page
+        location /stateless-info {
+            root /usr/share/nginx/html;
+            try_files /stateless.html =404;
+        }
+
+        # Reverse proxy to the internal Storefront Service
+        location / {
+            proxy_pass http://northpoint-storefront-svc.northpoint-living.svc.cluster.local:80;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Proxy-Engine "Stateless-Nginx-Gateway/v1";
+        }
+    }
+
+  stateless.html: |
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <title>Northpoint Living — Stateless Gateway</title>
+      <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; padding: 40px; text-align: center; }
+        .card { background: #1e293b; max-width: 650px; margin: 0 auto; padding: 30px; border-radius: 12px; border: 1px solid #334155; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        h1 { color: #38bdf8; margin-top: 0; }
+        .badge { background: #10b981; color: #022c22; padding: 4px 10px; border-radius: 9999px; font-weight: bold; font-size: 12px; }
+        .metric { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #334155; text-align: left; }
+        .metric strong { color: #94a3b8; }
+        .metric span { color: #f1f5f9; font-family: monospace; }
+        .highlight { color: #34d399; font-weight: bold; }
+      </style>
+    </head>
+    <body>
+      <div class="card">
+        <span class="badge">100% STATELESS WORKLOAD</span>
+        <h1>Reverse Proxy & Frontend Gateway</h1>
+        <p>This Pod runs purely in memory. It requires <strong>ZERO Persistent Volumes</strong>.</p>
+        <div class="metric"><strong>Storage Backing:</strong> <span class="highlight">Ephemeral RAM / OverlayFS</span></div>
+        <div class="metric"><strong>Persistent Volume Claim:</strong> <span>None (pvc_required = false)</span></div>
+        <div class="metric"><strong>Self-Healing Time:</strong> <span>&lt; 1 Second</span></div>
+        <div class="metric"><strong>Target Backend:</strong> <span>northpoint-storefront-svc:80</span></div>
+        <p style="margin-top: 20px; font-size: 13px; color: #94a3b8;">
+          Test the self-healing drill: kill this container anytime with <code>kubectl delete pod</code>.<br/>
+          The ReplicaSet will instantly spawn a twin with zero downtime and zero data loss!
+        </p>
+      </div>
+    </body>
+    </html>
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stateless-nginx-proxy
+  namespace: northpoint-living
+  labels:
+    app: stateless-nginx-proxy
+    tier: gateway
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: stateless-nginx-proxy
+  template:
+    metadata:
+      labels:
+        app: stateless-nginx-proxy
+        tier: gateway
+    spec:
+      containers:
+      - name: nginx-proxy
+        image: nginx:alpine
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+          name: http
+        resources:
+          requests:
+            cpu: 30m
+            memory: 32Mi
+          limits:
+            cpu: 100m
+            memory: 64Mi
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 80
+          initialDelaySeconds: 2
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 80
+          initialDelaySeconds: 2
+          periodSeconds: 5
+        volumeMounts:
+        - name: nginx-config
+          mountPath: /etc/nginx/conf.d/default.conf
+          subPath: default.conf
+          readOnly: true
+        - name: nginx-config
+          mountPath: /usr/share/nginx/html/stateless.html
+          subPath: stateless.html
+          readOnly: true
+      volumes:
+      - name: nginx-config
+        configMap:
+          name: stateless-proxy-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stateless-nginx-proxy-svc
+  namespace: northpoint-living
+  labels:
+    app: stateless-nginx-proxy
+    tier: gateway
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+    name: http
+  selector:
+    app: stateless-nginx-proxy

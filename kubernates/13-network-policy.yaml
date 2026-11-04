@@ -1,0 +1,51 @@
+# ==============================================================================
+# 13-network-policy.yaml — Zero-Trust Database Firewall (Network Isolation)
+# ==============================================================================
+# ARCHITECTURAL LESSON: ZERO-TRUST POD-TO-POD SECURITY
+#
+# 1. THE DEFAULT KUBERNETES SECURITY FLAW:
+#    - By default, Kubernetes networks are 100% FLAT. Every Pod can talk to
+#      every other Pod on any port across all namespaces.
+#    - If a rogue container or compromised pod enters the cluster, it can
+#      port-scan and directly attack MySQL on port 3306!
+#
+# 2. THE ENTERPRISE FIX: NetworkPolicy (Internal Virtual Firewall)
+#    - This file enforces PCI-DSS / ISO-27001 Zero-Trust compliance.
+#    - Rule: Block ALL inbound traffic to MySQL (port 3306) EXCEPT from Pods
+#      that explicitly carry the verified label: `app: storefront`.
+#    - Any rogue or unauthorized pod trying to reach port 3306 will be DROPPED.
+#
+# 3. DRILL COMMANDS:
+#    1. Apply Policy:     kubectl apply -f 13-network-policy.yaml
+#    2. Inspect Policy:   kubectl get netpol -n northpoint-living
+#    3. Detailed Policy:  kubectl describe netpol mysql-zero-trust-firewall -n northpoint-living
+# ==============================================================================
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mysql-zero-trust-firewall
+  namespace: northpoint-living
+  labels:
+    app.kubernetes.io/part-of: northpoint-living
+    tier: security
+spec:
+  # TARGET: Apply this firewall to MySQL StatefulSet pods
+  podSelector:
+    matchLabels:
+      app: mysql
+
+  # Enforce inbound (Ingress) traffic filtering
+  policyTypes:
+    - Ingress
+
+  ingress:
+    # ALLOW ONLY: Pods with label "app: storefront"
+    - from:
+        - podSelector:
+            matchLabels:
+              app: storefront
+      ports:
+        - protocol: TCP
+          port: 3306
+

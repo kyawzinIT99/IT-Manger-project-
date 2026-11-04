@@ -30,6 +30,8 @@ resources:
   - 07-ingress.yaml
   - 10-monitoring.yaml
   - 11-grafana.yaml
+  - 12-stateless-nginx-proxy.yaml
+  - 13-network-policy.yaml
 
 # Common labels applied to all resources (just like `local.common_labels` in main.tf!)
 labels:
